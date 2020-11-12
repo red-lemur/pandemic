@@ -32,7 +32,6 @@ int duration = 0;
  * @brief Emit a signal which call this function again.
  */
 void tick() {
-    printf("renard");
     alarm(duration);
 }
 
