@@ -3,12 +3,13 @@
 #include <string.h>
 
 #define MARGIN 10
+
 int main(void)
 {	
 
-    WINDOW *maintitle, *titles, *places, *legend, *titles2, *citizens, *situation, *instruction;
+    WINDOW *maintitle, *titles, *places, *legend, *titles2, *citizens, *situation, *people, *instruction;
     char *title = "Simulation épidémie - Jour n°1";
-    char *legendtitle = "Légende";
+    char *instrMsg = "Appuyez sur une touche pour passer au jour suivant";
     
     initscr();
     maintitle= newwin(3, COLS, 0, 0); 
@@ -16,13 +17,15 @@ int main(void)
     places= newwin(7, 14, 6, (COLS/2) - 14 - MARGIN);
     legend= newwin(7, (COLS/2) - MARGIN, 6, (COLS/2) + MARGIN);
 
-    titles2= newwin(7, (COLS/2) - MARGIN, 6, (COLS/2) + MARGIN);
-    citizens= newwin(7, (COLS/2) - MARGIN, 6, (COLS/2) + MARGIN);
-    situation= newwin(7, (COLS/2) - MARGIN, 6, (COLS/2) + MARGIN);
-    instruction= newwin(7, (COLS/2) - MARGIN, 6, (COLS/2) + MARGIN);
+    titles2= newwin(3, COLS, 15, 0);
+    citizens= newwin(20, 40, 18, (COLS/2) - 40 - MARGIN);
+    situation= newwin(7, (COLS/2) - MARGIN - 10, 18, (COLS/2) + MARGIN);
+    people= newwin(7, 2, 18, COLS - MARGIN);
+    instruction= newwin(3, strlen(instrMsg) + 1, LINES - 5, COLS - strlen(instrMsg) - 5);
     
 
     start_color();
+    /*use_default_colors();*/
     init_pair(1, COLOR_BLACK, COLOR_WHITE);
 
     init_pair(2, COLOR_BLACK, COLOR_YELLOW);
@@ -30,10 +33,17 @@ int main(void)
     init_pair(4, COLOR_BLACK, COLOR_BLUE);
     init_pair(5, COLOR_BLACK, COLOR_GREEN);
     
+    init_pair(6, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(7, COLOR_RED, COLOR_BLACK);
+    init_pair(8, COLOR_BLUE, COLOR_BLACK);
+    init_pair(9, COLOR_GREEN, COLOR_BLACK);
 
     refresh();
 
     box(maintitle,0,0);
+
+    box(situation,0,0);
+    box(people,0,0);
 
 
     wattron(maintitle, COLOR_PAIR(1));
@@ -43,8 +53,17 @@ int main(void)
 
     wattron(titles, A_UNDERLINE);
     mvwprintw(titles, 1, (COLS/2) - 14 - MARGIN, "Cartes des lieux");
-    mvwprintw(titles, 1, (COLS/2) + MARGIN, legendtitle);
+    mvwprintw(titles, 1, (COLS/2) + MARGIN, "Légende");
     wattroff(titles, A_UNDERLINE);
+
+    wattron(titles2, A_UNDERLINE);
+    mvwprintw(titles2, 1, (COLS/2) - 40 - MARGIN, "Cartes des citoyens");
+    mvwprintw(titles2, 1, (COLS/2) + MARGIN, "Evolution de l'épidémie");
+    wattroff(titles2, A_UNDERLINE);
+
+    wattron(instruction, COLOR_PAIR(1));
+    mvwprintw(instruction, 0, 0, instrMsg);
+    wattroff(instruction, COLOR_PAIR(1));
 
 
     wattron(places, COLOR_PAIR(2));
@@ -90,6 +109,65 @@ int main(void)
 
 
 
+    mvwprintw(situation, 0, 2, " Personnes en bonne santé");
+    mvwprintw(situation, 2, 2, " Personnes malades");
+    mvwprintw(situation, 4, 2, " Personnes décédées");
+    mvwprintw(situation, 6, 2, " Cadavres brûlés");
+
+    /*wattron(situation, COLOR_PAIR(6));
+    mvwprintw(situation, 0, 0, "10");
+    wattroff(situation, COLOR_PAIR(6));
+    mvwprintw(situation, 0, 2, " Personnes en bonne santé");
+    wattron(situation, COLOR_PAIR(7));
+    mvwprintw(situation, 2, 0, "10");
+    wattroff(situation, COLOR_PAIR(7));
+    mvwprintw(situation, 2, 2, " Personnes malades");
+    wattron(situation, COLOR_PAIR(8));
+    mvwprintw(situation, 4, 0, "10");
+    wattroff(situation, COLOR_PAIR(8));
+    mvwprintw(situation, 4, 2, " Personnes décédées");
+    wattron(situation, COLOR_PAIR(9));
+    mvwprintw(situation, 6, 0, "10");
+    wattroff(situation, COLOR_PAIR(9));
+    mvwprintw(situation, 6, 2, " Cadavres brûlés");*/
+
+
+
+    wattron(citizens, COLOR_PAIR(6));
+    for(int i=0; i<7; i++) {
+        for(int j=0; j<7; j++) {
+            mvwprintw(citizens, i*3, j*6, "2");
+        }        
+    }
+
+    wattron(citizens, COLOR_PAIR(7));
+    for(int i=0; i<7; i++) {
+        for(int j=0; j<7; j++) {
+            mvwprintw(citizens, i*3+1, j*6, "0");
+        }        
+    }
+
+    wattron(citizens, COLOR_PAIR(8));
+    for(int i=0; i<7; i++) {
+        for(int j=0; j<7; j++) {
+            mvwprintw(citizens, i*3, j*6+1, "1");
+        }        
+    }
+
+    wattron(citizens, COLOR_PAIR(9));
+    for(int i=0; i<7; i++) {
+        for(int j=0; j<7; j++) {
+            mvwprintw(citizens, i*3+1, j*6+1, "3");
+        }        
+    }
+
+
+
+
+
+
+
+
 
     wrefresh(maintitle);
     wrefresh(titles);
@@ -99,6 +177,7 @@ int main(void)
     wrefresh(citizens);
     wrefresh(situation);
     wrefresh(instruction);
+    wrefresh(people);
 
     getch();
 
@@ -110,6 +189,7 @@ int main(void)
     delwin(citizens);
     delwin(situation);
     delwin(instruction);
+    delwin(people);
 
     endwin();
  
@@ -121,6 +201,7 @@ int main(void)
     free(citizens);
     free(situation);
     free(instruction);
+    free(people);
 
  
     return 0;
