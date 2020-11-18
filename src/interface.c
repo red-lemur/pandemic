@@ -10,6 +10,7 @@ int main(void)
     WINDOW *maintitle, *titles, *places, *legend, *titles2, *citizens, *situation, *people, *instruction;
     char *title = "Simulation épidémie - Jour n°1";
     char *instrMsg = "Appuyez sur une touche pour passer au jour suivant";
+    char *longestSituation = "Personnes en bonne santé";
     
     initscr();
     maintitle= newwin(3, COLS, 0, 0); 
@@ -19,8 +20,8 @@ int main(void)
 
     titles2= newwin(3, COLS, 15, 0);
     citizens= newwin(20, 40, 18, (COLS/2) - 40 - MARGIN);
-    situation= newwin(7, (COLS/2) - MARGIN - 10, 18, (COLS/2) + MARGIN);
-    people= newwin(7, 2, 18, COLS - MARGIN);
+    situation= newwin(7, strlen(longestSituation), 18, (COLS/2) + MARGIN);
+    people= newwin(7, 2, 18, (COLS/2) + MARGIN + strlen(longestSituation) + 3);
     instruction= newwin(3, strlen(instrMsg) + 1, LINES - 5, COLS - strlen(instrMsg) - 5);
     
 
@@ -42,9 +43,6 @@ int main(void)
 
     box(maintitle,0,0);
 
-    box(situation,0,0);
-    box(people,0,0);
-
 
     wattron(maintitle, COLOR_PAIR(1));
     mvwprintw(maintitle, 1, (COLS / 2) - (strlen(title) / 2), title);
@@ -61,9 +59,7 @@ int main(void)
     mvwprintw(titles2, 1, (COLS/2) + MARGIN, "Evolution de l'épidémie");
     wattroff(titles2, A_UNDERLINE);
 
-    wattron(instruction, COLOR_PAIR(1));
-    mvwprintw(instruction, 0, 0, instrMsg);
-    wattroff(instruction, COLOR_PAIR(1));
+   
 
 
     wattron(places, COLOR_PAIR(2));
@@ -109,52 +105,48 @@ int main(void)
 
 
 
-    mvwprintw(situation, 0, 2, " Personnes en bonne santé");
-    mvwprintw(situation, 2, 2, " Personnes malades");
-    mvwprintw(situation, 4, 2, " Personnes décédées");
-    mvwprintw(situation, 6, 2, " Cadavres brûlés");
+    mvwprintw(situation, 0, 0, longestSituation);
+    mvwprintw(situation, 2, 0, "Personnes malades");
+    mvwprintw(situation, 4, 0, "Personnes décédées");
+    mvwprintw(situation, 6, 0, "Cadavres brûlés");
 
-    /*wattron(situation, COLOR_PAIR(6));
-    mvwprintw(situation, 0, 0, "10");
-    wattroff(situation, COLOR_PAIR(6));
-    mvwprintw(situation, 0, 2, " Personnes en bonne santé");
-    wattron(situation, COLOR_PAIR(7));
-    mvwprintw(situation, 2, 0, "10");
-    wattroff(situation, COLOR_PAIR(7));
-    mvwprintw(situation, 2, 2, " Personnes malades");
-    wattron(situation, COLOR_PAIR(8));
-    mvwprintw(situation, 4, 0, "10");
-    wattroff(situation, COLOR_PAIR(8));
-    mvwprintw(situation, 4, 2, " Personnes décédées");
-    wattron(situation, COLOR_PAIR(9));
-    mvwprintw(situation, 6, 0, "10");
-    wattroff(situation, COLOR_PAIR(9));
-    mvwprintw(situation, 6, 2, " Cadavres brûlés");*/
+    wattron(people, COLOR_PAIR(9));
+    mvwprintw(people, 0, 0, "10");
+    wattroff(people, COLOR_PAIR(9));
+    wattron(people, COLOR_PAIR(6));
+    mvwprintw(people, 2, 0, "10");
+    wattroff(people, COLOR_PAIR(6));
+    wattron(people, COLOR_PAIR(8));
+    mvwprintw(people, 4, 0, "10");
+    wattroff(people, COLOR_PAIR(8));
+    wattron(people, COLOR_PAIR(7));
+    mvwprintw(people, 6, 0, "10");
+    wattroff(people, COLOR_PAIR(7));
 
 
 
-    wattron(citizens, COLOR_PAIR(6));
+    wattron(citizens, COLOR_PAIR(9));
     for(int i=0; i<7; i++) {
         for(int j=0; j<7; j++) {
             mvwprintw(citizens, i*3, j*6, "2");
         }        
     }
 
-    wattron(citizens, COLOR_PAIR(7));
+    wattron(citizens, COLOR_PAIR(8));
     for(int i=0; i<7; i++) {
         for(int j=0; j<7; j++) {
             mvwprintw(citizens, i*3+1, j*6, "0");
         }        
     }
 
-    wattron(citizens, COLOR_PAIR(8));
+    wattron(citizens, COLOR_PAIR(6));
     for(int i=0; i<7; i++) {
         for(int j=0; j<7; j++) {
             mvwprintw(citizens, i*3, j*6+1, "1");
         }        
     }
 
-    wattron(citizens, COLOR_PAIR(9));
+    wattron(citizens, COLOR_PAIR(7));
     for(int i=0; i<7; i++) {
         for(int j=0; j<7; j++) {
             mvwprintw(citizens, i*3+1, j*6+1, "3");
@@ -163,7 +155,9 @@ int main(void)
 
 
 
-
+    wattron(instruction, COLOR_PAIR(1));
+    mvwprintw(instruction, 0, 0, instrMsg);
+    wattroff(instruction, COLOR_PAIR(1));
 
 
 
@@ -176,8 +170,9 @@ int main(void)
     wrefresh(titles2);
     wrefresh(citizens);
     wrefresh(situation);
-    wrefresh(instruction);
     wrefresh(people);
+    wrefresh(instruction);
+   
 
     getch();
 
@@ -188,8 +183,9 @@ int main(void)
     delwin(titles2);
     delwin(citizens);
     delwin(situation);
-    delwin(instruction);
     delwin(people);
+    delwin(instruction);
+    
 
     endwin();
  
@@ -200,8 +196,9 @@ int main(void)
     free(titles2);
     free(citizens);
     free(situation);
-    free(instruction);
     free(people);
+    free(instruction);
+    
 
  
     return 0;
