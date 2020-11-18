@@ -1,18 +1,20 @@
 CC = gcc
 CFLAGS = -I./include -Wall -Wextra -pedantic
-#LDFLAGS = -lm 
-EXEC = bin/timer
+LDFLAGS = -lrt 
+EXEC = bin/epidemic_sim bin/timer
 
 all: $(EXEC)
 
 $(EXEC):
-	$(CC) $^ -o $@ #$(LDFLAGS)
+	$(CC) $^ -o $@ $(LDFLAGS)
 
+bin/epidemic_sim: obj/main.o
 bin/timer: obj/timer.o
 
 obj/%.o:
 	$(CC) $(CFLAGS) $< -c -o $@
 
+obj/main.o: src/main.c
 obj/timer.o: src/timer.c
 
 clean:
