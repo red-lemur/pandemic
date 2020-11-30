@@ -20,9 +20,22 @@
  * 
  */
 
+#ifndef EPIDEMIC_SIM_H
+#define EPIDEMIC_SIM_H
+
+#include "city.h"
+
 #define SHARED_MEM "/simulation"
 
 /**
  * @brief Create the shared memory.
  */
 int create_shared_memory();
+
+/**
+ * @brief Generate the city in which the simulation takes place.
+ * @param city City to generate.
+ */
+void generate_city(city_t *city);
+
+#endif

@@ -30,7 +30,6 @@
 #include <mqueue.h>
 
 #include "epidemic_sim.h"
-#include "city.h"
 
 int create_shared_memory()
 {
@@ -50,6 +49,12 @@ int create_shared_memory()
     return mem;
 }
 
+void generate_city(city_t *city) {
+    city->map[0][7] = init_tile(0, 7, 8, 0, FIRESTATION, 0.0);
+    city->map[4][4].type = HOSPITAL;
+    city->map[7][0].type = FIRESTATION;
+}
+
 /* mqd_t create_mqueue(); */
 
 int main(void)
@@ -57,19 +62,19 @@ int main(void)
     int mem;
     /*mqd_t mqueue;*/
 
-    int *c;
+    city_t *city;
     
     srand(time(NULL));
     mem = create_shared_memory();
     /*mqueue = create_mqueue();*/
 
-    c = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
-    /*c->map[0][0] = ...;*/
+    city = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
+    generate_city(city);
     
     /* Début de la simulation */
     /* C'est à vous d'écrire là ... */
     
-    if (munmap(c, sizeof(city_t)) < 0) {
+    if (munmap(city, sizeof(city_t)) < 0) {
         perror("Error when calling munmap()\n");
     }
     if (close(mem) < 0) {

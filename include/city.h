@@ -21,6 +21,9 @@
  * Structures defining the city.
  */
 
+#ifndef CITY_H
+#define CITY_H
+
 #define CITY_WIDTH 7
 #define CITY_HEIGHT 7
 
@@ -79,3 +82,18 @@ typedef struct city {
     tile_t map[CITY_WIDTH][CITY_HEIGHT];
     status_t citizens[CITIZENS_NB];
 } city_t;
+
+/**
+ * @brief Initialize a tile.
+ * @param x The x coordinate in the city.
+ * @param y The y coordinate in the city.
+ * @param capacity The max number of citizens on this tile.
+ * @param citizens_nb The current number of citizens on the tile.
+ * @param type The type of the building on the tile.
+ * @param contamination The contamination level on the tile.
+ * @return the intialized tile.
+ */
+tile_t init_tile(unsigned int x, unsigned int y, int capacity, int citizens_nb,
+                 building_type_e type, double contamination);
+
+#endif

@@ -14,7 +14,7 @@ $(INTERFACE):
 	$(CC) $^ -lncurses -o $@
 
 bin/main: obj/main.o
-bin/epidemic_sim: obj/epidemic_sim.o
+bin/epidemic_sim: obj/epidemic_sim.o obj/city.o
 bin/citizen_manager: obj/citizen_manager.o
 bin/press_agency: obj/press_agency.o
 bin/timer: obj/timer.o
@@ -28,6 +28,7 @@ obj/epidemic_sim.o: src/epidemic_sim.c include/epidemic_sim.h include/city.h
 obj/citizen_manager.o: src/citizen_manager.c include/epidemic_sim.h include/city.h
 obj/press_agency.o: src/press_agency.c
 obj/timer.o: src/timer.c include/timer.h
+obj/city.o: src/city.c include/city.h
 obj/interface.o: src/interface.c
 
 clean:

@@ -20,6 +20,9 @@
  * 
  */
 
+#ifndef TIMER_H
+#define TIMER_H
+
 #define TOTAL_TOUR_NB 100
 #define TOUR_DURATION 5
 
@@ -31,3 +34,5 @@ int tour_nb = 0;
  * @brief Emit a signal which call this function again.
  */
 void tick();
+
+#endif
