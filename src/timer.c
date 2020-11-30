@@ -27,11 +27,16 @@
 
 #include "timer.h"
 
-struct sigaction action;
-
 void tick()
 {
-    alarm(TOUR_DURATION);
+    if (tour_nb < TOTAL_TOUR_NB) {
+        alarm(TOUR_DURATION);
+        tour_nb++;
+    }
+    else {
+        /* prévenir epidemic_sim */
+        exit(EXIT_SUCCESS);
+    }
 }
 
 int main(void)
