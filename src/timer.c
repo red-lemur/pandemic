@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-11-07
+ * @version 1.0.0 - 2020-11-30
  */
 
 /**
@@ -25,34 +25,20 @@
 #include <signal.h>
 #include <unistd.h>
 
-struct sigaction action;
-int duration = 0;
+#include "timer.h"
 
-/**
- * @brief Emit a signal which call this function again.
- */
+struct sigaction action;
+
 void tick()
 {
-    alarm(duration);
+    alarm(TOUR_DURATION);
 }
 
-int main(int argc, char* argv[])
+int main(void)
 {
-    if (argc != 2) {
-        printf("Usage: %s tour_duration\n", argv[0]);
-        exit(-1);
-    }
-
-    duration = atoi(argv[1]);
-
-    if (duration < 1 || duration > 5) {
-        printf("Duration must be between 1 and 5 seconds!\n");
-        exit(-1);
-    }
-    
     action.sa_handler = &tick;
     sigaction(SIGALRM, &action, NULL);
-    alarm(duration);
+    alarm(TOUR_DURATION);
     
     for(;;);
 }

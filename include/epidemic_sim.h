@@ -21,3 +21,8 @@
  */
 
 #define SHARED_MEM "/simulation"
+
+/**
+ * @brief Create the shared memory.
+ */
+int create_shared_memory();

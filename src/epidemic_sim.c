@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-30
+ * @version 1.0.0 - 2020-11-30
  */
 
 /**
@@ -32,9 +32,6 @@
 #include "epidemic_sim.h"
 #include "city.h"
 
-/**
- * Create the shared memory.
- */
 int create_shared_memory()
 {
     int mem;
@@ -53,12 +50,14 @@ int create_shared_memory()
     return mem;
 }
 
+/* mqd_t create_mqueue(); */
+
 int main(void)
 {
     int mem;
     /*mqd_t mqueue;*/
 
-    int* c;
+    int *c;
     
     srand(time(NULL));
     mem = create_shared_memory();
