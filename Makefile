@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -I./include -Wall -Wextra -pedantic
 LDFLAGS = -lrt # -lm
-EXEC = bin/epidemic_sim bin/timer
+EXEC = bin/main bin/epidemic_sim bin/timer
 INTERFACE = bin/interface
 
 all: $(EXEC)
@@ -13,8 +13,8 @@ $(EXEC):
 $(INTERFACE):
 	$(CC) $^ -lncurses -o $@
 
-bin/epidemic_sim: obj/main.o
-
+bin/main: obj/main.o
+bin/epidemic_sim: obj/epidemic_sim.o
 bin/timer: obj/timer.o
 bin/interface: obj/interface.o
 
@@ -22,8 +22,8 @@ obj/%.o:
 	$(CC) $(CFLAGS) $< -c -o $@
 
 obj/main.o: src/main.c
+obj/epidemic_sim.o: src/epidemic_sim.c include/epidemic_sim.h include/city.h
 obj/timer.o: src/timer.c
-
 obj/interface.o: src/interface.c
 
 clean:
