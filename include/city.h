@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-11-30
+ * @version 1.0.0 - 2020-12-01
  */
 
 /**
@@ -29,14 +29,6 @@
 
 #define CITIZENS_NB 37
 #define CITIZEN_NAME_MAX_LENGTH 30
-
-#define WASTELAND_CAPACITY 16
-#define HOUSE_CAPACITY 6
-#define HOSPITAL_CAPACITY 12
-#define FIRESTATION_CAPACITY 8
-
-#define CITIZEN_NB_AT_BEGINING 0
-#define CONTAMINATION_AT_BEGINING 0
 
 typedef enum { WASTELAND, HOUSE, HOSPITAL, FIRESTATION } building_type_e;
 typedef enum { NORMAL, FIREFIGHTER, DOCTOR, REPORTER, DEAD, BURNED } citizen_type_e;
@@ -90,50 +82,5 @@ typedef struct city {
     tile_t map[CITY_WIDTH][CITY_HEIGHT];
     status_t citizens[CITIZENS_NB];
 } city_t;
-
-/**
- * @brief Initialize a tile.
- * @param x The x coordinate in the city.
- * @param y The y coordinate in the city.
- * @param capacity The max number of citizens on this tile.
- * @param type The type of the building on the tile.
- * @param contamination The contamination level on the tile.
- * @return the intialized tile.
- */
-tile_t init_tile(unsigned int x, unsigned int y, int capacity,
-                 building_type_e type, double contamination);
-
-/**
- * @brief Initialize a tile of WASTELAND type.
- * @param x The x coordinate in the city.
- * @param y The y coordinate in the city.
- * @param contamination The contamination level on the tile.
- * @return the intialized tile.
- */
-tile_t init_tile_wasteland(unsigned int x, unsigned int y, double contamination);
-
-/**
- * @brief Initialize a tile of HOUSE type.
- * @param x The x coordinate in the city.
- * @param y The y coordinate in the city.
- * @return the intialized tile.
- */
-tile_t init_tile_house(unsigned int x, unsigned int y);
-
-/**
- * @brief Initialize a tile of HOSPITAL type.
- * @param x The x coordinate in the city.
- * @param y The y coordinate in the city.
- * @return the intialized tile.
- */
-tile_t init_tile_hospital(unsigned int x, unsigned int y);
-
-/**
- * @brief Initialize a tile of FIRESTATION type.
- * @param x The x coordinate in the city.
- * @param y The y coordinate in the city.
- * @return the intialized tile.
- */
-tile_t init_tile_firestation(unsigned int x, unsigned int y);
 
 #endif

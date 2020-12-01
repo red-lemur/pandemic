@@ -11,16 +11,16 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-11-30
+ * @version 1.0.0 - 2020-12-01
  */
 
 /**
- * @file city.c
+ * @file city_sim.c
  *
- * Structures defining the city.
+ * Functions to manipulate a simulated city.
  */
 
-#include "city.h"
+#include "city_sim.h"
 
 tile_t init_tile(unsigned int x, unsigned int y, int capacity,
                  building_type_e type, double contamination) {

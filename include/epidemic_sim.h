@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-11-30
+ * @version 1.0.0 - 2020-12-01
  */
 
 /**
@@ -23,7 +23,7 @@
 #ifndef EPIDEMIC_SIM_H
 #define EPIDEMIC_SIM_H
 
-#include "city.h"
+#include "city_sim.h"
 
 #define SHARED_MEM "/simulation"
 

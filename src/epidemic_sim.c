@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-11-30
+ * @version 1.0.0 - 2020-12-01
  */
 
 /**
@@ -50,6 +50,8 @@ int create_shared_memory()
 }
 
 void generate_city(city_t *city) {
+    /* lire un fichier pour trouver les coordonnées */
+    /* => les constantes HOUSES_NB, etc. deviendront inutiles */
     city->map[0][7] = init_tile_firestation(0, 7);
     city->map[4][4] = init_tile_hospital(4, 4);
     city->map[7][0] = init_tile_firestation(7, 0);
