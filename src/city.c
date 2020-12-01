@@ -22,19 +22,32 @@
 
 #include "city.h"
 
-tile_t init_tile(unsigned int x, unsigned int y, int capacity, int citizens_nb,
+tile_t init_tile(unsigned int x, unsigned int y, int capacity,
                  building_type_e type, double contamination) {
     tile_t tile;
     
     tile.x = x;
     tile.y = y;
     tile.capacity = capacity;
-    tile.citizens_nb = citizens_nb;
+    tile.citizens_nb = CITIZEN_NB_AT_BEGINING;
     tile.type = type;
     tile.contamination = contamination;
-
-    // DES TRUCS A CHANGER
-    ...
     
     return tile;
+}
+
+tile_t init_tile_wasteland(unsigned int x, unsigned int y, double contamination) {
+    return init_tile(x, y, WASTELAND_CAPACITY, WASTELAND, contamination);
+}
+
+tile_t init_tile_house(unsigned int x, unsigned int y) {
+    return init_tile(x, y, HOUSE_CAPACITY, HOUSE, CONTAMINATION_AT_BEGINING);
+}
+
+tile_t init_tile_hospital(unsigned int x, unsigned int y) {
+    return init_tile(x, y, HOSPITAL_CAPACITY, HOSPITAL, CONTAMINATION_AT_BEGINING);
+}
+
+tile_t init_tile_firestation(unsigned int x, unsigned int y) {
+    return init_tile(x, y, FIRESTATION_CAPACITY, FIRESTATION, CONTAMINATION_AT_BEGINING);
 }

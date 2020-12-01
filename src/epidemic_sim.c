@@ -50,9 +50,9 @@ int create_shared_memory()
 }
 
 void generate_city(city_t *city) {
-    city->map[0][7] = init_tile(0, 7, 8, 0, FIRESTATION, 0.0);
-    city->map[4][4].type = HOSPITAL;
-    city->map[7][0].type = FIRESTATION;
+    city->map[0][7] = init_tile_firestation(0, 7);
+    city->map[4][4] = init_tile_hospital(4, 4);
+    city->map[7][0] = init_tile_firestation(7, 0);
 }
 
 /* mqd_t create_mqueue(); */
