@@ -52,9 +52,9 @@ int create_shared_memory()
 void generate_city(city_t *city) {
     /* lire un fichier pour trouver les coordonnées */
     /* => les constantes HOUSES_NB, etc. deviendront inutiles */
-    city->map[0][7] = init_tile_firestation(0, 7);
-    city->map[4][4] = init_tile_hospital(4, 4);
-    city->map[7][0] = init_tile_firestation(7, 0);
+    city->map[0][6] = init_tile_firestation(0, 6);
+    city->map[3][3] = init_tile_hospital(3, 3);
+    city->map[3][0] = init_tile_firestation(6, 0);
 }
 
 /* mqd_t create_mqueue(); */

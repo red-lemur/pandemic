@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-11-30
+ * @version 1.0.0 - 2020-12-02
  */
 
 /**
@@ -24,10 +24,10 @@
 #define TIMER_H
 
 #define TOTAL_TOUR_NB 100
-#define TOUR_DURATION 5
 
 struct sigaction action;
 
+int tour_duration = 0;
 int tour_nb = 0;
 
 /**

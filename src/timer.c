@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-11-30
+ * @version 1.0.0 - 2020-12-02
  */
 
 /**
@@ -30,8 +30,9 @@
 void tick()
 {
     if (tour_nb < TOTAL_TOUR_NB) {
-        alarm(TOUR_DURATION);
         tour_nb++;
+        
+        alarm(tour_duration);
     }
     else {
         /* prévenir epidemic_sim */
@@ -39,11 +40,23 @@ void tick()
     }
 }
 
-int main(void)
+int main(int argc, char* argv[])
 {
+    if (argc != 2) {
+        printf("Usage: %s tour_duration\n", argv[0]);
+        exit(-1);
+    }
+    
+    tour_duration = atoi(argv[1]);
+    
+    if (tour_duration < 1 || tour_duration > 5) {
+        printf("Duration must be between 1 and 5 seconds!\n");
+        exit(-1);
+    }    
+    
     action.sa_handler = &tick;
     sigaction(SIGALRM, &action, NULL);
-    alarm(TOUR_DURATION);
+    alarm(tour_duration);
     
     for(;;);
 }
