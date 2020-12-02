@@ -28,7 +28,7 @@
 #include "timer.h"
 
 void tick()
-{
+{    
     if (tour_nb < TOTAL_TOUR_NB) {
         tour_nb++;
         
