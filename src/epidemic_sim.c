@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-01
+ * @version 1.0.0 - 2020-12-02
  */
 
 /**
@@ -52,9 +52,28 @@ int create_shared_memory()
 void generate_city(city_t *city) {
     /* lire un fichier pour trouver les coordonnées */
     /* => les constantes HOUSES_NB, etc. deviendront inutiles */
-    city->map[0][6] = init_tile_firestation(0, 6);
+    /*city->map[0][6] = init_tile_firestation(0, 6);
     city->map[3][3] = init_tile_hospital(3, 3);
-    city->map[3][0] = init_tile_firestation(6, 0);
+    city->map[3][0] = init_tile_firestation(6, 0);*/
+    load_map(city);
+}
+
+void load_map(city_t *city) {
+    FILE *fp;
+    char buffer[100];
+    
+    if ((fp = fopen(MAP_URL, "r")) == NULL) {
+        printf("No map file\n"); /* ERREUR A CORRIGER */
+        exit(-1);
+    }
+
+    while (fscanf(fp, "%[^\n]\n", buffer) != EOF) {
+        if (buffer[0] == '\n' || (buffer[0] == '/' && buffer[1] == '/')) {
+            continue;
+        }
+    }
+    
+    fclose(fp);
 }
 
 /* mqd_t create_mqueue(); */

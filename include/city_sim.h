@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-01
+ * @version 1.0.0 - 2020-12-02
  */
 
 /**
@@ -36,6 +36,8 @@
 #define HOSPITALS_NB 1
 #define FIRESTATIONS_NB 2
 #define HOUSES_NB 12
+
+#define MAP_URL "../etc/map.txt"
 
 /**
  * @brief Initialize a tile.

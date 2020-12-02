@@ -34,7 +34,8 @@ obj/interface.o: src/interface.c
 clean:
 	rm -f obj/*.o
 	rm -f include/*~
-	rm -f src/*~
+	rm -f src/*~	
+	rm -f etc/*~
 	rm -f *~
 
 distclean: clean

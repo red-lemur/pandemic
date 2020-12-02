@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-01
+ * @version 1.0.0 - 2020-12-02
  */
 
 /**
@@ -37,5 +37,8 @@ int create_shared_memory();
  * @param city City to generate.
  */
 void generate_city(city_t *city);
+
+/* COMMENTAIRE */
+void load_map(city_t *city);
 
 #endif
