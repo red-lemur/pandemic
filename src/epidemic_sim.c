@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-02
+ * @version 1.0.0 - 2020-12-03
  */
 
 /**
@@ -49,7 +49,8 @@ int create_shared_memory()
     return mem;
 }
 
-void generate_city(city_t *city) {
+void generate_city(city_t *city)
+{
     /* lire un fichier pour trouver les coordonnées */
     /* => les constantes HOUSES_NB, etc. deviendront inutiles */
     /*city->map[0][6] = init_tile_firestation(0, 6);
@@ -58,12 +59,18 @@ void generate_city(city_t *city) {
     load_map(city);
 }
 
-void load_map(city_t *city) {
+void load_map(city_t *city)
+{
     FILE *fp;
     char buffer[100];
     
+    int col;
+    int row = 0;
+
+    double contamination;
+    
     if ((fp = fopen(MAP_URL, "r")) == NULL) {
-        printf("No map file\n"); /* ERREUR A CORRIGER */
+        printf("No map file\n");
         exit(-1);
     }
 
@@ -71,9 +78,50 @@ void load_map(city_t *city) {
         if (buffer[0] == '\n' || (buffer[0] == '/' && buffer[1] == '/')) {
             continue;
         }
+
+        if (row < CITY_HEIGHT) {
+            for (col = 0; col < CITY_WIDTH; col++) {
+                switch (buffer[col]) {
+                case 'F' : city->map[col][row] = init_tile_firestation(col, row); break;
+                case 'H' : city->map[col][row] = init_tile_hospital(col, row); break;
+                case 'O' : city->map[col][row] = init_tile_house(col, row); break;
+                case 'W' :
+                    contamination = generate_random_wasteland_contamination_level();
+                    city->map[col][row] = init_tile_wasteland(col, row, 0.0);
+                    break;
+                case 'X' : break;
+                default :
+                    printf("Error while reading the map\n");
+                    exit(-1);
+                }
+            }
+        }
+        else {
+            contamination = generate_random_wasteland_contamination_level();
+            
+            printf("%lf\n", contamination); // ERREUR A CHANGER
+                    
+            /* Gérer le random
+            switch (buffer[col]) {
+            case 'F' : city->map[col][row] = init_tile_firestation(col, row); break;
+            case 'H' : city->map[col][row] = init_tile_hospital(col, row); break;
+            case 'O' : city->map[col][row] = init_tile_house(col, row); break;
+            case 'W' : city->map[col][row] = init_tile_wasteland(col, row, 0.0); break;
+            default :
+                printf("Error while reading the map\n");
+                exit(-1);
+                }*/
+        }
+
+        row++;
     }
     
     fclose(fp);
+}
+
+double generate_random_wasteland_contamination_level() {
+    return rand()/(double)RAND_MAX * MAX_WASTELAND_CONTAMINATION_AT_BEGINNING
+        - MIN_WASTELAND_CONTAMINATION_AT_BEGINNING;
 }
 
 /* mqd_t create_mqueue(); */
@@ -86,6 +134,7 @@ int main(void)
     city_t *city;
     
     srand(time(NULL));
+    
     mem = create_shared_memory();
     /*mqueue = create_mqueue();*/
 

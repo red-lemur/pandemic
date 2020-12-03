@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-02
+ * @version 1.0.0 - 2020-12-03
  */
 
 /**
@@ -30,14 +30,16 @@
 #define HOSPITAL_CAPACITY 12
 #define FIRESTATION_CAPACITY 8
 
-#define CITIZEN_NB_AT_BEGINING 0
-#define CONTAMINATION_AT_BEGINING 0
+#define CITIZEN_NB_AT_BEGINNING 0
+#define CONTAMINATION_AT_BEGINNING 0
+#define MIN_WASTELAND_CONTAMINATION_AT_BEGINNING 0.2
+#define MAX_WASTELAND_CONTAMINATION_AT_BEGINNING 0.4
 
 #define HOSPITALS_NB 1
 #define FIRESTATIONS_NB 2
 #define HOUSES_NB 12
 
-#define MAP_URL "../etc/map.txt"
+#define MAP_URL "./etc/map.txt"
 
 /**
  * @brief Initialize a tile.

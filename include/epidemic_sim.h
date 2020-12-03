@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-02
+ * @version 1.0.0 - 2020-12-03
  */
 
 /**
@@ -40,5 +40,8 @@ void generate_city(city_t *city);
 
 /* COMMENTAIRE */
 void load_map(city_t *city);
+
+/**/
+double generate_random_wasteland_contamination_level();
 
 #endif
