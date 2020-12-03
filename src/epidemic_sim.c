@@ -97,9 +97,6 @@ void load_map(city_t *city)
             }
         }
         else {
-            contamination = generate_random_wasteland_contamination_level();
-            
-            printf("%lf\n", contamination); // ERREUR A CHANGER
                     
             /* Gérer le random
             switch (buffer[col]) {
@@ -120,8 +117,9 @@ void load_map(city_t *city)
 }
 
 double generate_random_wasteland_contamination_level() {
-    return rand()/(double)RAND_MAX * MAX_WASTELAND_CONTAMINATION_AT_BEGINNING
-        - MIN_WASTELAND_CONTAMINATION_AT_BEGINNING;
+    return rand()/(double)RAND_MAX * (MAX_WASTELAND_CONTAMINATION_AT_BEGINNING
+                                      - MIN_WASTELAND_CONTAMINATION_AT_BEGINNING)
+        + MIN_WASTELAND_CONTAMINATION_AT_BEGINNING;
 }
 
 /* mqd_t create_mqueue(); */
