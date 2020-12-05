@@ -44,7 +44,7 @@ int main(void)
     }
 
     city = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmd, 0);
-
+    
     //create_population(city);
     
     exit(EXIT_SUCCESS);

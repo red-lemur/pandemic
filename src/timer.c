@@ -22,7 +22,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
 #include <unistd.h>
 
 #include "timer.h"
@@ -31,22 +30,23 @@ void tick()
 {    
     if (tour_nb < TOTAL_TOUR_NB) {
         tour_nb++;
-        printf("Tick\n");//
         alarm(tour_duration);
     }
     else {
+        kill(epidemic_sim_pid, SIGUSR1);
         exit(EXIT_SUCCESS);
     }
 }
 
 int main(int argc, char* argv[])
 {
-    if (argc != 2) {
-        printf("Usage: %s tour_duration\n", argv[0]);
+    if (argc != 3) {
+        printf("Usage: %s pid tour_duration\n", argv[0]);
         exit(EXIT_FAILURE);
     }
-    
-    tour_duration = atoi(argv[1]);
+
+    epidemic_sim_pid = atoi(argv[1]);
+    tour_duration = atoi(argv[2]);
     
     if (tour_duration < 1 || tour_duration > 5) {
         printf("Duration must be between 1 and 5 seconds!\n");

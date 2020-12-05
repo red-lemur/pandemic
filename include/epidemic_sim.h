@@ -26,7 +26,11 @@
 #include "city.h"
 #include "map_generator.h"
 
+#include <signal.h>
+
 #define SHARED_MEM "/simulation"
+
+struct sigaction action;
 
 /**
  * @brief Create the shared memory.
@@ -38,5 +42,8 @@ int create_shared_memory();
  * @param city City to generate.
  */
 void generate_city(city_t *city);
-    
+
+/**/
+void handler_sigusr1();
+
 #endif

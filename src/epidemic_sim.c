@@ -28,6 +28,7 @@
 #include <sys/mman.h>
 #include <fcntl.h>
 #include <mqueue.h>
+#include <sys/wait.h>
 
 #include "epidemic_sim.h"
 
@@ -56,6 +57,11 @@ void generate_city(city_t *city)
     // Générer citoyens ?
 }
 
+void handler_sigusr1()
+{
+    printf("End of the game !\n");
+}
+
 /* mqd_t create_mqueue(); */
 
 int main(void)
@@ -73,17 +79,22 @@ int main(void)
     city = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
     generate_city(city);
     
+    action.sa_handler = handler_sigusr1;
+    sigaction(SIGUSR1, &action, NULL);
+    
     /* TEST DEBUG MAP */
-    int row, col;
+    /*int row, col;
     for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_HEIGHT; col++) {
             printf("%d", city->map[col][row].type);
         }
         printf("\n");
-        }
+        }*/
     
     /* Début de la simulation */
     /* C'est à vous d'écrire là ... */
+
+    pause(); // wait for a signal
     
     if (munmap(city, sizeof(city_t)) < 0) {
         perror("Error when calling munmap()\n");

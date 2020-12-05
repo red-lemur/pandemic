@@ -11,23 +11,26 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-02
+ * @version 1.0.0 - 2020-12-05
  */
 
 /**
  * @file timer.h
  *
- * 
+ * A clock that emit an alarm signal every tour of a given duration.
  */
 
 #ifndef TIMER_H
 #define TIMER_H
 
+#include <signal.h>
+
 #define TOTAL_TOUR_NB 100
 
 struct sigaction action;
 
-int tour_duration = 0;
+int epidemic_sim_pid;
+int tour_duration;
 int tour_nb = 0;
 
 /**
