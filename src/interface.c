@@ -1,46 +1,39 @@
+/*
+ * ENSICAEN
+ * 6 Boulevard Maréchal Juin 
+ * F-14050 Caen Cedex 
+ * 
+ * This file is owned by ENSICAEN.
+ * No portion of this document may be reproduced, copied
+ * or revised without written permission of the authors.
+ */
+
+/**
+ * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
+ * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
+ * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
+ * @version 1.0.0 - 2020-12-05
+ */
+
+/**
+ * @file interface.c
+ *
+ *
+ */
+
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
-#define MARGIN 10
-#define VERTICAL_MARGIN 2
-#define HEADER_HEIGHT 3
-#define TITLES_HEIGHT 3
-#define MAP_HEIGHT 7
-#define SPACE_SITUATION 3
-#define BOTTOM_MARGIN 5
-#define POPULATION_NUMBER 25
-#define NUMBER_OF_DIF_TILES 4
-#define NUMBER_OF_SITUATIONS 4
-#define SIZE_OF_TITLE 32
-
-#define NUMBER_OF_DAYS 10
-
-#define HOUSE 2
-#define HOSPITAL 3
-#define FIRESTATION 4
-#define WASTELAND 5
-
-#define HEALTHY 6
-#define SICK 7
-#define DEAD 8
-#define BURNT 9
-
-#define UP_LEFT 1
-#define UP 2
-#define UP_RIGHT 3
-#define RIGHT 4
-#define BOTTOM_RIGHT 5
-#define BOTTOM 6
-#define BOTTOM_LEFT 7
-#define LEFT 8
+#include "interface.h"
 
 WINDOW *main_title, *titles, *places, *legend, *titles_2, *citizens, *situation, *people, *instruction;
 
 int day = 0;
 
-void write_spaces(WINDOW *win, int y, int x, int number, int color_index) {
+void write_spaces(WINDOW *win, int y, int x, int number, int color_index)
+{
     number *= 2;    
     
     char *spaces = malloc(sizeof(char)*number);
@@ -54,8 +47,8 @@ void write_spaces(WINDOW *win, int y, int x, int number, int color_index) {
     wattroff(win, COLOR_PAIR(color_index));
 }
 
-
-int size_of_longest_string(char **strings, int size) {
+int size_of_longest_string(char **strings, int size)
+{
     unsigned int longest = strlen(strings[0]);
 
     for (int i = 1; i < size; i++) {
@@ -67,15 +60,12 @@ int size_of_longest_string(char **strings, int size) {
     return longest;
 }
 
-
-
-
-
 /*
  * Functions to interact with the interface 
  */
 
-void next_day() {
+void next_day()
+{
     day++;
     char day_str[(int) log10(NUMBER_OF_DAYS) + 1];
     sprintf(day_str, "%d", day);
@@ -85,8 +75,8 @@ void next_day() {
     wattroff(main_title, COLOR_PAIR(1));
 }
 
-
-void set_number_of_people_in_state(int number, int state) {
+void set_number_of_people_in_state(int number, int state)
+{
     char str[(int) log10(POPULATION_NUMBER) + 1];
     int y;
 
@@ -104,8 +94,8 @@ void set_number_of_people_in_state(int number, int state) {
     wattroff(people, COLOR_PAIR(state));
 }
 
-
-void set_citizen_on_tile(int tile_x, int tile_y, int number, int state) {
+void set_citizen_on_tile(int tile_x, int tile_y, int number, int state)
+{
     int shift_right;
     int shift_bottom;
 
@@ -131,17 +121,18 @@ void set_citizen_on_tile(int tile_x, int tile_y, int number, int state) {
     wattroff(citizens, COLOR_PAIR(state));
 }
 
-void set_type_of_tile(int tile_x, int tile_y, int type) {
+void set_type_of_tile(int tile_x, int tile_y, int type)
+{
     write_spaces(places, tile_y, tile_x*2, 1, type);
 }
-
 
 /*
  * We need the get_citizen_on_tile defined in another file to uncomment these functions 
  * Maybe it's an object-oriented way
  */
 
-/*void change_state_of_a_citizen(int tile, int new_state) {
+/*void change_state_of_a_citizen(int tile, int new_state)
+{
     set_citizen_on_tile(tile, get_citizen_on_tile(tile, new_state - 1) - 1, new_state - 1);
     set_citizen_on_tile(tile, get_citizen_on_tile(tile, new_state) + 1, new_state);
 
@@ -151,16 +142,14 @@ void set_type_of_tile(int tile_x, int tile_y, int type) {
 /*
  * probably useless
  */
-/*void move_citizen(int starting_tile, int direction, int state) {
+/*void move_citizen(int starting_tile, int direction, int state)
+{
     set_citizen_on_tile(starting_tile, get_citizen_on_tile(starting_tile, state) - 1, state);
     set_citizen_on_tile()
 }*/
 
-
-
 int main(void)
-{	
-    
+{    
     char *title = "Simulation épidémie - Jour n°";
     char *instr_msg = "Appuyez sur une touche pour passer au jour suivant";
     char *situations_title[NUMBER_OF_SITUATIONS] = {"Personnes en bonne santé", "Personnes malades", "Personnes décédées", "Cadavres brûlés"};
@@ -176,12 +165,21 @@ int main(void)
         legend = newwin(MAP_HEIGHT, (COLS/2) - MARGIN, HEADER_HEIGHT + TITLES_HEIGHT, (COLS/2) + MARGIN);
 
         titles_2 = newwin(TITLES_HEIGHT, COLS, HEADER_HEIGHT + TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN, 0);
-        citizens = newwin(MAP_HEIGHT*2 + (MAP_HEIGHT-1), (MAP_HEIGHT*2 + (MAP_HEIGHT-1)) *2, HEADER_HEIGHT + 2*TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN, (COLS/2) - ((MAP_HEIGHT*2 + (MAP_HEIGHT-1)) *2) - MARGIN);
-        situation = newwin(2*NUMBER_OF_SITUATIONS - 1, size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS), HEADER_HEIGHT + 2*TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN, (COLS/2) + MARGIN);
-        people = newwin(2*NUMBER_OF_SITUATIONS - 1, (int) log10(POPULATION_NUMBER) + 1, HEADER_HEIGHT + 2*TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN, (COLS/2) + MARGIN + size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS) + SPACE_SITUATION);
-        instruction = newwin(TITLES_HEIGHT, strlen(instr_msg) + 1, LINES - BOTTOM_MARGIN, COLS - strlen(instr_msg) - BOTTOM_MARGIN);
+        citizens = newwin(MAP_HEIGHT*2 + (MAP_HEIGHT-1),
+                          (MAP_HEIGHT*2 + (MAP_HEIGHT-1)) *2,
+                          HEADER_HEIGHT + 2*TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN, (COLS/2) - ((MAP_HEIGHT*2 + (MAP_HEIGHT-1)) *2) - MARGIN);
+        situation = newwin(2*NUMBER_OF_SITUATIONS - 1,
+                           size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS),
+                           HEADER_HEIGHT + 2*TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN, (COLS/2) + MARGIN);
+        people = newwin(2*NUMBER_OF_SITUATIONS - 1,
+                        (int)log10(POPULATION_NUMBER) + 1,
+                        HEADER_HEIGHT + 2*TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN,
+                        (COLS/2) + MARGIN + size_of_longest_string(situations_title,NUMBER_OF_SITUATIONS) + SPACE_SITUATION);
+        instruction = newwin(TITLES_HEIGHT,
+                             strlen(instr_msg) + 1,
+                             LINES - BOTTOM_MARGIN,
+                             COLS - strlen(instr_msg) - BOTTOM_MARGIN);
         
-
         start_color();
         init_pair(1, COLOR_BLACK, COLOR_WHITE);
 
@@ -195,11 +193,8 @@ int main(void)
         init_pair(8, COLOR_BLUE, COLOR_BLACK);
         init_pair(9, COLOR_RED, COLOR_BLACK);
 
-
-
         refresh();
-        
-        
+               
         box(main_title,0,0);        
         wattron(main_title, COLOR_PAIR(1));        
         mvwprintw(main_title, 1, (COLS / 2) - (strlen(title) / 2), title);
@@ -215,9 +210,6 @@ int main(void)
         mvwprintw(titles_2, 1, (COLS/2) - ((MAP_HEIGHT*2 + (MAP_HEIGHT-1)) *2) - MARGIN, "Cartes des citoyens");
         mvwprintw(titles_2, 1, (COLS/2) + MARGIN, "Evolution de l'épidémie");
         wattroff(titles_2, A_UNDERLINE);
-
-       
-
         
         /* This will be replaced by sth with the text file */
         write_spaces(places, 0, 0, 6, WASTELAND);
@@ -228,26 +220,19 @@ int main(void)
         write_spaces(places, 6, 0, 1, FIRESTATION);
         write_spaces(places, 6, 2, 6, WASTELAND);
         
-
-
-
         for (int i = 0; i < NUMBER_OF_DIF_TILES; i++) {
             write_spaces(legend, i*2, 0, 1, HOUSE + i);
             mvwprintw(legend, i*2, 3, tiles[i]);
         }
 
-
-
         for (int i = 0; i < NUMBER_OF_SITUATIONS; i++) {
             mvwprintw(situation, i*2, 0, situations_title[i]);
         }
         
-
         set_number_of_people_in_state(POPULATION_NUMBER, HEALTHY);
         set_number_of_people_in_state(0, SICK);
         set_number_of_people_in_state(0, DEAD);
         set_number_of_people_in_state(0, BURNT);
-
 
         for (int s = HEALTHY; s <= BURNT; s++) {
             for (int i=0; i < MAP_HEIGHT; i++) {
@@ -257,12 +242,9 @@ int main(void)
             } 
         }
 
-
         wattron(instruction, COLOR_PAIR(1));
         mvwprintw(instruction, 0, 0, instr_msg);
         wattroff(instruction, COLOR_PAIR(1));
-
-
 
         wrefresh(main_title);
         wrefresh(titles);

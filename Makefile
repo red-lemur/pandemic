@@ -29,7 +29,7 @@ obj/citizen_manager.o: src/citizen_manager.c include/epidemic_sim.h include/city
 obj/press_agency.o: src/press_agency.c
 obj/timer.o: src/timer.c include/timer.h
 obj/city_sim.o: src/city_sim.c include/city_sim.h include/city.h
-obj/interface.o: src/interface.c
+obj/interface.o: src/interface.c include/interface.h
 
 clean:
 	rm -f obj/*.o
