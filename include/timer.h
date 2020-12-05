@@ -25,7 +25,7 @@
 
 #include <signal.h>
 
-#define TOTAL_TOUR_NB 10
+#define TOTAL_TOUR_NB 10 // 100
 
 struct sigaction action;
 

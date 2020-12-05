@@ -25,10 +25,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
-#include <sys/mman.h>
 #include <fcntl.h>
 #include <mqueue.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
+#include <string.h> // à cause de mkfifo
 
 #include "epidemic_sim.h"
 
@@ -73,6 +75,9 @@ void end_of_game()
 int main(void)
 {
     int shared_memory;
+
+    int fifo_to_citizen_manager;
+
     /*mqd_t mqueue;*/
 
     city_t *city;
@@ -90,6 +95,11 @@ int main(void)
 
     action_sigusr2.sa_handler = &end_of_game;
     sigaction(SIGUSR2, &action_sigusr2, NULL);
+
+    mkfifo("/tmp/epidemic_sim_to_citizen_manager", S_IRUSR | S_IWUSR);
+    fifo_to_citizen_manager = open("/tmp/epidemic_sim_to_citizen_manager", O_WRONLY);
+    
+    write(fifo_to_citizen_manager, "TEST", strlen("TEST"));
     
     /* TEST DEBUG MAP */
     /*int row, col;
@@ -111,6 +121,9 @@ int main(void)
         }
     }
 
+    close(fifo_to_citizen_manager);
+    unlink("/tmp/epidemic_sim_to_citizen_manager");
+    
     if (munmap(city, sizeof(city_t)) < 0) {
         perror("Error when calling munmap()\n");
     }
