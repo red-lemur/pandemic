@@ -61,6 +61,7 @@ void generate_city(city_t *city)
 
 void game_round()
 {
+    printf("Round\n");
     // Do somthing
 }
 
@@ -89,17 +90,28 @@ int main(void)
 
     city = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, shared_memory, 0);
     generate_city(city);
-    
+
+    printf("1\n");///
     action_sigusr1.sa_handler = &game_round;
     sigaction(SIGUSR1, &action_sigusr1, NULL);
 
     action_sigusr2.sa_handler = &end_of_game;
     sigaction(SIGUSR2, &action_sigusr2, NULL);
 
-    mkfifo("/tmp/epidemic_sim_to_citizen_manager", S_IRUSR | S_IWUSR);
-    fifo_to_citizen_manager = open("/tmp/epidemic_sim_to_citizen_manager", O_WRONLY);
+    unlink(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);
+    if (mkfifo(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL, S_IRUSR | S_IWUSR) == -1) {
+        perror("Error while creating a FIFO\n");
+        exit(EXIT_FAILURE);
+    }
     
-    write(fifo_to_citizen_manager, "TEST", strlen("TEST"));
+    fifo_to_citizen_manager = open(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL, O_WRONLY);
+    
+    if (fifo_to_citizen_manager == -1) {
+        perror("Error while opening a FIFO\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    write(fifo_to_citizen_manager, "TEST", strlen("TEST"));///
     
     /* TEST DEBUG MAP */
     /*int row, col;

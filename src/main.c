@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "file_paths.h"
+
 #define MAX_PID_LENGTH 7
 
 int main(void) {
@@ -39,10 +41,10 @@ int main(void) {
 
     switch (pid_epidemic_sim) {
     case -1:
-        printf("Error on fork()\n");
+        perror("Error on fork()\n");
         exit(EXIT_FAILURE);
     case 0:
-        execl("./bin/epidemic_sim", "epidemic_sim", NULL);
+        execl(EPIDEMIC_SIM_URL, EPIDEMIC_SIM_NAME, NULL);
         exit(EXIT_FAILURE);
     }
     
@@ -54,10 +56,10 @@ int main(void) {
 
     switch (pid_citizen_manager) {
     case -1:
-        printf("Error on fork()\n");
+        perror("Error on fork()\n");
         exit(EXIT_FAILURE);
     case 0:
-        execl("./bin/citizen_manager", "citizen_manager", NULL);
+        execl(CITIZEN_MANAGER_URL, CITIZEN_MANAGER_NAME, NULL);
         exit(EXIT_FAILURE);
     }
     
@@ -67,10 +69,10 @@ int main(void) {
 
     switch (pid_timer) {
     case -1:
-        printf("Error on fork()\n");
+        perror("Error on fork()\n");
         exit(EXIT_FAILURE);
     case 0:
-        execl("./bin/timer", "timer", pid_epidemic_sim_arg, "1", NULL);
+        execl(TIMER_URL, TIMER_NAME, pid_epidemic_sim_arg, TIMER_ARG, NULL);
         exit(EXIT_FAILURE);
     }
     

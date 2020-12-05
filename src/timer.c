@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
     game_round_duration = atoi(argv[2]);
     
     if (game_round_duration < 1 || game_round_duration > 5) {
-        printf("Duration must be between 1 and 5 seconds!\n");
+        perror("Duration must be between 1 and 5 seconds!\n");
         exit(EXIT_FAILURE);
     }    
     

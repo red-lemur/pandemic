@@ -23,7 +23,7 @@ bin/interface: obj/interface.o
 obj/%.o:
 	$(CC) $(CFLAGS) $< -c -o $@
 
-obj/main.o: src/main.c
+obj/main.o: src/main.c include/file_paths.h
 obj/epidemic_sim.o: src/epidemic_sim.c include/epidemic_sim.h src/city_sim.c include/city_sim.h src/map_generator.c include/map_generator.h include/city.h
 obj/citizen_manager.o: src/citizen_manager.c include/citizen_manager.h include/epidemic_sim.h include/city.h
 obj/press_agency.o: src/press_agency.c

@@ -46,18 +46,24 @@ int main(void)
 
     char arr[10];
     
-    fifo_from_epidemic_sim = open("/tmp/epidemic_sim_to_citizen_manager", O_RDONLY);
+    fifo_from_epidemic_sim = open(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL, O_RDONLY);
+
+    if (fifo_from_epidemic_sim == -1) {
+        perror("Error while opening a FIFO\n");
+        exit(EXIT_FAILURE);
+    }
     
     read(fifo_from_epidemic_sim, arr, sizeof(arr));
+    printf("%s\n", arr);///
     
     shared_memory = shm_open(SHARED_MEM, O_RDWR, S_IRUSR | S_IWUSR);
     if (shared_memory == -1) {
         perror("Error when calling shm_open() from citizen_manager\n");
         exit(EXIT_FAILURE);
     }
-    
+    printf("2\n");///
     city = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, shared_memory, 0);
-    printf("TYPE : %d\n", city->map[4][4].type);
+    printf("TYPE : %d\n", city->map[3][3].type);///
     
     create_population(city);
     
