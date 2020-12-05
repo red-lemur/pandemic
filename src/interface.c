@@ -104,15 +104,13 @@ void set_citizen_on_tile(int tile_x, int tile_y, int number, int state)
 
     if (state == SICK || state == BURNT) {
         shift_right = 1;
-    }
-    else {
+    } else {
         shift_right = 0;
     }
 
     if (state == DEAD || state == BURNT) {
         shift_bottom = 1;
-    }
-    else {
+    } else {
         shift_bottom = 0;
     }
 

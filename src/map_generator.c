@@ -18,7 +18,7 @@
 /**
  * @file map_generator.c
  *
- *
+ * Functions to generate the map of the city.
  */
 
 #include <stdio.h>
@@ -26,21 +26,16 @@
 
 #include "map_generator.h"
 
-void load_map(city_t *city) // A DIVISER
+void load_map(city_t *city)
 {
     FILE *fp;
     
     char buffer[100];
-    char building_type;
     
     int col;
     int row;
 
     int indexes_taken[CITY_WIDTH][CITY_HEIGHT];
-    int buildings_nb;
-    int building;
-    
-    double contamination;
     
     if ((fp = fopen(MAP_URL, "r")) == NULL) {
         printf("No map file\n");
@@ -61,73 +56,101 @@ void load_map(city_t *city) // A DIVISER
         }
         
         if (row < CITY_HEIGHT) {
-            for (col = 0; col < CITY_WIDTH; col++) {
-                switch (buffer[col]) {
-                case 'F' :
-                    city->map[col][row] = init_tile_firestation(col, row);
-                    indexes_taken[col][row] = 1;
-                    break;
-                case 'H' :
-                    city->map[col][row] = init_tile_hospital(col, row);
-                    indexes_taken[col][row] = 1;
-                    break;
-                case 'O' :
-                    city->map[col][row] = init_tile_house(col, row);
-                    indexes_taken[col][row] = 1;
-                    break;
-                case 'W' :
-                    contamination = generate_random_wasteland_contamination_level();
-                    city->map[col][row] = init_tile_wasteland(col, row, contamination);
-                    indexes_taken[col][row] = 1;
-                    break;
-                case 'X' : break;
-                default :
-                    printf("Error while reading the map\n");
-                    exit(-1);
-                }
-            }
+            init_fixed_tiles(city, indexes_taken, buffer, row);
         }
         else {        
-            if (!sscanf(buffer, "%c %d", &building_type, &buildings_nb)) {
-                printf("Error while reading the map parameters\n");
-                exit(-1);
-            }
-
-            for (building = 0; building < buildings_nb; building++) {
-                if (all_tile_indexes_are_taken(indexes_taken)) {
-                    printf("Too many buildings on the map\n");
-                    exit(-1);
-                }
-                
-                do {
-                    col = generate_random_index(CITY_WIDTH);
-                    row = generate_random_index(CITY_HEIGHT);    
-                } while (indexes_taken[col][row]);
-                
-                switch (building_type) {                
-                case 'F' :
-                    city->map[col][row] = init_tile_firestation(col, row);
-                    indexes_taken[col][row] = 1;
-                    break;
-                case 'H' :
-                    city->map[col][row] = init_tile_hospital(col, row);
-                    indexes_taken[col][row] = 1;
-                    break;
-                case 'O' :
-                    city->map[col][row] = init_tile_house(col, row);
-                    indexes_taken[col][row] = 1;
-                    break;
-                default :
-                    printf("Error while reading the map\n");
-                    exit(-1);
-                }
-            }
+            init_random_tiles(city, indexes_taken, buffer);
         }
-
+        
         row++;
     }
-
+    
     fclose(fp);
+    
+    replace_unitialized_tiles_with_wasteland(city, indexes_taken);
+}
+
+void init_fixed_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT], char* buffer,
+                      int row) {
+    double contamination;
+    int col;
+    
+    for (col = 0; col < CITY_WIDTH; col++) {
+        switch (buffer[col]) {
+        case 'F' :
+            city->map[col][row] = init_tile_firestation(col, row);
+            indexes_taken[col][row] = 1;
+            break;
+        case 'H' :
+            city->map[col][row] = init_tile_hospital(col, row);
+            indexes_taken[col][row] = 1;
+            break;
+        case 'O' :
+            city->map[col][row] = init_tile_house(col, row);
+            indexes_taken[col][row] = 1;
+            break;
+        case 'W' :
+            contamination = generate_random_wasteland_contamination_level();
+            city->map[col][row] = init_tile_wasteland(col, row, contamination);
+            indexes_taken[col][row] = 1;
+            break;
+        case 'X' : break;
+        default :
+            printf("Error while reading the map\n");
+            exit(-1);
+        }
+    }
+}
+
+void init_random_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT], char* buffer) {
+    char building_type;
+    int buildings_nb;
+    int building;
+
+    int col;
+    int row;
+    
+    if (!sscanf(buffer, "%c %d", &building_type, &buildings_nb)) {
+        printf("Error while reading the map parameters\n");
+        exit(-1);
+    }
+    
+    for (building = 0; building < buildings_nb; building++) {
+        if (all_tile_indexes_are_taken(indexes_taken)) {
+            printf("Too many buildings on the map\n");
+            exit(-1);
+        }
+        
+        do {
+            col = generate_random_index(CITY_WIDTH);
+            row = generate_random_index(CITY_HEIGHT);    
+        } while (indexes_taken[col][row]);
+        
+        switch (building_type) {                
+        case 'F' :
+            city->map[col][row] = init_tile_firestation(col, row);
+            indexes_taken[col][row] = 1;
+            break;
+        case 'H' :
+            city->map[col][row] = init_tile_hospital(col, row);
+            indexes_taken[col][row] = 1;
+            break;
+        case 'O' :
+            city->map[col][row] = init_tile_house(col, row);
+            indexes_taken[col][row] = 1;
+            break;
+        default :
+            printf("Error while reading the map\n");
+            exit(-1);
+        }
+    }
+}
+
+void replace_unitialized_tiles_with_wasteland(city_t *city,
+                                              int indexes_taken[CITY_WIDTH][CITY_HEIGHT]) {
+    double contamination;
+    int col;
+    int row;
     
     if (!all_tile_indexes_are_taken(indexes_taken)) {
         for (row = 0; row < CITY_HEIGHT; row++) {
