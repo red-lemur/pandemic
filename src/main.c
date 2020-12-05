@@ -30,6 +30,7 @@ int main(void) {
     char pid_epidemic_sim_arg[MAX_PID_LENGTH + 1];
     
     int pid_epidemic_sim;
+    int pid_citizen_manager;
     int pid_timer;
     
     printf("PID du main : %d\n", getpid()); ///
@@ -47,18 +48,30 @@ int main(void) {
 
         sprintf(pid_epidemic_sim_arg, "%d", pid_epidemic_sim);
         
-        pid_timer = fork();
-        switch (pid_timer) {
+        pid_citizen_manager = fork();
+        switch (pid_citizen_manager) {
         case -1:
             printf("Error on fork()\n");
             exit(EXIT_FAILURE);
         case 0:
-            execl("./bin/timer", "timer", pid_epidemic_sim_arg, "1", NULL);
+            execl("./bin/citizen_manager", "citizen_manager", NULL);
             exit(EXIT_FAILURE);
         default:
-            printf("PID de timer : %d\n", pid_timer); ///
-            
-            exit(EXIT_SUCCESS);
+            printf("PID de citizen_manager : %d\n", pid_citizen_manager); ///
+
+            pid_timer = fork();
+            switch (pid_timer) {
+            case -1:
+                printf("Error on fork()\n");
+                exit(EXIT_FAILURE);
+            case 0:
+                execl("./bin/timer", "timer", pid_epidemic_sim_arg, "1", NULL);
+                exit(EXIT_FAILURE);
+            default:
+                printf("PID de timer : %d\n", pid_timer); ///
+                
+                exit(EXIT_SUCCESS);
+            }
         }
     }
 }

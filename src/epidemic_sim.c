@@ -66,17 +66,17 @@ void handler_sigusr1()
 
 int main(void)
 {
-    int mem;
+    int shared_memory;
     /*mqd_t mqueue;*/
 
     city_t *city;
     
     srand(time(NULL));
     
-    mem = create_shared_memory();
+    shared_memory = create_shared_memory();
     /*mqueue = create_mqueue();*/
 
-    city = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, mem, 0);
+    city = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, shared_memory, 0);
     generate_city(city);
     
     action.sa_handler = handler_sigusr1;
@@ -99,7 +99,7 @@ int main(void)
     if (munmap(city, sizeof(city_t)) < 0) {
         perror("Error when calling munmap()\n");
     }
-    if (close(mem) < 0) {
+    if (close(shared_memory) < 0) {
         perror("Error when calling close(mem)\n");
     }
     if (shm_unlink(SHARED_MEM) < 0) {
