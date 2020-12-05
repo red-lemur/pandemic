@@ -25,13 +25,13 @@
 
 #include <signal.h>
 
-#define TOTAL_TOUR_NB 100
+#define TOTAL_TOUR_NB 10
 
 struct sigaction action;
 
 int epidemic_sim_pid;
-int tour_duration;
-int tour_nb = 0;
+int game_round_duration;
+int game_round_nb = 0;
 
 /**
  * @brief Emit a signal which call this function again.

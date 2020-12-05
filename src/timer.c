@@ -28,12 +28,13 @@
 
 void tick()
 {    
-    if (tour_nb < TOTAL_TOUR_NB) {
-        tour_nb++;
-        alarm(tour_duration);
+    if (game_round_nb < TOTAL_TOUR_NB) {
+        game_round_nb++;
+        kill(epidemic_sim_pid, SIGUSR1);
+        alarm(game_round_duration);
     }
     else {
-        kill(epidemic_sim_pid, SIGUSR1);
+        kill(epidemic_sim_pid, SIGUSR2);
         exit(EXIT_SUCCESS);
     }
 }
@@ -41,21 +42,21 @@ void tick()
 int main(int argc, char* argv[])
 {
     if (argc != 3) {
-        printf("Usage: %s pid tour_duration\n", argv[0]);
+        printf("Usage: %s pid game_round_duration\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
     epidemic_sim_pid = atoi(argv[1]);
-    tour_duration = atoi(argv[2]);
+    game_round_duration = atoi(argv[2]);
     
-    if (tour_duration < 1 || tour_duration > 5) {
+    if (game_round_duration < 1 || game_round_duration > 5) {
         printf("Duration must be between 1 and 5 seconds!\n");
         exit(EXIT_FAILURE);
     }    
     
     action.sa_handler = &tick;
     sigaction(SIGALRM, &action, NULL);
-    alarm(tour_duration);
+    alarm(game_round_duration);
     
     for(;;);
 }

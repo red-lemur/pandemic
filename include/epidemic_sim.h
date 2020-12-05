@@ -30,7 +30,10 @@
 
 #define SHARED_MEM "/simulation"
 
-struct sigaction action;
+struct sigaction action_sigusr1;
+struct sigaction action_sigusr2;
+
+int game_is_not_over = 1;
 
 /**
  * @brief Create the shared memory.
@@ -44,6 +47,9 @@ int create_shared_memory();
 void generate_city(city_t *city);
 
 /**/
-void handler_sigusr1();
+void game_round();
+
+/**/
+void end_of_game();
 
 #endif

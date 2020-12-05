@@ -57,9 +57,15 @@ void generate_city(city_t *city)
     // Générer citoyens ?
 }
 
-void handler_sigusr1()
+void game_round()
+{
+    // Do somthing
+}
+
+void end_of_game()
 {
     printf("End of the game !\n");
+    game_is_not_over = 0;
 }
 
 /* mqd_t create_mqueue(); */
@@ -79,8 +85,11 @@ int main(void)
     city = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, shared_memory, 0);
     generate_city(city);
     
-    action.sa_handler = handler_sigusr1;
-    sigaction(SIGUSR1, &action, NULL);
+    action_sigusr1.sa_handler = &game_round;
+    sigaction(SIGUSR1, &action_sigusr1, NULL);
+
+    action_sigusr2.sa_handler = &end_of_game;
+    sigaction(SIGUSR2, &action_sigusr2, NULL);
     
     /* TEST DEBUG MAP */
     /*int row, col;
@@ -94,8 +103,14 @@ int main(void)
     /* Début de la simulation */
     /* C'est à vous d'écrire là ... */
 
-    pause(); // wait for a signal
-    
+    for(;;) {
+        if (game_is_not_over) {
+            pause();
+        } else {
+            break;
+        }
+    }
+
     if (munmap(city, sizeof(city_t)) < 0) {
         perror("Error when calling munmap()\n");
     }
