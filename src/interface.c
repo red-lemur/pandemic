@@ -36,7 +36,6 @@
 #define BOTTOM_LEFT 7
 #define LEFT 8
 
-
 WINDOW *main_title, *titles, *places, *legend, *titles_2, *citizens, *situation, *people, *instruction;
 
 int day = 0;
@@ -304,5 +303,3 @@ int main(void)
  
     return 0;
 }
-
-
