@@ -14,7 +14,7 @@ $(INTERFACE):
 	$(CC) $^ -lncurses -o $@
 
 bin/main: obj/main.o
-bin/epidemic_sim: obj/epidemic_sim.o obj/city_sim.o
+bin/epidemic_sim: obj/epidemic_sim.o obj/city_sim.o obj/map_generator.o
 bin/citizen_manager: obj/citizen_manager.o
 bin/press_agency: obj/press_agency.o
 bin/timer: obj/timer.o
@@ -24,11 +24,12 @@ obj/%.o:
 	$(CC) $(CFLAGS) $< -c -o $@
 
 obj/main.o: src/main.c
-obj/epidemic_sim.o: src/epidemic_sim.c include/epidemic_sim.h src/city_sim.c include/city_sim.h include/city.h
+obj/epidemic_sim.o: src/epidemic_sim.c include/epidemic_sim.h src/city_sim.c include/city_sim.h src/map_generator.c include/map_generator.h include/city.h
 obj/citizen_manager.o: src/citizen_manager.c include/epidemic_sim.h include/city.h
 obj/press_agency.o: src/press_agency.c
 obj/timer.o: src/timer.c include/timer.h
 obj/city_sim.o: src/city_sim.c include/city_sim.h include/city.h
+obj/map_generator.o: src/map_generator.c include/map_generator.h src/city_sim.c include/city_sim.h include/city.h
 obj/interface.o: src/interface.c include/interface.h
 
 clean:

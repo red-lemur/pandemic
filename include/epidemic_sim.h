@@ -23,7 +23,8 @@
 #ifndef EPIDEMIC_SIM_H
 #define EPIDEMIC_SIM_H
 
-#include "city_sim.h"
+#include "city.h"
+#include "map_generator.h"
 
 #define SHARED_MEM "/simulation"
 
@@ -37,31 +38,5 @@ int create_shared_memory();
  * @param city City to generate.
  */
 void generate_city(city_t *city);
-
-/**
- * @brief Load the map of the city from a text file.
- * @param city City to load.
- */
-void load_map(city_t *city);
-
-/**
- * @brief Generate a random contamination level to initiate a tile of WASTELAND type.
- * return A contamination level between MIN and MAX_WASTELAND_CONTAMINATION_AT_BEGINNING
- */
-double generate_random_wasteland_contamination_level();
-
-/**
- * @brief Generate a random index for an array.
- * @param ind_max Maximal index to generate.
- * @return An index between 0 and ind_max excluded.
- */
-int generate_random_index(int ind_max);
-
-/**
- * @brief Test if all indexes of an array are taken.
- * @param indexes_taken An array that represents the indexes taken or not of another array.
- * @return 1 if all indexes are taken / 0 if not.
- */
-int all_tile_indexes_are_taken(int indexes_taken[CITY_WIDTH][CITY_HEIGHT]);
     
 #endif

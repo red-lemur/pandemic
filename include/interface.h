@@ -9,7 +9,6 @@
  */
 
 /**
- * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
  * @version 1.0.0 - 2020-12-05
@@ -20,6 +19,9 @@
  *
  *
  */
+
+#ifndef INTERFACE_H
+#define INTERFACE_H
 
 #define MARGIN 10
 #define VERTICAL_MARGIN 2
@@ -54,6 +56,7 @@
 #define BOTTOM_LEFT 7
 #define LEFT 8
 
+/* COMMENTAIRES */
 void write_spaces(WINDOW *win, int y, int x, int number, int color_index);
 
 int size_of_longest_string(char **strings, int size);
@@ -65,3 +68,5 @@ void set_number_of_people_in_state(int number, int state);
 void set_citizen_on_tile(int tile_x, int tile_y, int number, int state);
 
 void set_type_of_tile(int tile_x, int tile_y, int type);
+
+#endif
