@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-02
+ * @version 1.0.0 - 2020-12-05
  */
 
 /**
@@ -31,11 +31,10 @@ void tick()
 {    
     if (tour_nb < TOTAL_TOUR_NB) {
         tour_nb++;
-        
+        printf("Tick\n");//
         alarm(tour_duration);
     }
     else {
-        /* prévenir epidemic_sim */
         exit(EXIT_SUCCESS);
     }
 }
@@ -44,14 +43,14 @@ int main(int argc, char* argv[])
 {
     if (argc != 2) {
         printf("Usage: %s tour_duration\n", argv[0]);
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
     
     tour_duration = atoi(argv[1]);
     
     if (tour_duration < 1 || tour_duration > 5) {
         printf("Duration must be between 1 and 5 seconds!\n");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }    
     
     action.sa_handler = &tick;

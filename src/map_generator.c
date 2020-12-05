@@ -39,7 +39,7 @@ void load_map(city_t *city)
     
     if ((fp = fopen(MAP_URL, "r")) == NULL) {
         printf("No map file\n");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
 
     for (row = 0; row < CITY_HEIGHT; row++) {
@@ -97,7 +97,7 @@ void init_fixed_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT], 
         case 'X' : break;
         default :
             printf("Error while reading the map\n");
-            exit(-1);
+            exit(EXIT_FAILURE);
         }
     }
 }
@@ -112,13 +112,13 @@ void init_random_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT],
     
     if (!sscanf(buffer, "%c %d", &building_type, &buildings_nb)) {
         printf("Error while reading the map parameters\n");
-        exit(-1);
+        exit(EXIT_FAILURE);
     }
     
     for (building = 0; building < buildings_nb; building++) {
         if (all_tile_indexes_are_taken(indexes_taken)) {
             printf("Too many buildings on the map\n");
-            exit(-1);
+            exit(EXIT_FAILURE);
         }
         
         do {
@@ -141,7 +141,7 @@ void init_random_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT],
             break;
         default :
             printf("Error while reading the map\n");
-            exit(-1);
+            exit(EXIT_FAILURE);
         }
     }
 }

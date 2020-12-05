@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-11-18
+ * @version 1.0.0 - 2020-12-05
  */
 
 /**
@@ -22,47 +22,36 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <unistd.h> /* close */
-#include <sys/mman.h> /* shm_open and shm_unlink */
-#include <sys/stat.h> /* constantes des modes */
-#include <fcntl.h> /* constantes O_XXX */
+#include <unistd.h>
 
-#define SHM_SIZE 100
+int main(void) {
+    int pid;
 
-int main() {
-    int* ptr;
-    int fd, i;
-    pid_t pid;
+    printf("PID du main : %d\n", getpid()); ///
     
-    srand(time(NULL));
-
-    fd = shm_open("/simulation", O_CREAT | O_RDWR, 0666);
-    ftruncate(fd, SHM_SIZE);
-    ptr = (int *) mmap(NULL, SHM_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-
     pid = fork();
-
-    if (pid > 0) {
-        for (i = 0; i < SHM_SIZE; i++) {
-            /*ptr[i] = rand()%SHM_SIZE;*/
-            ptr[i] = i;
-            printf("%d ", ptr[i]);
+    switch (pid) {
+    case -1:
+        printf("Error on fork()\n");
+        exit(EXIT_FAILURE);
+    case 0:
+        execl("./bin/epidemic_sim", "epidemic_sim", NULL);
+        exit(EXIT_FAILURE);
+    default:
+        printf("PID de epidemic_sim : %d\n", pid); ///
+        
+        pid = fork();
+        switch (pid) {
+        case -1:
+            printf("Error on fork()\n");
+            exit(EXIT_FAILURE);
+        case 0:
+            execl("./bin/timer", "timer", "1", NULL);
+            exit(EXIT_FAILURE);
+        default:
+            printf("PID de timer : %d\n", pid); ///
+            
+            exit(EXIT_SUCCESS);
         }
-        printf("\n");
-    } else {
-        for (i = 0; i < SHM_SIZE; i++) {
-            printf("%d ", ptr[i]);
-        }
-        printf("\n");
     }
-    
-    munmap(ptr, SHM_SIZE);
-    close(fd);
-
-    if (pid > 0) {
-        shm_unlink("/simulation");
-    }
-    
-    return EXIT_SUCCESS;
 }
