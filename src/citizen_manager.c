@@ -32,25 +32,33 @@
 #include "citizen_manager.h"
 #include "epidemic_sim.h"
 
-void *doctor_process(void *vargp) { // A CHANGER
+void *doctor_process(void *status) {
+    status_t *st = (status_t *) status;
+    
     printf("Je suis un docteur\n");
     
     pthread_exit(NULL);
 }
 
-void *fireman_process(void *vargp) {
+void *fireman_process(void *status) {
+    status_t *st = (status_t *) status;
+    
     printf("Je suis un pompier\n");
     
     pthread_exit(NULL);
 }
 
-void *journalist_process(void *vargp) {
+void *journalist_process(void *status) {
+    status_t *st = (status_t *) status;
+    
     printf("Je suis un journaliste\n");
     
     pthread_exit(NULL);
 }
 
-void *simple_citizen_process(void *vargp) {
+void *simple_citizen_process(void *status) {
+    status_t *st = (status_t *) status;
+    
     printf("Je suis un simple citoyen\n");
     
     pthread_exit(NULL);
@@ -58,22 +66,27 @@ void *simple_citizen_process(void *vargp) {
 
 void init_population(city_t *city)
 {
+    int current_citizen;
     int i;
     
     for (i = 0; i < DOCTORS_NB; i++) {
-        pthread_create(&doctors[i], NULL, doctor_process, NULL);
+        pthread_create(&doctors[i], NULL, doctor_process,
+                       (void*) &(city->citizens[current_citizen++]));
     }
 
     for (i = 0; i < FIREMEN_NB; i++) {
-        pthread_create(&firemen[i], NULL, fireman_process, NULL);
+        pthread_create(&firemen[i], NULL, fireman_process,
+                       (void*) &(city->citizens[current_citizen++]));
     }
 
     for (i = 0; i < JOURNALISTS_NB; i++) {
-        pthread_create(&journalists[i], NULL, journalist_process, NULL);
+        pthread_create(&journalists[i], NULL, journalist_process,
+                       (void*) &(city->citizens[current_citizen++]));
     }
 
     for (i = 0; i < SIMPLE_CITIZENS_NB; i++) {
-        pthread_create(&simple_citizens[i], NULL, simple_citizen_process, NULL);
+        pthread_create(&simple_citizens[i], NULL, simple_citizen_process,
+                       (void*) &(city->citizens[current_citizen++]));
     }
     
     

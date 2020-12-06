@@ -28,7 +28,7 @@
 #define DOCTORS_NB 4
 #define FIREMEN_NB 6
 #define JOURNALISTS_NB 2
-#define SIMPLE_CITIZENS_NB 25
+#define SIMPLE_CITIZENS_NB CITIZENS_NB - DOCTORS_NB - FIREMEN_NB - JOURNALISTS_NB
 
 pthread_t doctors[DOCTORS_NB];
 pthread_t firemen[FIREMEN_NB];
@@ -36,10 +36,10 @@ pthread_t journalists[JOURNALISTS_NB];
 pthread_t simple_citizens[SIMPLE_CITIZENS_NB];
 
 /**/
-void *doctor_process(void *vargp);
-void *fireman_process(void *vargp);
-void *journalist_process(void *vargp);
-void *simple_citizen_process(void *vargp);
+void *doctor_process(void *status);
+void *fireman_process(void *status);
+void *journalist_process(void *status);
+void *simple_citizen_process(void *status);
 
 /**/
 void init_population(city_t *city);
