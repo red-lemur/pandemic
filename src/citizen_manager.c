@@ -27,13 +27,29 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <pthread.h>
 
 #include "citizen_manager.h"
 #include "epidemic_sim.h"
 
-void create_population(city_t *city)
-{
+void *doctor_process(void *vargp) { // A CHANGER
+    printf("Salut\n");
     
+    pthread_exit(NULL);
+}
+
+void init_population(city_t *city)
+{
+    int i;
+    
+    for (i = 0; i < DOCTORS_NB; i++) {
+        pthread_create(&doctors[i], NULL, doctor_process, NULL);
+    }
+    
+    /*for (i = 0; i < FIREMEN_NB; i++) {
+        pthread_create(..., fireman_process, ...);
+    }
+    ...*/
 }
 
 int main(void)
@@ -68,7 +84,7 @@ int main(void)
     city = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, shared_memory, 0);
     //printf("TYPE : %d\n", city->map[0][6].type);///
     
-    create_population(city);
+    init_population(city);
     
     close(fifo_from_epidemic_sim);
     

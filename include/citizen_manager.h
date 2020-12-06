@@ -25,6 +25,16 @@
 
 #include "city.h"
 
-void create_population(city_t *city);
+#define DOCTORS_NB 4
+#define FIREMEN_NB 6
+#define JOURNALISTS_NB 2
+#define SIMPLE_CITIZENS_NB 25
+
+pthread_t doctors[DOCTORS_NB];
+pthread_t firemen[FIREMEN_NB];
+pthread_t journalists[JOURNALISTS_NB];
+pthread_t simple_citizens[SIMPLE_CITIZENS_NB];
+
+void init_population(city_t *city);
 
 #endif

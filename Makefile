@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -I./include -Wall -Wextra -pedantic
-LDFLAGS = -lrt # -lm
+LDFLAGS = -lrt -lpthread # -lm
 EXEC = bin/main bin/epidemic_sim bin/citizen_manager bin/press_agency bin/timer
 INTERFACE = bin/interface
 

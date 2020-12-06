@@ -123,7 +123,7 @@ int main(void)
     
     /* Début de la simulation */
     /* C'est à vous d'écrire là ... */
-
+    
     for(;;) {
         if (game_is_not_over) {
             pause();
@@ -133,7 +133,7 @@ int main(void)
     }
 
     close(fifo_to_citizen_manager);
-    unlink("/tmp/epidemic_sim_to_citizen_manager");
+    unlink(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);
     
     if (munmap(city, sizeof(city_t)) < 0) {
         perror("Error when calling munmap()\n");
