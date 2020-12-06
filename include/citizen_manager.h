@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-05
+ * @version 1.0.0 - 2020-12-07
  */
 
 /**
@@ -30,11 +30,6 @@
 #define JOURNALISTS_NB 2
 #define SIMPLE_CITIZENS_NB CITIZENS_NB - DOCTORS_NB - FIREMEN_NB - JOURNALISTS_NB
 
-pthread_t doctors[DOCTORS_NB];
-pthread_t firemen[FIREMEN_NB];
-pthread_t journalists[JOURNALISTS_NB];
-pthread_t simple_citizens[SIMPLE_CITIZENS_NB];
-
 /**/
 void *doctor_process(void *status);
 void *fireman_process(void *status);
@@ -43,8 +38,5 @@ void *simple_citizen_process(void *status);
 
 /**/
 void init_population(city_t *city);
-
-/**/
-void run_threads();
 
 #endif

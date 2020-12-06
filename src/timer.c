@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-05
+ * @version 1.0.0 - 2020-12-07
  */
 
 /**
@@ -25,6 +25,12 @@
 #include <unistd.h>
 
 #include "timer.h"
+
+struct sigaction action;
+
+int epidemic_sim_pid;
+int game_round_duration;
+int game_round_nb = 0;
 
 void tick()
 {    

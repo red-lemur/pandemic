@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-03
+ * @version 1.0.0 - 2020-12-07
  */
 
 /**
@@ -31,26 +31,18 @@
 #define SHARED_MEM "/simulation"
 #define FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL "/tmp/epidemic_sim_to_citizen_manager"
 
-struct sigaction action_sigusr1;
-struct sigaction action_sigusr2;
-
-int game_is_not_over = 1;
-
 /**
  * @brief Create the shared memory.
  */
 int create_shared_memory();
 
-/**
- * @brief Generate the city in which the simulation takes place.
- * @param city City to generate.
- */
-void generate_city(city_t *city);
+/**/
+void launch_simulation();
 
 /**/
-void game_round();
+void simulation_round();
 
 /**/
-void end_of_game();
+void end_of_simulation();
 
 #endif

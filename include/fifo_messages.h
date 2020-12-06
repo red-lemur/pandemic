@@ -15,21 +15,9 @@
  */
 
 /**
- * @file timer.h
+ * @file fifo_messages.h
  *
- * A clock that emit an alarm signal every tour of a given duration.
+ *
  */
 
-#ifndef TIMER_H
-#define TIMER_H
-
-#include <signal.h>
-
-#define TOTAL_TOUR_NB 10 // 100
-
-/**
- * @brief Emit a signal which call this function again.
- */
-void tick();
-
-#endif
+typedef enum { NEXT_ROUND, END_OF_SIMULATION } fifo_message_e;

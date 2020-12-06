@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-05
+ * @version 1.0.0 - 2020-12-07
  */
 
 /**
@@ -30,9 +30,18 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <string.h> // à cause de mkfifo
 
 #include "epidemic_sim.h"
+#include "fifo_messages.h"
+
+struct sigaction action_sigusr1;
+struct sigaction action_sigusr2;
+
+int fifo_to_citizen_manager;
+
+fifo_message_e message_to_citizen_manager[1];
+
+int simulation_is_not_over = 1;
 
 int create_shared_memory()
 {
@@ -52,23 +61,38 @@ int create_shared_memory()
     return mem;
 }
 
-void generate_city(city_t *city)
-{
-    load_map(city);
-
-    // Générer citoyens ?
+void launch_simulation() {
+    for(;;) {
+        if (simulation_is_not_over) {
+            pause();
+        } else {
+            break;
+        }
+    }
 }
 
-void game_round()
+void simulation_round()
 {
-    printf("Round\n");
-    // Do somthing
+    printf("Round\n"); ///
+    
+    // write in evolution.txt
+
+    // Envoyer un message à citizen_manager pour lui dire que c'est son tour
+    *message_to_citizen_manager = NEXT_ROUND;
+    write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));
+
+    // update interface
 }
 
-void end_of_game()
+void end_of_simulation()
 {
-    printf("End of the game !\n");
-    game_is_not_over = 0;
+    printf("End of the simulation !\n"); ///
+
+    // Envoyer un message à citizen_manager pour lui dire que c'est fini
+    *message_to_citizen_manager = END_OF_SIMULATION;
+    write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));
+    
+    simulation_is_not_over = 0;
 }
 
 /* mqd_t create_mqueue(); */
@@ -76,8 +100,6 @@ void end_of_game()
 int main(void)
 {
     int shared_memory;
-
-    int fifo_to_citizen_manager;
 
     /*mqd_t mqueue;*/
 
@@ -89,12 +111,12 @@ int main(void)
     /*mqueue = create_mqueue();*/
 
     city = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, shared_memory, 0);
-    generate_city(city);
+    load_map(city);
     
-    action_sigusr1.sa_handler = &game_round;
+    action_sigusr1.sa_handler = &simulation_round;
     sigaction(SIGUSR1, &action_sigusr1, NULL);
 
-    action_sigusr2.sa_handler = &end_of_game;
+    action_sigusr2.sa_handler = &end_of_simulation;
     sigaction(SIGUSR2, &action_sigusr2, NULL);
 
     unlink(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);
@@ -110,8 +132,6 @@ int main(void)
         exit(EXIT_FAILURE);
     }
     
-    //write(fifo_to_citizen_manager, "TEST", strlen("TEST"));///
-    
     /* TEST DEBUG MAP */
     /*int row, col;
     for (row = 0; row < CITY_HEIGHT; row++) {
@@ -121,16 +141,7 @@ int main(void)
         printf("\n");
         }*/
     
-    /* Début de la simulation */
-    /* C'est à vous d'écrire là ... */
-    
-    for(;;) {
-        if (game_is_not_over) {
-            pause();
-        } else {
-            break;
-        }
-    }
+    launch_simulation();
 
     close(fifo_to_citizen_manager);
     unlink(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);
