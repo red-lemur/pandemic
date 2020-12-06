@@ -35,6 +35,16 @@ pthread_t firemen[FIREMEN_NB];
 pthread_t journalists[JOURNALISTS_NB];
 pthread_t simple_citizens[SIMPLE_CITIZENS_NB];
 
+/**/
+void *doctor_process(void *vargp);
+void *fireman_process(void *vargp);
+void *journalist_process(void *vargp);
+void *simple_citizen_process(void *vargp);
+
+/**/
 void init_population(city_t *city);
+
+/**/
+void run_threads();
 
 #endif

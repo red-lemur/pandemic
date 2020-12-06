@@ -33,7 +33,25 @@
 #include "epidemic_sim.h"
 
 void *doctor_process(void *vargp) { // A CHANGER
-    printf("Salut\n");
+    printf("Je suis un docteur\n");
+    
+    pthread_exit(NULL);
+}
+
+void *fireman_process(void *vargp) {
+    printf("Je suis un pompier\n");
+    
+    pthread_exit(NULL);
+}
+
+void *journalist_process(void *vargp) {
+    printf("Je suis un journaliste\n");
+    
+    pthread_exit(NULL);
+}
+
+void *simple_citizen_process(void *vargp) {
+    printf("Je suis un simple citoyen\n");
     
     pthread_exit(NULL);
 }
@@ -45,11 +63,41 @@ void init_population(city_t *city)
     for (i = 0; i < DOCTORS_NB; i++) {
         pthread_create(&doctors[i], NULL, doctor_process, NULL);
     }
-    
-    /*for (i = 0; i < FIREMEN_NB; i++) {
-        pthread_create(..., fireman_process, ...);
+
+    for (i = 0; i < FIREMEN_NB; i++) {
+        pthread_create(&firemen[i], NULL, fireman_process, NULL);
     }
-    ...*/
+
+    for (i = 0; i < JOURNALISTS_NB; i++) {
+        pthread_create(&journalists[i], NULL, journalist_process, NULL);
+    }
+
+    for (i = 0; i < SIMPLE_CITIZENS_NB; i++) {
+        pthread_create(&simple_citizens[i], NULL, simple_citizen_process, NULL);
+    }
+    
+    
+}
+
+void run_threads()
+{
+    int i;
+    
+    for (i = 0; i < DOCTORS_NB; i++) {
+        pthread_join(doctors[i], NULL);
+    }
+
+    for (i = 0; i < FIREMEN_NB; i++) {
+        pthread_join(firemen[i], NULL);
+    }
+
+    for (i = 0; i < JOURNALISTS_NB; i++) {
+        pthread_join(journalists[i], NULL);
+    }
+
+    for (i = 0; i < SIMPLE_CITIZENS_NB; i++) {
+        pthread_join(simple_citizens[i], NULL);
+    }
 }
 
 int main(void)
@@ -62,13 +110,6 @@ int main(void)
 
     //char arr[10];
     
-    /*fifo_from_epidemic_sim = open(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL, O_RDONLY);
-
-    if (fifo_from_epidemic_sim == -1) {
-        perror("Error while opening a FIFO\n");
-        exit(EXIT_FAILURE);
-        }*/
-
     do {
         fifo_from_epidemic_sim = open(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL, O_RDONLY);
     } while (fifo_from_epidemic_sim == -1);
@@ -85,6 +126,7 @@ int main(void)
     //printf("TYPE : %d\n", city->map[0][6].type);///
     
     init_population(city);
+    run_threads();
     
     close(fifo_from_epidemic_sim);
     
