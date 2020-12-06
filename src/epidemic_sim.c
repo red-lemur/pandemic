@@ -90,8 +90,7 @@ int main(void)
 
     city = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, shared_memory, 0);
     generate_city(city);
-
-    printf("1\n");///
+    
     action_sigusr1.sa_handler = &game_round;
     sigaction(SIGUSR1, &action_sigusr1, NULL);
 
@@ -111,7 +110,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
     
-    write(fifo_to_citizen_manager, "TEST", strlen("TEST"));///
+    //write(fifo_to_citizen_manager, "TEST", strlen("TEST"));///
     
     /* TEST DEBUG MAP */
     /*int row, col;
