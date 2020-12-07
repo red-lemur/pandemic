@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-07
+ * @version 1.0.0 - 2020-12-08
  */
 
 /**
@@ -32,6 +32,9 @@
  * @brief Create the shared memory.
  */
 int create_shared_memory();
+
+/**/
+void update_wastelands_contamination();
 
 /**/
 void launch_simulation();

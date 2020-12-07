@@ -9,10 +9,9 @@
  */
 
 /**
- * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-05
+ * @version 1.0.0 - 2020-12-08
  */
 
 /**
@@ -25,6 +24,7 @@
 #include <stdlib.h>
 
 #include "map_generator.h"
+#include "util.h"
 
 void load_map(city_t *city)
 {
@@ -129,20 +129,19 @@ void init_random_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT],
         switch (building_type) {                
         case 'F' :
             city->map[col][row] = init_tile_firestation(col, row);
-            indexes_taken[col][row] = 1;
             break;
         case 'H' :
             city->map[col][row] = init_tile_hospital(col, row);
-            indexes_taken[col][row] = 1;
             break;
         case 'O' :
             city->map[col][row] = init_tile_house(col, row);
-            indexes_taken[col][row] = 1;
             break;
         default :
             perror("Error while reading the map\n");
             exit(EXIT_FAILURE);
         }
+
+        indexes_taken[col][row] = 1;
     }
 }
 
@@ -159,7 +158,7 @@ void replace_unitialized_tiles_with_wasteland(city_t *city,
                     contamination = generate_random_wasteland_contamination_level();
                     city->map[col][row] = init_tile_wasteland(col, row, contamination);
                 }
-            }   
+            }
         }
     }
 }
@@ -169,11 +168,6 @@ double generate_random_wasteland_contamination_level()
     return rand()/(double)RAND_MAX * (MAX_WASTELAND_CONTAMINATION_AT_BEGINNING
                                       - MIN_WASTELAND_CONTAMINATION_AT_BEGINNING)
         + MIN_WASTELAND_CONTAMINATION_AT_BEGINNING;
-}
-
-int generate_random_index(int ind_max)
-{
-    return (int)(rand()/(double)RAND_MAX * ind_max);
 }
 
 int all_tile_indexes_are_taken(int indexes_taken[CITY_WIDTH][CITY_HEIGHT])
@@ -186,7 +180,7 @@ int all_tile_indexes_are_taken(int indexes_taken[CITY_WIDTH][CITY_HEIGHT])
             if (!indexes_taken[col][row]) {
                 return 0;
             }
-        }   
+        }
     }
     
     return 1;

@@ -39,7 +39,6 @@ typedef enum { NORMAL, FIREFIGHTER, DOCTOR, REPORTER, DEAD, BURNED } citizen_typ
  * @param y The y coordinate in the city
  * @param contamination The level of contamination (between 0 and 1)
  * @param is_sick A boolean to say if the citizen is sick.
- * @param name The name of the citizen (Ah ah ah)
  * @param sickness_duration The number of days the citizen have been sick.
  * @param type The type of the citizen.
  * @param days_spend_in_hospital_healthy the number of days spent in the hospital while not being sick
@@ -49,7 +48,6 @@ typedef struct status {
     unsigned int y;
     double contamination;
     int is_sick;
-    char name[CITIZEN_NAME_MAX_LENGTH];
     int sickness_duration;
     citizen_type_e type;
     int days_spent_in_hospital_healthy;

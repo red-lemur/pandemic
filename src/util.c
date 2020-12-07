@@ -15,17 +15,16 @@
  */
 
 /**
- * @file exchanges_between_processes.h
+ * @file utils.c
  *
- *
+ * Reusable functions.
  */
 
-#ifndef EXCHANGES_BETWEEN_PROCESSES_H
-#define EXCHANGES_BETWEEN_PROCESSES_H
+#include <stdlib.h>
 
-#define SHARED_MEM "/simulation"
-#define FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL "/tmp/epidemic_sim_to_citizen_manager"
+#include "util.h"
 
-typedef enum { NEXT_ROUND, END_OF_SIMULATION } fifo_message_e;
-
-#endif
+int generate_random_index(int ind_max)
+{
+    return (int)(rand()/(double)RAND_MAX * ind_max);
+}

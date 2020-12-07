@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-07
+ * @version 1.0.0 - 2020-12-08
  */
 
 /**
@@ -43,6 +43,8 @@ fifo_message_e message_to_citizen_manager[1];
 
 int simulation_is_not_over = 1;
 
+city_t *city;
+
 int create_shared_memory()
 {
     int mem;
@@ -61,7 +63,42 @@ int create_shared_memory()
     return mem;
 }
 
-void launch_simulation() {
+void update_wastelands_contamination()
+{
+    int row;
+    int col;
+
+    int i;
+    int j;
+    
+    for (row = 0; row < CITY_HEIGHT; row++) {
+        for (col = 0; col < CITY_WIDTH; col++) {
+            if (city->map[col][row].type != WASTELAND) {
+                continue;
+            }
+            
+            for (i = row - 1; i <= row + 1; i++) {
+                for (j = col - 1; j <= col + 1; j++) {
+                    if (i < 0 || j < 0 || i > CITY_HEIGHT || j > CITY_WIDTH
+                        || (i == row && j == col)) {
+                        continue;
+                    }
+
+                    if (city->map[j][i].type != WASTELAND
+                        || city->map[col][row].contamination <= city->map[j][i].contamination) {
+                        continue;
+                    }
+
+                    int a = 0; //////
+                    // A CONTINUER : contaminer les autres terrains
+                }
+            }
+        }   
+    }
+}
+
+void launch_simulation()
+{
     for(;;) {
         if (simulation_is_not_over) {
             pause();
@@ -77,7 +114,8 @@ void simulation_round()
     
     // write in evolution.txt
 
-    // Envoyer un message à citizen_manager pour lui dire que c'est son tour
+    update_wastelands_contamination();
+    
     *message_to_citizen_manager = NEXT_ROUND;
     write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));
 
@@ -102,8 +140,6 @@ int main(void)
     int shared_memory;
 
     /*mqd_t mqueue;*/
-
-    city_t *city;
     
     srand(time(NULL));
     
@@ -133,13 +169,19 @@ int main(void)
     }
     
     /* TEST DEBUG MAP */
-    /*int row, col;
+    int row, col;
     for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_HEIGHT; col++) {
             printf("%d", city->map[col][row].type);
         }
         printf("\n");
-        }*/
+    }
+    for (row = 0; row < CITY_HEIGHT; row++) {
+        for (col = 0; col < CITY_HEIGHT; col++) {
+            printf("%.3lf ", city->map[col][row].contamination);
+        }
+        printf("\n");
+    }
     
     launch_simulation();
 

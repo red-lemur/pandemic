@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-05
+ * @version 1.0.0 - 2020-12-08
  */
 
 /**
@@ -62,13 +62,6 @@ void replace_unitialized_tiles_with_wasteland(city_t *city,
  * @return A contamination level between MIN and MAX_WASTELAND_CONTAMINATION_AT_BEGINNING
  */
 double generate_random_wasteland_contamination_level();
-
-/**
- * @brief Generate a random index for an array.
- * @param ind_max Maximal index to generate.
- * @return An index between 0 and ind_max excluded.
- */
-int generate_random_index(int ind_max);
 
 /**
  * @brief Test if all indexes of an array are taken.
