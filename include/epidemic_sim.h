@@ -28,9 +28,6 @@
 
 #include <signal.h>
 
-#define SHARED_MEM "/simulation"
-#define FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL "/tmp/epidemic_sim_to_citizen_manager"
-
 /**
  * @brief Create the shared memory.
  */

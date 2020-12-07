@@ -32,7 +32,7 @@
 #include <sys/wait.h>
 
 #include "epidemic_sim.h"
-#include "fifo_messages.h"
+#include "exchanges_between_processes.h"
 
 struct sigaction action_sigusr1;
 struct sigaction action_sigusr2;

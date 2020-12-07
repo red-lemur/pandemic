@@ -30,8 +30,7 @@
 #include <pthread.h>
 
 #include "citizen_manager.h"
-#include "epidemic_sim.h"
-#include "fifo_messages.h"
+#include "exchanges_between_processes.h"
 
 pthread_t doctors[DOCTORS_NB];
 pthread_t firemen[FIREMEN_NB];

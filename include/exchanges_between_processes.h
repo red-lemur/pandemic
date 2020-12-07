@@ -15,9 +15,12 @@
  */
 
 /**
- * @file fifo_messages.h
+ * @file exchanges_between_processes.h
  *
  *
  */
+
+#define SHARED_MEM "/simulation"
+#define FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL "/tmp/epidemic_sim_to_citizen_manager"
 
 typedef enum { NEXT_ROUND, END_OF_SIMULATION } fifo_message_e;
