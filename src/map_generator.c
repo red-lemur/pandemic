@@ -68,6 +68,8 @@ void load_map(city_t *city)
     fclose(fp);
     
     replace_unitialized_tiles_with_wasteland(city, indexes_taken);
+
+    // Nouvelle fonction qui set la contamination des wastelands
 }
 
 void init_fixed_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT], char* buffer,
@@ -91,7 +93,7 @@ void init_fixed_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT], 
             break;
         case 'W' :
             contamination = generate_random_wasteland_contamination_level();
-            city->map[col][row] = init_tile_wasteland(col, row, contamination);
+            city->map[col][row] = init_tile_wasteland(col, row, contamination); // TODO 10%
             indexes_taken[col][row] = 1;
             break;
         case 'X' : break;

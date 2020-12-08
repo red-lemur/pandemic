@@ -73,18 +73,18 @@ void update_wastelands_contamination()
     int j;
     
     for (row = 0; row < CITY_HEIGHT; row++) {
-        for (col = 0; col < CITY_WIDTH; col++) {
+        for (col = 0; col < CITY_WIDTH; col++) {     
             if (city->map[col][row].type != WASTELAND) {
                 continue;
             }
             
             for (i = row - 1; i <= row + 1; i++) {
                 for (j = col - 1; j <= col + 1; j++) {
-                    if (i < 0 || j < 0 || i > CITY_HEIGHT || j > CITY_WIDTH
+                    if (i < 0 || j < 0 || i >= CITY_HEIGHT || j >= CITY_WIDTH
                         || (i == row && j == col)) {
                         continue;
                     }
-
+                    
                     if (city->map[j][i].type != WASTELAND
                         || city->map[col][row].contamination <= city->map[j][i].contamination) {
                         continue;
@@ -93,8 +93,8 @@ void update_wastelands_contamination()
                     if (generate_random_percentage() > PROBABILITY_WASTELAND_CONTAMINATION) {
                         continue;
                     }
-
-                    printf("[%d %d] %.3lf augmente ", col, row, city->map[col][row].contamination);///
+                    
+                    //printf("[%d %d] %.3lf augmente ", col, row, city->map[col][row].contamination);///
                     increase_wasteland_contamination(&(city->map[j][i]),
                                                      city->map[col][row].contamination);
                 }
@@ -108,7 +108,7 @@ void increase_wasteland_contamination(tile_t *tile, double other_tile_contaminat
     double increase;
     double difference;
 
-    printf("[%d %d] %.3lf à ", tile->x, tile->y, tile->contamination);///
+    //printf("[%d %d] %.3lf à ", tile->x, tile->y, tile->contamination);///
     
     increase = generate_random_percentage_in_interval(MIN_WASTELAND_CONTAMINATION_INCREASE,
                                                       MAX_WASTELAND_CONTAMINATION_INCREASE);
@@ -120,7 +120,7 @@ void increase_wasteland_contamination(tile_t *tile, double other_tile_contaminat
         tile->contamination = MAX_CONTAMINATION;
     }
 
-    printf("%.3lf\n", tile->contamination);///
+    //printf("%.3lf\n", tile->contamination);///
 }
 
 void launch_simulation()
@@ -140,6 +140,7 @@ void simulation_round()
     
     // write in evolution.txt
 
+    // A SURVEILLER
     update_wastelands_contamination();
 
     /* DEBUG */
