@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-03
+ * @version 1.0.0 - 2020-12-08
  */
 
 /**
@@ -29,6 +29,8 @@
 #define HOUSE_CAPACITY 6
 #define HOSPITAL_CAPACITY 12
 #define FIRESTATION_CAPACITY 8
+
+#define MAX_CONTAMINATION 1
 
 #define CITIZEN_NB_AT_BEGINNING 0
 #define CONTAMINATION_AT_BEGINNING 0

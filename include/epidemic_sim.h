@@ -28,6 +28,10 @@
 
 #include <signal.h>
 
+#define PROBABILITY_WASTELAND_CONTAMINATION 0.15
+#define MIN_WASTELAND_CONTAMINATION_INCREASE 0.01
+#define MAX_WASTELAND_CONTAMINATION_INCREASE 0.20
+
 /**
  * @brief Create the shared memory.
  */
@@ -35,6 +39,13 @@ int create_shared_memory();
 
 /**/
 void update_wastelands_contamination();
+
+/**
+ * @brief Increase the contamination of a WASTELAND tile based on another tile contamination.
+ * @param tile Tile whose contamination must be increased.
+ * @param other_tile_contamination Contamination of another tile.
+ */
+void increase_wasteland_contamination(tile_t *tile, double other_tile_contamination);
 
 /**/
 void launch_simulation();

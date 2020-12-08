@@ -30,4 +30,18 @@
  */
 int generate_random_index(int ind_max);
 
+/**
+ * @brief Generate a random percentage in an interval.
+ * @param lower_bound Lower bound of the interval.
+ * @param upper_bound Upper bound of the interval.
+ * @return A double between the lower bound and the upper bound.
+ */
+double generate_random_percentage_in_interval(double lower_bound, double upper_bound);
+
+/**
+ * @brief Generate a random percentage.
+ * @return A double between 0 and 1.
+ */
+double generate_random_percentage();
+
 #endif

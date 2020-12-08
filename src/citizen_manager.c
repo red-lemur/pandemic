@@ -45,7 +45,7 @@ void *doctor_process(void *status)
 
     int current_round = 0;
     
-    printf("Je suis un docteur\n"); ///
+    //printf("Je suis un docteur\n"); ///
 
     // TODO init 
     
@@ -68,7 +68,7 @@ void *fireman_process(void *status)
 {
     status_t *st = (status_t *) status;
     
-    printf("Je suis un pompier\n"); ///
+    //printf("Je suis un pompier\n"); ///
     
     pthread_exit(NULL);
 }
@@ -77,7 +77,7 @@ void *journalist_process(void *status)
 {
     status_t *st = (status_t *) status;
     
-    printf("Je suis un journaliste\n"); ///
+    //printf("Je suis un journaliste\n"); ///
     
     pthread_exit(NULL);
 }
@@ -86,7 +86,7 @@ void *simple_citizen_process(void *status)
 {
     status_t *st = (status_t *) status;
     
-    printf("Je suis un simple citoyen\n"); ///
+    //printf("Je suis un simple citoyen\n"); ///
     
     pthread_exit(NULL);
 }

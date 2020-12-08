@@ -28,3 +28,13 @@ int generate_random_index(int ind_max)
 {
     return (int)(rand()/(double)RAND_MAX * ind_max);
 }
+
+double generate_random_percentage_in_interval(double lower_bound, double upper_bound)
+{
+    return rand()/(double)RAND_MAX * (upper_bound - lower_bound) + lower_bound;
+}
+
+double generate_random_percentage()
+{
+    return generate_random_percentage_in_interval(0, 1);
+}

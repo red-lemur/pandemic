@@ -165,9 +165,8 @@ void replace_unitialized_tiles_with_wasteland(city_t *city,
 
 double generate_random_wasteland_contamination_level()
 {
-    return rand()/(double)RAND_MAX * (MAX_WASTELAND_CONTAMINATION_AT_BEGINNING
-                                      - MIN_WASTELAND_CONTAMINATION_AT_BEGINNING)
-        + MIN_WASTELAND_CONTAMINATION_AT_BEGINNING;
+    return generate_random_percentage_in_interval(MIN_WASTELAND_CONTAMINATION_AT_BEGINNING,
+                                                  MAX_WASTELAND_CONTAMINATION_AT_BEGINNING);
 }
 
 int all_tile_indexes_are_taken(int indexes_taken[CITY_WIDTH][CITY_HEIGHT])
