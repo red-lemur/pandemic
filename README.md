@@ -12,5 +12,5 @@ make
 $ ./bin/main
 ```
 Do not run the other binary files, or they may loop endlessly.
-If you executed them anyway, you can stop them with the command ```{bash}kill -9```
-followed by the PID of the processes (you can find their PID with the command ```{bash}ps -e```).
+If you executed them anyway, you can stop them with the command ```kill -9```
+followed by the PID of the processes (you can find their PID with the command ```ps -e```).
