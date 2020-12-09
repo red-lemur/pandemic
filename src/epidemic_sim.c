@@ -94,7 +94,6 @@ void update_wastelands_contamination()
                         continue;
                     }
                     
-                    //printf("[%d %d] %.3lf augmente ", col, row, city->map[col][row].contamination);///
                     increase_wasteland_contamination(&(city->map[j][i]),
                                                      city->map[col][row].contamination);
                 }
@@ -107,8 +106,6 @@ void increase_wasteland_contamination(tile_t *tile, double other_tile_contaminat
 {
     double increase;
     double difference;
-
-    //printf("[%d %d] %.3lf à ", tile->x, tile->y, tile->contamination);///
     
     increase = generate_random_percentage_in_interval(MIN_WASTELAND_CONTAMINATION_INCREASE,
                                                       MAX_WASTELAND_CONTAMINATION_INCREASE);
@@ -119,8 +116,6 @@ void increase_wasteland_contamination(tile_t *tile, double other_tile_contaminat
     if (tile->contamination > MAX_CONTAMINATION) {
         tile->contamination = MAX_CONTAMINATION;
     }
-
-    //printf("%.3lf\n", tile->contamination);///
 }
 
 void launch_simulation()
@@ -140,18 +135,17 @@ void simulation_round()
     
     // write in evolution.txt
 
-    // A SURVEILLER
     update_wastelands_contamination();
 
     /* DEBUG */
-    int row, col;
+    /*int row, col;
     printf("=====================================================\n");
     for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_HEIGHT; col++) {
             printf("%.3lf ", city->map[col][row].contamination);
         }
         printf("\n");
-    }
+        }*/
     
     *message_to_citizen_manager = NEXT_ROUND;
     write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));
@@ -206,7 +200,7 @@ int main(void)
     }
     
     /* TEST DEBUG MAP */
-    int row, col;
+    /*int row, col;
     for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_HEIGHT; col++) {
             printf("%d", city->map[col][row].type);
@@ -218,7 +212,7 @@ int main(void)
             printf("%.3lf ", city->map[col][row].contamination);
         }
         printf("\n");
-    }
+        }*/
     
     launch_simulation();
 

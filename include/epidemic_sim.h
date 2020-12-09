@@ -37,7 +37,9 @@
  */
 int create_shared_memory();
 
-/**/
+/**
+ * @brief Update the contamination level of the WASTELAND tiles.
+ */
 void update_wastelands_contamination();
 
 /**
@@ -47,13 +49,19 @@ void update_wastelands_contamination();
  */
 void increase_wasteland_contamination(tile_t *tile, double other_tile_contamination);
 
-/**/
+/**
+ * @brief Infinite loop while the simulation is not over.
+ */
 void launch_simulation();
 
-/**/
+/**
+ * @brief Actions taken during a simulation round.
+ */
 void simulation_round();
 
-/**/
+/**
+ * @brief End the simulation.
+ */
 void end_of_simulation();
 
 #endif

@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-08
+ * @version 1.0.0 - 2020-12-09
  */
 
 /**
@@ -39,6 +39,8 @@ pthread_t simple_citizens[SIMPLE_CITIZENS_NB];
 
 int citizen_round;
 
+int init_doctor_in_hospital = 0;
+
 void *doctor_process(void *status)
 {
     status_t *st = (status_t *) status;
@@ -51,7 +53,7 @@ void *doctor_process(void *status)
     
     for(;;) {        
         if (citizen_round == -1) {
-            //printf("C'est la fin !\n"); ///
+            printf("C'est la fin !\n"); ///
             break;
         }
 
@@ -107,7 +109,7 @@ void init_population(city_t *city)
         pthread_create(&firemen[i], NULL, fireman_process,
                        (void*) &(city->citizens[current_citizen++]));
     }
-
+    
     for (i = 0; i < JOURNALISTS_NB; i++) {
         pthread_create(&journalists[i], NULL, journalist_process,
                        (void*) &(city->citizens[current_citizen++]));
@@ -155,6 +157,8 @@ int main(void)
             citizen_round++;
         }
     }
+
+    // Attendre les citizen ?
     
     close(fifo_from_epidemic_sim);
     
