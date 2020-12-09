@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-03
+ * @version 1.0.0 - 2020-12-09
  */
 
 /**
@@ -23,7 +23,7 @@
 #include "city_sim.h"
 
 tile_t init_tile(unsigned int x, unsigned int y, int capacity,
-                 building_type_e type, double contamination)
+                 building_type_e type)
 {
     tile_t tile;
     
@@ -32,27 +32,27 @@ tile_t init_tile(unsigned int x, unsigned int y, int capacity,
     tile.capacity = capacity;
     tile.citizens_nb = CITIZEN_NB_AT_BEGINNING;
     tile.type = type;
-    tile.contamination = contamination;
+    tile.contamination = CONTAMINATION_AT_BEGINNING;
     
     return tile;
 }
 
-tile_t init_tile_wasteland(unsigned int x, unsigned int y, double contamination)
+tile_t init_tile_wasteland(unsigned int x, unsigned int y)
 {
-    return init_tile(x, y, WASTELAND_CAPACITY, WASTELAND, contamination);
+    return init_tile(x, y, WASTELAND_CAPACITY, WASTELAND);
 }
 
 tile_t init_tile_house(unsigned int x, unsigned int y)
 {
-    return init_tile(x, y, HOUSE_CAPACITY, HOUSE, CONTAMINATION_AT_BEGINNING);
+    return init_tile(x, y, HOUSE_CAPACITY, HOUSE);
 }
 
 tile_t init_tile_hospital(unsigned int x, unsigned int y)
 {
-    return init_tile(x, y, HOSPITAL_CAPACITY, HOSPITAL, CONTAMINATION_AT_BEGINNING);
+    return init_tile(x, y, HOSPITAL_CAPACITY, HOSPITAL);
 }
 
 tile_t init_tile_firestation(unsigned int x, unsigned int y)
 {
-    return init_tile(x, y, FIRESTATION_CAPACITY, FIRESTATION, CONTAMINATION_AT_BEGINNING);
+    return init_tile(x, y, FIRESTATION_CAPACITY, FIRESTATION);
 }

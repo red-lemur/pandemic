@@ -70,4 +70,10 @@ double generate_random_wasteland_contamination_level();
  */
 int all_tile_indexes_are_taken(int indexes_taken[CITY_WIDTH][CITY_HEIGHT]);
 
+/**
+ * @brief Contaminate some wastlands in the city.
+ * @param city City to contaminate.
+ */
+void contaminate_some_wastelands(city_t *city);
+
 #endif
