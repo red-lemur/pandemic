@@ -58,6 +58,13 @@ void init_doctor(status_t *status, int* treatment_pouches_nb);
 void init_fireman(status_t *status, double *sprayer_capacity);
 
 /**
+ * @brief Initialize a citizen.
+ * @param status Status of the citizen.
+ * @param type The type of the citizen.
+ */
+void init_citizen(status_t *status, citizen_type_e type);
+
+/**
  * @brief Initialize the status of a citizen.
  * @param status Status of the citizen which contains several paramters.
  * @param x The x coordinate in the city.
@@ -81,6 +88,22 @@ void increment_init_doctors_in_hospital();
  * @brief Increment a global variable that counts the number of firemen initialized in a firestation.
  */
 void increment_init_firemen_in_firestation();
+
+/**
+ * @brief Count the number of firemen in a firestation.
+ * @param col The x coordinate in the city.
+ * @param row The y coordinate in the city.
+ * @return -1 if the tile is not a FIRESTATION / else the number of firemen.
+ */
+int firemen_nb_in_firestation(unsigned int row, unsigned int col);
+
+/**
+ * @brief Count the number of visitors in a firestation.
+ * @param col The x coordinate in the city.
+ * @param row The y coordinate in the city.
+ * @return -1 if the tile is not a FIRESTATION / else the number of visitors.
+ */
+int visitors_nb_in_firestation(unsigned int row, unsigned int col);
 
 /**/
 void move_citizen();

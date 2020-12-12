@@ -138,6 +138,8 @@ void *simple_citizen_process(void *status)
     
     //printf("Je suis un simple citoyen\n"); ///
 
+    init_citizen(st, SIMPLE_CITIZEN);
+
     current_round = 0;
     for(;;) {        
         if (citizen_round == -1) {
@@ -170,8 +172,8 @@ void init_doctor(status_t *status, int* treatment_pouches_nb)
                 if (city->map[col][row].type == HOSPITAL) {
                     if (!tile_is_full(city->map[col][row])
                         && hospital_taken_counter == init_doctors_in_hospital) {
-                        init_citizen_status(status, col, row, DOCTOR);
                         add_citizen_in_tile(&(city->map[col][row]));
+                        init_citizen_status(status, col, row, DOCTOR);
                         *treatment_pouches_nb = MAX_TREATMENT_POUCHES_NB;
                         increment_init_doctors_in_hospital();
                         return;
@@ -183,12 +185,12 @@ void init_doctor(status_t *status, int* treatment_pouches_nb)
     }
     
     do {
-        row = generate_random_index(CITY_HEIGHT - 1);
-        col = generate_random_index(CITY_WIDTH - 1);
+        row = generate_random_index(CITY_HEIGHT);
+        col = generate_random_index(CITY_WIDTH);
     } while (tile_is_full(city->map[col][row]));
-
-    init_citizen_status(status, col, row, DOCTOR);
+    
     add_citizen_in_tile(&(city->map[col][row]));
+    init_citizen_status(status, col, row, DOCTOR);
     *treatment_pouches_nb = TREATMENT_POUCHES_NB_AT_BEGINNING;
 
     //printf("Je suis un docteur et END\n"); ///
@@ -210,8 +212,8 @@ void init_fireman(status_t *status, double *sprayer_capacity)
                 if (city->map[col][row].type == FIRESTATION) {
                     if (!tile_is_full(city->map[col][row])
                         && firestation_taken_counter == init_firemen_in_firestation) {
-                        init_citizen_status(status, col, row, FIREMAN);
                         add_citizen_in_tile(&(city->map[col][row]));
+                        init_citizen_status(status, col, row, FIREMAN);
                         *sprayer_capacity = MAX_SPRAYER_CAPACITY;
                         increment_init_firemen_in_firestation();
                         return;
@@ -223,15 +225,32 @@ void init_fireman(status_t *status, double *sprayer_capacity)
     }
     
     do {
-        row = generate_random_index(CITY_HEIGHT - 1);
-        col = generate_random_index(CITY_WIDTH - 1);
+        row = generate_random_index(CITY_HEIGHT);
+        col = generate_random_index(CITY_WIDTH);
     } while (tile_is_full(city->map[col][row]));
 
-    init_citizen_status(status, col, row, FIREMAN);
     add_citizen_in_tile(&(city->map[col][row]));
+    init_citizen_status(status, col, row, FIREMAN);
+    
     *sprayer_capacity = SPRAYER_CAPACITY_AT_BEGINNING;
 
     //printf("Je suis un pompier et END\n"); ///
+}
+
+void init_citizen(status_t *status, citizen_type_e type)
+{
+    int row;
+    int col;
+    
+    do {
+        row = generate_random_index(CITY_HEIGHT);
+        col = generate_random_index(CITY_WIDTH);
+    } while (tile_is_full(city->map[col][row])
+             || (type != FIREMAN && firemen_nb_in_firestation(row, col) == 0));
+    // TEST POUR HOSPITAL
+    
+    add_citizen_in_tile(&(city->map[col][row]));
+    init_citizen_status(status, col, row, type);
 }
 
 void init_citizen_status(status_t *status, int x, int y, citizen_type_e type)
@@ -254,16 +273,58 @@ void add_citizen_in_tile(tile_t *tile)
     pthread_mutex_unlock(&mutex);
 }
 
-void increment_init_doctors_in_hospital() {
+void increment_init_doctors_in_hospital()
+{
     pthread_mutex_lock(&mutex);
     init_doctors_in_hospital++;
     pthread_mutex_unlock(&mutex);
 }
 
-void increment_init_firemen_in_firestation() {
+void increment_init_firemen_in_firestation()
+{
     pthread_mutex_lock(&mutex);
     init_firemen_in_firestation++;
     pthread_mutex_unlock(&mutex);
+}
+
+int firemen_nb_in_firestation(unsigned int row, unsigned int col)
+{
+    int counter;
+    int i;
+    
+    if (city->map[col][row].type != FIRESTATION) {
+        return -1;
+    }
+    
+    counter = 0;
+    for (i = 0; i < CITIZENS_NB; i++) {
+        if (city->citizens[i].x == col && city->citizens[i].y == row
+            && city->citizens[i].type == FIREMAN) {
+            counter++;
+        }
+    }
+    
+    return counter;
+}
+
+int visitors_nb_in_firestation(unsigned int row, unsigned int col)
+{
+    int counter;
+    int i;
+    
+    if (city->map[col][row].type != FIRESTATION) {
+        return -1;
+    }
+
+    counter = 0;
+    for (i = 0; i < CITIZENS_NB; i++) {
+        if (city->citizens[i].x == col && city->citizens[i].y == row
+            && city->citizens[i].type != FIREMAN) {
+            counter++;
+        }
+    }
+    
+    return counter;
 }
 
 void move_citizen()

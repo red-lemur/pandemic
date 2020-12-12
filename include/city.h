@@ -31,7 +31,7 @@
 #define CITIZEN_NAME_MAX_LENGTH 30
 
 typedef enum { WASTELAND, HOUSE, HOSPITAL, FIRESTATION } building_type_e;
-typedef enum { NORMAL, FIREMAN, DOCTOR, REPORTER, DEAD, BURNED } citizen_type_e;
+typedef enum { SIMPLE_CITIZEN, FIREMAN, DOCTOR, JOURNALIST, DEAD, BURNED } citizen_type_e;
 
 /**
  * @brief Defines the status of a citizen.
