@@ -31,17 +31,17 @@
 #define CITIZEN_NAME_MAX_LENGTH 30
 
 typedef enum { WASTELAND, HOUSE, HOSPITAL, FIRESTATION } building_type_e;
-typedef enum { NORMAL, FIREFIGHTER, DOCTOR, REPORTER, DEAD, BURNED } citizen_type_e;
+typedef enum { NORMAL, FIREMAN, DOCTOR, REPORTER, DEAD, BURNED } citizen_type_e;
 
 /**
  * @brief Defines the status of a citizen.
- * @param x The x coordinate in the city
- * @param y The y coordinate in the city
- * @param contamination The level of contamination (between 0 and 1)
+ * @param x The x coordinate in the city.
+ * @param y The y coordinate in the city.
+ * @param contamination The level of contamination (between 0 and 1).
  * @param is_sick A boolean to say if the citizen is sick.
  * @param sickness_duration The number of days the citizen have been sick.
  * @param type The type of the citizen.
- * @param days_spend_in_hospital_healthy the number of days spent in the hospital while not being sick
+ * @param days_spend_in_hospital_healthy the number of days spent in the hospital while not being sick.
  */
 typedef struct status {
     unsigned int x;

@@ -45,7 +45,8 @@ pthread_mutex_t mutex;
 
 int citizen_round;
 
-int init_doctor_in_hospital = 0;
+int init_doctors_in_hospital = 0;
+int init_firemen_in_firestation = 0;
 
 int citizen_ended_nb = 0;
 
@@ -55,12 +56,13 @@ void *doctor_process(void *status)
 
     int treatment_pouches_nb;
     
-    int current_round = 0;
+    int current_round;
     
     //printf("Je suis un docteur\n"); ///
 
     init_doctor(st, &treatment_pouches_nb);
     
+    current_round = 0;
     for(;;) {        
         if (citizen_round == -1) {
             citizen_ended();
@@ -82,10 +84,13 @@ void *fireman_process(void *status)
 
     double sprayer_capacity;
 
-    int current_round = 0;
+    int current_round;
     
     //printf("Je suis un pompier\n"); ///
 
+    init_fireman(st, &sprayer_capacity);
+
+    current_round = 0;
     for(;;) {        
         if (citizen_round == -1) {
             citizen_ended();
@@ -105,10 +110,11 @@ void *journalist_process(void *status)
 {
     status_t *st = (status_t *) status;
 
-    int current_round = 0;
+    int current_round;
     
     //printf("Je suis un journaliste\n"); ///
 
+    current_round = 0;
     for(;;) {        
         if (citizen_round == -1) {
             citizen_ended();
@@ -128,10 +134,11 @@ void *simple_citizen_process(void *status)
 {
     status_t *st = (status_t *) status;
 
-    int current_round = 0;
+    int current_round;
     
     //printf("Je suis un simple citoyen\n"); ///
 
+    current_round = 0;
     for(;;) {        
         if (citizen_round == -1) {
             citizen_ended();
@@ -155,18 +162,18 @@ void init_doctor(status_t *status, int* treatment_pouches_nb)
     int hospital_taken_counter;
     //printf("Je suis un docteur\n"); ///
     
-    if (init_doctor_in_hospital < city->hospital_tiles_nb) {
+    if (init_doctors_in_hospital < city->hospital_tiles_nb) {
         hospital_taken_counter = 0;
         
         for (row = 0; row < CITY_HEIGHT; row++) {
             for (col = 0; col < CITY_HEIGHT; col++) {
                 if (city->map[col][row].type == HOSPITAL) {
                     if (!tile_is_full(city->map[col][row])
-                        && hospital_taken_counter == init_doctor_in_hospital) {
-                        init_citizen(status, col, row, DOCTOR);
+                        && hospital_taken_counter == init_doctors_in_hospital) {
+                        init_citizen_status(status, col, row, DOCTOR);
                         add_citizen_in_tile(&(city->map[col][row]));
                         *treatment_pouches_nb = MAX_TREATMENT_POUCHES_NB;
-                        increment_init_doctor_in_hospital();
+                        increment_init_doctors_in_hospital();
                         return;
                     }
                     hospital_taken_counter++;
@@ -178,16 +185,56 @@ void init_doctor(status_t *status, int* treatment_pouches_nb)
     do {
         row = generate_random_index(CITY_HEIGHT - 1);
         col = generate_random_index(CITY_WIDTH - 1);
-        } while (tile_is_full(city->map[col][row]));
+    } while (tile_is_full(city->map[col][row]));
 
-    init_citizen(status, col, row, DOCTOR);
+    init_citizen_status(status, col, row, DOCTOR);
     add_citizen_in_tile(&(city->map[col][row]));
     *treatment_pouches_nb = TREATMENT_POUCHES_NB_AT_BEGINNING;
 
     //printf("Je suis un docteur et END\n"); ///
 }
 
-void init_citizen(status_t *status, int x, int y, citizen_type_e type)
+void init_fireman(status_t *status, double *sprayer_capacity)
+{
+    int row;
+    int col;
+    
+    int firestation_taken_counter;
+    //printf("Je suis un pompier\n"); ///
+    
+    if (init_firemen_in_firestation < city->firestation_tiles_nb) {
+        firestation_taken_counter = 0;
+        
+        for (row = 0; row < CITY_HEIGHT; row++) {
+            for (col = 0; col < CITY_HEIGHT; col++) {
+                if (city->map[col][row].type == FIRESTATION) {
+                    if (!tile_is_full(city->map[col][row])
+                        && firestation_taken_counter == init_firemen_in_firestation) {
+                        init_citizen_status(status, col, row, FIREMAN);
+                        add_citizen_in_tile(&(city->map[col][row]));
+                        *sprayer_capacity = MAX_SPRAYER_CAPACITY;
+                        increment_init_firemen_in_firestation();
+                        return;
+                    }
+                    firestation_taken_counter++;
+                }
+            }
+        }
+    }
+    
+    do {
+        row = generate_random_index(CITY_HEIGHT - 1);
+        col = generate_random_index(CITY_WIDTH - 1);
+    } while (tile_is_full(city->map[col][row]));
+
+    init_citizen_status(status, col, row, FIREMAN);
+    add_citizen_in_tile(&(city->map[col][row]));
+    *sprayer_capacity = SPRAYER_CAPACITY_AT_BEGINNING;
+
+    //printf("Je suis un pompier et END\n"); ///
+}
+
+void init_citizen_status(status_t *status, int x, int y, citizen_type_e type)
 {
     pthread_mutex_lock(&mutex);
     status->x = x;
@@ -207,9 +254,15 @@ void add_citizen_in_tile(tile_t *tile)
     pthread_mutex_unlock(&mutex);
 }
 
-void increment_init_doctor_in_hospital() {
+void increment_init_doctors_in_hospital() {
     pthread_mutex_lock(&mutex);
-    init_doctor_in_hospital++;
+    init_doctors_in_hospital++;
+    pthread_mutex_unlock(&mutex);
+}
+
+void increment_init_firemen_in_firestation() {
+    pthread_mutex_lock(&mutex);
+    init_firemen_in_firestation++;
     pthread_mutex_unlock(&mutex);
 }
 
