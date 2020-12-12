@@ -50,6 +50,14 @@ void init_doctor(status_t *status, int* treatment_pouches_nb);
 void init_citizen(status_t *status, int x, int y, citizen_type_e type);
 
 /**/
+void add_citizen_in_tile(tile_t *tile);
+
+/**
+ * @brief Increment a global variable that counts the nuber of doctors initialized in a hospital.
+ */
+void increment_init_doctor_in_hospital();
+
+/**/
 void move_citizen();
 
 /**/

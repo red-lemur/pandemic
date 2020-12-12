@@ -58,7 +58,7 @@ void *doctor_process(void *status)
     
     //printf("Je suis un docteur\n"); ///
 
-    //init_doctor(st, &treatment_pouches_nb);
+    init_doctor(st, &treatment_pouches_nb);
     
     for(;;) {        
         if (citizen_round == -1) {
@@ -68,7 +68,7 @@ void *doctor_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
-            printf("Je soigne\n"); ///
+            //printf("Je soigne\n"); ///
         }
     }
     
@@ -151,9 +151,9 @@ void init_doctor(status_t *status, int* treatment_pouches_nb)
 
     int hospital_taken_counter;
     printf("Je suis un docteur\n"); ///
-    pthread_mutex_lock(&mutex);
-    printf("Je suis un docteur et END\n"); ///
-    if (init_doctor_in_hospital < city->hospital_tiles_nb) {
+    //pthread_mutex_lock(&mutex);
+    
+    /*if (init_doctor_in_hospital < city->hospital_tiles_nb) {
         hospital_taken_counter = 0;
         
         for (row = 0; row < CITY_HEIGHT; row++) {
@@ -162,31 +162,33 @@ void init_doctor(status_t *status, int* treatment_pouches_nb)
                     if (!tile_is_full(city->map[col][row])
                         && hospital_taken_counter == init_doctor_in_hospital) {
                         init_citizen(status, col, row, DOCTOR);
-                        city->map[col][row].citizens_nb++;
+                        add_citizen_in_tile(&(city->map[col][row]));
                         *treatment_pouches_nb = MAX_TREATMENT_POUCHES_NB;
-                        init_doctor_in_hospital++;
+                        increment_init_doctor_in_hospital();
                         return;
                     }
                     hospital_taken_counter++;
                 }
             }
         }
-    }
+    }*/
     
     do {
         row = generate_random_index(CITY_HEIGHT - 1);
         col = generate_random_index(CITY_WIDTH - 1);
-    } while (tile_is_full(city->map[col][row]));
+        } while (tile_is_full(city->map[col][row]));
 
-    init_citizen(status, col, row, DOCTOR);
-    city->map[col][row].citizens_nb++;
-    *treatment_pouches_nb = TREATMENT_POUCHES_NB_AT_BEGINNING;
-    
-    pthread_mutex_unlock(&mutex);
+    init_citizen(status, col, row, DOCTOR); // ICI CA BLOQUE
+    /*add_citizen_in_tile(&(city->map[col][row]));
+    *treatment_pouches_nb = TREATMENT_POUCHES_NB_AT_BEGINNING;*/
+
+    printf("Je suis un docteur et END\n"); ///
+    //pthread_mutex_unlock(&mutex);
 }
 
 void init_citizen(status_t *status, int x, int y, citizen_type_e type)
 {
+    pthread_mutex_lock(&mutex);
     status->x = x;
     status->y = y;
     status->contamination = 0;
@@ -194,6 +196,20 @@ void init_citizen(status_t *status, int x, int y, citizen_type_e type)
     status->sickness_duration = 0;
     status->type = type;
     status->days_spent_in_hospital_healthy = 0;
+    pthread_mutex_unlock(&mutex);
+}
+
+void add_citizen_in_tile(tile_t *tile)
+{
+    pthread_mutex_lock(&mutex);
+    tile->citizens_nb++;
+    pthread_mutex_unlock(&mutex);
+}
+
+void increment_init_doctor_in_hospital() {
+    pthread_mutex_lock(&mutex);
+    init_doctor_in_hospital++;
+    pthread_mutex_unlock(&mutex);
 }
 
 void move_citizen()
