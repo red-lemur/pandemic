@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-01
+ * @version 1.0.0 - 2020-12-12
  */
 
 /**
@@ -75,10 +75,18 @@ typedef struct tile {
  * @brief Represents the city in which the epidemic occurs.
  * @param map A 2D array of tiles representing the city.
  * @param citizens An array of status representing the citizens.
+ * @param wasteland_tiles_nb Number of WASTELAND tiles.
+ * @param house_tiles_nb Number of HOUSE tiles.
+ * @param hospital_tiles_nb Number of HOSPITAL tiles.
+ * @param firestation_tiles_nb Number of FIRESTATION tiles.
  */
 typedef struct city {
     tile_t map[CITY_WIDTH][CITY_HEIGHT];
     status_t citizens[CITIZENS_NB];
+    int wasteland_tiles_nb;
+    int house_tiles_nb;
+    int hospital_tiles_nb;
+    int firestation_tiles_nb;
 } city_t;
 
 #endif

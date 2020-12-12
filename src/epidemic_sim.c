@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-08
+ * @version 1.0.0 - 2020-12-12
  */
 
 /**
@@ -138,14 +138,14 @@ void simulation_round()
     update_wastelands_contamination();
 
     /* DEBUG */
-    /*int row, col;
+    int row, col;
     printf("=====================================================\n");
     for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_HEIGHT; col++) {
             printf("%.3lf ", city->map[col][row].contamination);
         }
         printf("\n");
-        }*/
+        }
     
     *message_to_citizen_manager = NEXT_ROUND;
     write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));
@@ -200,7 +200,7 @@ int main(void)
     }
     
     /* TEST DEBUG MAP */
-    /*int row, col;
+    int row, col;
     for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_HEIGHT; col++) {
             printf("%d", city->map[col][row].type);
@@ -212,7 +212,7 @@ int main(void)
             printf("%.3lf ", city->map[col][row].contamination);
         }
         printf("\n");
-        }*/
+    }
     
     launch_simulation();
 

@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-08
+ * @version 1.0.0 - 2020-12-12
  */
 
 /**
@@ -30,6 +30,12 @@
  * @param city City to load.
  */
 void load_map(city_t *city);
+
+/**
+ * @brief Initialize some parameters of the city.
+ * @param city City to initialize.
+ */
+void init_city(city_t *city);
 
 /**
  * @brief Initialize the tiles of a row of the map of the city placed at a certain index.

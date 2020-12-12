@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-09
+ * @version 1.0.0 - 2020-12-12
  */
 
 /**
@@ -25,8 +25,6 @@
 
 #include "map_generator.h"
 #include "util.h"
-
-int wasteland_tiles_nb = 0;
 
 void load_map(city_t *city)
 {
@@ -43,6 +41,8 @@ void load_map(city_t *city)
         perror("No map file\n");
         exit(EXIT_FAILURE);
     }
+
+    init_city(city);
 
     for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_HEIGHT; col++) {
@@ -74,8 +74,17 @@ void load_map(city_t *city)
     contaminate_some_wastelands(city);
 }
 
+void init_city(city_t *city)
+{
+    city->wasteland_tiles_nb = 0;
+    city->house_tiles_nb = 0;
+    city->hospital_tiles_nb = 0;
+    city->firestation_tiles_nb = 0;
+}
+
 void init_fixed_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT], char* buffer,
-                      int row) {
+                      int row)
+{
     int col;
     
     for (col = 0; col < CITY_WIDTH; col++) {
@@ -83,19 +92,22 @@ void init_fixed_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT], 
         case 'F' :
             city->map[col][row] = init_tile_firestation(col, row);
             indexes_taken[col][row] = 1;
+            city->firestation_tiles_nb++;
             break;
         case 'H' :
             city->map[col][row] = init_tile_hospital(col, row);
             indexes_taken[col][row] = 1;
+            city->hospital_tiles_nb++;
             break;
         case 'O' :
             city->map[col][row] = init_tile_house(col, row);
             indexes_taken[col][row] = 1;
+            city->house_tiles_nb++;
             break;
         case 'W' :
             city->map[col][row] = init_tile_wasteland(col, row);
             indexes_taken[col][row] = 1;
-            wasteland_tiles_nb++;
+            city->wasteland_tiles_nb++;
             break;
         case 'X' : break;
         default :
@@ -105,7 +117,8 @@ void init_fixed_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT], 
     }
 }
 
-void init_random_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT], char* buffer) {
+void init_random_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT], char* buffer)
+{
     char building_type;
     int buildings_nb;
     int building;
@@ -132,12 +145,15 @@ void init_random_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT],
         switch (building_type) {                
         case 'F' :
             city->map[col][row] = init_tile_firestation(col, row);
+            city->firestation_tiles_nb++;
             break;
         case 'H' :
             city->map[col][row] = init_tile_hospital(col, row);
+            city->hospital_tiles_nb++;
             break;
         case 'O' :
             city->map[col][row] = init_tile_house(col, row);
+            city->house_tiles_nb++;
             break;
         default :
             perror("Error while reading the map\n");
@@ -149,7 +165,8 @@ void init_random_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT],
 }
 
 void replace_unitialized_tiles_with_wasteland(city_t *city,
-                                              int indexes_taken[CITY_WIDTH][CITY_HEIGHT]) {
+                                              int indexes_taken[CITY_WIDTH][CITY_HEIGHT])
+{
     int col;
     int row;
     
@@ -161,14 +178,15 @@ void replace_unitialized_tiles_with_wasteland(city_t *city,
         for (col = 0; col < CITY_HEIGHT; col++) {
             if (!indexes_taken[col][row]) {
                 city->map[col][row] = init_tile_wasteland(col, row);
-                wasteland_tiles_nb++;
+                city->wasteland_tiles_nb++;
             }
         }
     }
 }
 
-void contaminate_some_wastelands(city_t *city) {
-    tile_t **wastelands = malloc(wasteland_tiles_nb*sizeof(tile_t *));
+void contaminate_some_wastelands(city_t *city)
+{
+    tile_t **wastelands = malloc(city->wasteland_tiles_nb*sizeof(tile_t *));
 
     double contamination;
     
