@@ -37,10 +37,28 @@
 #define TREATMENT_POUCHES_NB_AT_BEGINNING 5
 #define SPRAYER_CAPACITY_AT_BEGINNING 5
 
-/**/
+/**
+ * @brief Handler function for a doctor thread.
+ * @param status Status of the doctor.
+ */
 void *doctor_process(void *status);
+
+/**
+ * @brief Handler function for a fireman thread.
+ * @param status Status of the fireman.
+ */
 void *fireman_process(void *status);
+
+/**
+ * @brief Handler function for a journalist thread.
+ * @param status Status of the journalist.
+ */
 void *journalist_process(void *status);
+
+/**
+ * @brief Handler function for a simple citizen thread.
+ * @param status Status of the simple citizen.
+ */
 void *simple_citizen_process(void *status);
 
 /**
@@ -105,10 +123,18 @@ int firemen_nb_in_firestation(unsigned int row, unsigned int col);
  */
 int visitors_nb_in_firestation(unsigned int row, unsigned int col);
 
+/**
+ * @brief Test if a citizen is allowed to enter in a hospital.
+ * @return 1 if the citizen is allowed / 0 if not.
+ */
+int is_allowed_to_enter_in_a_hospital(status_t *status);
+
 /**/
 void move_citizen();
 
-/**/
+/**
+ * @brief Initialize all the threads of the citizens.
+ */
 void init_population();
 
 /**

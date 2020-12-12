@@ -114,6 +114,8 @@ void *journalist_process(void *status)
     
     //printf("Je suis un journaliste\n"); ///
 
+    init_citizen(st, JOURNALIST);
+    
     current_round = 0;
     for(;;) {        
         if (citizen_round == -1) {
@@ -184,13 +186,8 @@ void init_doctor(status_t *status, int* treatment_pouches_nb)
         }
     }
     
-    do {
-        row = generate_random_index(CITY_HEIGHT);
-        col = generate_random_index(CITY_WIDTH);
-    } while (tile_is_full(city->map[col][row]));
+    init_citizen(status, DOCTOR);
     
-    add_citizen_in_tile(&(city->map[col][row]));
-    init_citizen_status(status, col, row, DOCTOR);
     *treatment_pouches_nb = TREATMENT_POUCHES_NB_AT_BEGINNING;
 
     //printf("Je suis un docteur et END\n"); ///
@@ -224,13 +221,7 @@ void init_fireman(status_t *status, double *sprayer_capacity)
         }
     }
     
-    do {
-        row = generate_random_index(CITY_HEIGHT);
-        col = generate_random_index(CITY_WIDTH);
-    } while (tile_is_full(city->map[col][row]));
-
-    add_citizen_in_tile(&(city->map[col][row]));
-    init_citizen_status(status, col, row, FIREMAN);
+    init_citizen(status, FIREMAN);
     
     *sprayer_capacity = SPRAYER_CAPACITY_AT_BEGINNING;
 
@@ -246,8 +237,9 @@ void init_citizen(status_t *status, citizen_type_e type)
         row = generate_random_index(CITY_HEIGHT);
         col = generate_random_index(CITY_WIDTH);
     } while (tile_is_full(city->map[col][row])
-             || (type != FIREMAN && firemen_nb_in_firestation(row, col) == 0));
-    // TEST POUR HOSPITAL
+             || (type != FIREMAN && firemen_nb_in_firestation(row, col) == 0)
+             || (city->map[col][row].type == HOSPITAL
+                 && !is_allowed_to_enter_in_a_hospital(status)));
     
     add_citizen_in_tile(&(city->map[col][row]));
     init_citizen_status(status, col, row, type);
@@ -325,6 +317,10 @@ int visitors_nb_in_firestation(unsigned int row, unsigned int col)
     }
     
     return counter;
+}
+
+int is_allowed_to_enter_in_a_hospital(status_t *status) {
+    return status->type == DOCTOR || status->type == FIREMAN || status->is_sick;
 }
 
 void move_citizen()
