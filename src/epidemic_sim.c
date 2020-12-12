@@ -138,14 +138,22 @@ void simulation_round()
     update_wastelands_contamination();
 
     /* DEBUG */
-    int row, col;
+    /*int row, col;
     printf("=====================================================\n");
     for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_HEIGHT; col++) {
             printf("%.3lf ", city->map[col][row].contamination);
         }
         printf("\n");
+        }*/
+    int row, col;
+    printf("=====================================================\n");
+    for (row = 0; row < CITY_HEIGHT; row++) {
+        for (col = 0; col < CITY_HEIGHT; col++) {
+            printf("%d ", city->map[col][row].citizens_nb);
         }
+        printf("\n");
+    }
     
     *message_to_citizen_manager = NEXT_ROUND;
     write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));

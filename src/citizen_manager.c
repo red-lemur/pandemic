@@ -28,6 +28,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <pthread.h>
+#include <time.h>
 
 #include "citizen_manager.h"
 #include "exchanges_between_processes.h"
@@ -53,7 +54,7 @@ void *doctor_process(void *status)
     status_t *st = (status_t *) status;
 
     int treatment_pouches_nb;
-
+    
     int current_round = 0;
     
     //printf("Je suis un docteur\n"); ///
@@ -78,6 +79,8 @@ void *doctor_process(void *status)
 void *fireman_process(void *status)
 {
     status_t *st = (status_t *) status;
+
+    double sprayer_capacity;
 
     int current_round = 0;
     
@@ -150,10 +153,9 @@ void init_doctor(status_t *status, int* treatment_pouches_nb)
     int col;
 
     int hospital_taken_counter;
-    printf("Je suis un docteur\n"); ///
-    //pthread_mutex_lock(&mutex);
+    //printf("Je suis un docteur\n"); ///
     
-    /*if (init_doctor_in_hospital < city->hospital_tiles_nb) {
+    if (init_doctor_in_hospital < city->hospital_tiles_nb) {
         hospital_taken_counter = 0;
         
         for (row = 0; row < CITY_HEIGHT; row++) {
@@ -171,19 +173,18 @@ void init_doctor(status_t *status, int* treatment_pouches_nb)
                 }
             }
         }
-    }*/
+    }
     
     do {
         row = generate_random_index(CITY_HEIGHT - 1);
         col = generate_random_index(CITY_WIDTH - 1);
         } while (tile_is_full(city->map[col][row]));
 
-    init_citizen(status, col, row, DOCTOR); // ICI CA BLOQUE
-    /*add_citizen_in_tile(&(city->map[col][row]));
-    *treatment_pouches_nb = TREATMENT_POUCHES_NB_AT_BEGINNING;*/
+    init_citizen(status, col, row, DOCTOR);
+    add_citizen_in_tile(&(city->map[col][row]));
+    *treatment_pouches_nb = TREATMENT_POUCHES_NB_AT_BEGINNING;
 
-    printf("Je suis un docteur et END\n"); ///
-    //pthread_mutex_unlock(&mutex);
+    //printf("Je suis un docteur et END\n"); ///
 }
 
 void init_citizen(status_t *status, int x, int y, citizen_type_e type)
@@ -229,7 +230,7 @@ void init_population()
     pthread_mutex_init(&mutex, NULL);
     
     citizen_round = 0;
-    
+    current_citizen = 0;
     for (i = 0; i < DOCTORS_NB; i++) {
         pthread_create(&doctors[i], NULL, doctor_process,
                        (void*) &(city->citizens[current_citizen++]));
@@ -270,6 +271,8 @@ int main(void)
     int fifo_from_epidemic_sim;
     
     fifo_message_e message_from_epidemic_sim[1];
+
+    srand(time(NULL));
     
     do {
         fifo_from_epidemic_sim = open(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL, O_RDONLY);
