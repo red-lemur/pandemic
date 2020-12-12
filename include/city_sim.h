@@ -11,11 +11,11 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-09
+ * @version 1.0.0 - 2020-12-12
  */
 
 /**
- * @file city.h
+ * @file city_sim.h
  *
  * Constants and functions to manipulate a simulated city.
  */

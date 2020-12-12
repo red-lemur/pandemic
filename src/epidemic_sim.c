@@ -18,7 +18,7 @@
 /**
  * @file epidemic_sim.c
  *
- *
+ * The most important process of the simulation. Manage the city.
  */
 
 #include <stdio.h>
@@ -165,7 +165,6 @@ void end_of_simulation()
 {
     printf("End of the simulation !\n"); ///
 
-    // Envoyer un message à citizen_manager pour lui dire que c'est fini
     *message_to_citizen_manager = END_OF_SIMULATION;
     write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));
     

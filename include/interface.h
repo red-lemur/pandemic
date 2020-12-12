@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-05
+ * @version 1.0.0 - 2020-12-12
  */
 
 /**
@@ -37,24 +37,8 @@
 
 #define NUMBER_OF_DAYS 10
 
-#define HOUSE 2
-#define HOSPITAL 3
-#define FIRESTATION 4
-#define WASTELAND 5
-
-#define HEALTHY 6
-#define SICK 7
-#define DEAD 8
-#define BURNT 9
-
-#define UP_LEFT 1
-#define UP 2
-#define UP_RIGHT 3
-#define RIGHT 4
-#define BOTTOM_RIGHT 5
-#define BOTTOM 6
-#define BOTTOM_LEFT 7
-#define LEFT 8
+enum { DEFAULT, HOUSE, HOSPITAL, FIRESTATION, WASTELAND, HEALTHY, SICK, DEAD, BURNT };
+enum { UP_LEFT, UP, UP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT };
 
 /* COMMENTAIRES */
 void write_spaces(WINDOW *win, int y, int x, int number, int color_index);

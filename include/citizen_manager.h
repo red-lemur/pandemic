@@ -17,7 +17,7 @@
 /**
  * @file citizen_manager.h
  *
- *
+ * Manage the citizens of the city.
  */
 
 #ifndef CITIZEN_MANAGER_H

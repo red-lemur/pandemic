@@ -18,7 +18,7 @@
 /**
  * @file citizen_manager.c
  *
- *
+ * Manage the citizens of the city.
  */
 
 #include <stdio.h>

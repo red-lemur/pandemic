@@ -32,19 +32,27 @@ WINDOW *main_title, *titles, *places, *legend, *titles_2, *citizens, *situation,
 
 int day = 0;
 
+//city->map[col][row].type
+
+
 void write_spaces(WINDOW *win, int y, int x, int number, int color_index)
 {
     number *= 2;    
     
-    char *spaces = malloc(sizeof(char)*number);
-
-    for (int i = 0; i < number; i++) {
-        spaces[i] = ' ';
-    }
+    //char *spaces = malloc(sizeof(char)*number);
 
     wattron(win, COLOR_PAIR(color_index));
-    mvwprintw(win, y, x, spaces);
+    for (int i = 0; i < number; i++) {
+        //spaces[i] = ' ';
+        mvwprintw(win, y, x + i, " ");
+    }
     wattroff(win, COLOR_PAIR(color_index));
+    
+    //wattron(win, COLOR_PAIR(color_index));
+    //mvwprintw(win, y, x, spaces);
+    //wattroff(win, COLOR_PAIR(color_index));
+
+    //free(spaces);
 }
 
 int size_of_longest_string(char **strings, int size)
@@ -66,8 +74,9 @@ int size_of_longest_string(char **strings, int size)
 
 void next_day()
 {
-    day++;
     char day_str[(int) log10(NUMBER_OF_DAYS) + 1];
+    
+    day++;
     sprintf(day_str, "%d", day);
 
     wattron(main_title, COLOR_PAIR(1));        
@@ -150,46 +159,74 @@ int main(void)
 {    
     char *title = "Simulation épidémie - Jour n°";
     char *instr_msg = "Appuyez sur une touche pour passer au jour suivant";
-    char *situations_title[NUMBER_OF_SITUATIONS] = {"Personnes en bonne santé", "Personnes malades", "Personnes décédées", "Cadavres brûlés"};
-    char *tiles[NUMBER_OF_DIF_TILES] = {"Maison", "Hôpital", "Caserne", "Terrain vague"};
+    char *situations_title[NUMBER_OF_SITUATIONS] = { "Personnes en bonne santé",
+                                                     "Personnes malades",
+                                                     "Personnes décédées",
+                                                     "Cadavres brûlés"};
+    char *tiles[NUMBER_OF_DIF_TILES] = {"Maison",
+                                        "Hôpital",
+                                        "Caserne",
+                                        "Terrain vague"};
     
     initscr();
 
-    while(1) {
+    for (;;) {
+        main_title = newwin(HEADER_HEIGHT, COLS, 0, 0);
+        
+        titles = newwin(TITLES_HEIGHT,
+                        COLS,
+                        HEADER_HEIGHT,
+                        0);
+        
+        places = newwin(NUMBER_OF_DIF_TILES * 2 - 1,
+                        MAP_HEIGHT * 2,
+                        HEADER_HEIGHT + TITLES_HEIGHT,
+                        (COLS / 2) - MAP_HEIGHT * 2 - MARGIN);
+        
+        legend = newwin(MAP_HEIGHT,
+                        (COLS / 2) - MARGIN,
+                        HEADER_HEIGHT + TITLES_HEIGHT,
+                        (COLS / 2) + MARGIN);
 
-        main_title = newwin(HEADER_HEIGHT, COLS, 0, 0); 
-        titles = newwin(TITLES_HEIGHT, COLS, HEADER_HEIGHT, 0);
-        places = newwin(NUMBER_OF_DIF_TILES*2 - 1, MAP_HEIGHT*2, HEADER_HEIGHT + TITLES_HEIGHT, (COLS/2) - MAP_HEIGHT*2 - MARGIN);
-        legend = newwin(MAP_HEIGHT, (COLS/2) - MARGIN, HEADER_HEIGHT + TITLES_HEIGHT, (COLS/2) + MARGIN);
-
-        titles_2 = newwin(TITLES_HEIGHT, COLS, HEADER_HEIGHT + TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN, 0);
+        titles_2 = newwin(TITLES_HEIGHT,
+                          COLS,
+                          HEADER_HEIGHT + TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN,
+                          0);
+        
         citizens = newwin(MAP_HEIGHT*2 + (MAP_HEIGHT-1),
-                          (MAP_HEIGHT*2 + (MAP_HEIGHT-1)) *2,
-                          HEADER_HEIGHT + 2*TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN, (COLS/2) - ((MAP_HEIGHT*2 + (MAP_HEIGHT-1)) *2) - MARGIN);
-        situation = newwin(2*NUMBER_OF_SITUATIONS - 1,
+                          (MAP_HEIGHT*2 + (MAP_HEIGHT-1)) * 2,
+                          HEADER_HEIGHT + 2*TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN,
+                          (COLS / 2) - ((MAP_HEIGHT * 2 + (MAP_HEIGHT - 1)) * 2) - MARGIN);
+        
+        situation = newwin(2 * NUMBER_OF_SITUATIONS - 1,
                            size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS),
-                           HEADER_HEIGHT + 2*TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN, (COLS/2) + MARGIN);
-        people = newwin(2*NUMBER_OF_SITUATIONS - 1,
+                           HEADER_HEIGHT + 2*TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN,
+                           (COLS / 2) + MARGIN);
+        
+        people = newwin(2 * NUMBER_OF_SITUATIONS - 1,
                         (int)log10(POPULATION_NUMBER) + 1,
-                        HEADER_HEIGHT + 2*TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN,
-                        (COLS/2) + MARGIN + size_of_longest_string(situations_title,NUMBER_OF_SITUATIONS) + SPACE_SITUATION);
+                        HEADER_HEIGHT + 2 * TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN,
+                        (COLS / 2) + MARGIN
+                        + size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS)
+                        + SPACE_SITUATION);
+        
         instruction = newwin(TITLES_HEIGHT,
                              strlen(instr_msg) + 1,
                              LINES - BOTTOM_MARGIN,
                              COLS - strlen(instr_msg) - BOTTOM_MARGIN);
         
         start_color();
-        init_pair(1, COLOR_BLACK, COLOR_WHITE);
+        init_pair(DEFAULT, COLOR_BLACK, COLOR_WHITE);
+        
+        init_pair(HOUSE, COLOR_BLACK, COLOR_GREEN);
+        init_pair(HOSPITAL, COLOR_BLACK, COLOR_BLUE);
+        init_pair(FIRESTATION, COLOR_BLACK, COLOR_RED);
+        init_pair(WASTELAND, COLOR_BLACK, COLOR_YELLOW);
 
-        init_pair(2, COLOR_BLACK, COLOR_GREEN);
-        init_pair(3, COLOR_BLACK, COLOR_BLUE);
-        init_pair(4, COLOR_BLACK, COLOR_RED);
-        init_pair(5, COLOR_BLACK, COLOR_YELLOW);
-
-        init_pair(6, COLOR_GREEN, COLOR_BLACK);
-        init_pair(7, COLOR_YELLOW, COLOR_BLACK);
-        init_pair(8, COLOR_BLUE, COLOR_BLACK);
-        init_pair(9, COLOR_RED, COLOR_BLACK);
+        init_pair(HEALTHY, COLOR_GREEN, COLOR_BLACK);
+        init_pair(SICK, COLOR_YELLOW, COLOR_BLACK);
+        init_pair(DEAD, COLOR_BLUE, COLOR_BLACK);
+        init_pair(BURNT, COLOR_RED, COLOR_BLACK);
 
         refresh();
                
@@ -259,27 +296,27 @@ int main(void)
         }
     }
 
-    delwin(main_title);
-    delwin(titles);
-    delwin(places);
-    delwin(legend);
-    delwin(titles_2);
-    delwin(citizens);
-    delwin(situation);
+    delwin(instruction);
     delwin(people);
-    delwin(instruction);  
+    delwin(situation);
+    delwin(citizens);
+    delwin(titles_2);
+    delwin(legend);
+    delwin(places);
+    delwin(titles);
+    delwin(main_title);
 
     endwin();
- 
-    free(main_title);
-    free(titles);
-    free(places);
-    free(legend);
-    free(titles_2);
-    free(citizens);
-    free(situation);
+
+    /*free(instruction);
     free(people);
-    free(instruction);
+    free(situation);
+    free(citizens);
+    free(titles_2);
+    free(legend);
+    free(places);
+    free(titles);
+    free(main_title);*/
  
     return 0;
 }

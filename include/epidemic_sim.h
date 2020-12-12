@@ -11,13 +11,13 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-08
+ * @version 1.0.0 - 2020-12-12
  */
 
 /**
  * @file epidemic_sim.h
  *
- * 
+ * The most important process of the simulation. Manage the city.
  */
 
 #ifndef EPIDEMIC_SIM_H

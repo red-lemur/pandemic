@@ -11,13 +11,13 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-05
+ * @version 1.0.0 - 2020-12-12
  */
 
 /**
  * @file main.c
  *
- *
+ * Main program that launches all the processes.
  */
 
 #include <stdio.h>
@@ -28,7 +28,8 @@
 
 #define MAX_PID_LENGTH 7
 
-int main(void) {
+int main(void)
+{
     char pid_epidemic_sim_arg[MAX_PID_LENGTH + 1];
     
     int pid_epidemic_sim;
