@@ -30,7 +30,7 @@
 #define MAP_HEIGHT 7
 #define SPACE_SITUATION 3
 #define BOTTOM_MARGIN 5
-#define POPULATION_NUMBER 25
+#define CITIZENS_NB 25
 #define NUMBER_OF_DIF_TILES 4
 #define NUMBER_OF_SITUATIONS 4
 #define SIZE_OF_TITLE 32
@@ -40,9 +40,14 @@
 
 enum { DEFAULT, WASTELAND_CODE, HOUSE_CODE, HOSPITAL_CODE, FIRESTATION_CODE, HEALTHY_CODE, SICK_CODE, DEAD_CODE, BURNED_CODE, TITLE };
 enum { UP_LEFT, UP, UP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT };
+enum { HEALTHY_STATE, SICK_STATE, DEAD_STATE, BURNED_STATE };
 
 /* COMMENTAIRES */
-void write_spaces(WINDOW *win, int y, int x, int number, int color_index);
+int get_tile_color_code(int tile);
+
+int get_state_color_code(int state);
+
+void write_space(WINDOW *win, int y, int x, int color_index);
 
 int size_of_longest_string(char **strings, int size);
 
@@ -58,6 +63,14 @@ void set_type_of_tile(int tile_x, int tile_y, int type);
 typedef enum { WASTELAND, HOUSE, HOSPITAL, FIRESTATION } building_type_e;
 typedef enum { SIMPLE_CITIZEN, FIREMAN, DOCTOR, JOURNALIST, DEAD, BURNED } citizen_type_e;
 
+
+typedef struct status {
+    unsigned int x;
+    unsigned int y;
+    int is_sick;
+    citizen_type_e type;
+} status_t;
+
 typedef struct tile {
     unsigned int x;
     unsigned int y;
@@ -68,7 +81,7 @@ typedef struct tile {
 
 typedef struct city {
     tile_t map[7][7];
-    /*status_t citizens[CITIZENS_NB];*/
+    status_t citizens[CITIZENS_NB];
 } city_t;
 
 #endif

@@ -33,29 +33,26 @@ WINDOW *main_title, *titles, *places, *legend, *titles_2, *citizens, *situation,
 int day = 0;
 
 
+/* TO DELETE AFTER BEING LINKED */
+    city_t *city;    
+/* TO DELETE AFTER BEING LINKED */
+
+
+
 int get_tile_color_code(int tile) {
     return tile + 1;
+
+}
+int get_state_color_code(int state) {
+    return state + 5;
 }
 
-
-void write_spaces(WINDOW *win, int y, int x, int number, int color_index)
-{
-    number *= 2;    
-    
-    //char *spaces = malloc(sizeof(char)*number);
-
+void write_space(WINDOW *win, int y, int x, int color_index)
+{  
     wattron(win, COLOR_PAIR(color_index));
-    for (int i = 0; i < number; i++) {
-        //spaces[i] = ' ';
-        mvwprintw(win, y, x + i, " ");
-    }
+    mvwprintw(win, y, x, " ");
+    mvwprintw(win, y, x + 1, " ");
     wattroff(win, COLOR_PAIR(color_index));
-    
-    //wattron(win, COLOR_PAIR(color_index));
-    //mvwprintw(win, y, x, spaces);
-    //wattroff(win, COLOR_PAIR(color_index));
-
-    //free(spaces);
 }
 
 int size_of_longest_string(char **strings, int size)
@@ -71,9 +68,7 @@ int size_of_longest_string(char **strings, int size)
     return longest;
 }
 
-/*
- * Functions to interact with the interface 
- */
+
 
 void next_day()
 {
@@ -89,7 +84,7 @@ void next_day()
 
 void set_number_of_people_in_state(int number, int state_code)
 {
-    char str[(int) log10(POPULATION_NUMBER) + 1];
+    char str[(int) log10(CITIZENS_NB) + 1];
     int y;
 
     switch (state_code) {
@@ -101,11 +96,9 @@ void set_number_of_people_in_state(int number, int state_code)
 
     sprintf(str, "%d", number);
    
-
     wattron(people, COLOR_PAIR(state_code));
     mvwprintw(people, y, 0, str);
     wattroff(people, COLOR_PAIR(state_code));
-
 }
 
 void set_citizen_on_tile(int tile_x, int tile_y, int number, int state_code)
@@ -113,7 +106,7 @@ void set_citizen_on_tile(int tile_x, int tile_y, int number, int state_code)
     int shift_right;
     int shift_bottom;
 
-    char str[(int) log10(POPULATION_NUMBER) + 1];
+    char str[(int) log10(CITIZENS_NB) + 1];
     sprintf(str, "%d", number);
 
     if (state_code == SICK_CODE || state_code == BURNED_CODE) {
@@ -135,31 +128,65 @@ void set_citizen_on_tile(int tile_x, int tile_y, int number, int state_code)
 
 void set_type_of_tile(int tile_x, int tile_y, int type)
 {
-    write_spaces(places, tile_y, tile_x*2, 1, get_tile_color_code(type));
+    write_space(places, tile_y, tile_x*2, get_tile_color_code(type));
 }
 
-/*
- * We need the get_citizen_on_tile defined in another file to uncomment these functions 
- * Maybe it's an object-oriented way
- */
 
-/*void change_state_of_a_citizen(int tile, int new_state)
-{
-    set_citizen_on_tile(tile, get_citizen_on_tile(tile, new_state - 1) - 1, new_state - 1);
-    set_citizen_on_tile(tile, get_citizen_on_tile(tile, new_state) + 1, new_state);
+void update() {
+    int i;
+    int j;
+    int k;
+    int population[MAP_HEIGHT][MAP_HEIGHT][NUMBER_OF_SITUATIONS];
+    int state_counters[NUMBER_OF_SITUATIONS];
 
-    set_number_of_people_in_state()
-}*/
+    for (i = 0; i < NUMBER_OF_SITUATIONS; i++) {
+        state_counters[i] = 0;
+    }
 
-/*
- * probably useless
- */
-/*void move_citizen(int starting_tile, int direction, int state)
-{
-    set_citizen_on_tile(starting_tile, get_citizen_on_tile(starting_tile, state) - 1, state);
-    set_citizen_on_tile()
-}*/
+    for (i = 0; i < MAP_HEIGHT; i++) {
+        for (j = 0; j < MAP_HEIGHT; j++) {
+            for (k = 0; k < NUMBER_OF_SITUATIONS; k++) {
+                population[i][j][k] = 0;
+            }
+        }
+    }
 
+    for (i = 0; i < CITIZENS_NB; i++) {
+        if (city->citizens[i].type == BURNED) {
+            population[city->citizens[i].x][city->citizens[i].y][BURNED_STATE]++;
+            state_counters[BURNED_STATE]++;
+        }
+        else if (city->citizens[i].type == DEAD) {
+            population[city->citizens[i].x][city->citizens[i].y][DEAD_STATE]++;
+            state_counters[DEAD_STATE]++;
+        }
+        else if (city->citizens[i].is_sick) {
+            population[city->citizens[i].x][city->citizens[i].y][SICK_STATE]++;
+            state_counters[SICK_STATE]++;
+        }
+        else {
+            population[city->citizens[i].x][city->citizens[i].y][HEALTHY_STATE]++;
+            state_counters[HEALTHY_STATE]++;
+        }
+    }
+
+    for (i = 0; i < MAP_HEIGHT; i++) {
+        for (j = 0; j < MAP_HEIGHT; j++) {
+            for (k = 0; k < NUMBER_OF_SITUATIONS; k++) {
+                set_citizen_on_tile(i, j, population[i][j][k], get_state_color_code(k));
+            }
+        }
+    }
+
+    for (i = 0; i < NUMBER_OF_SITUATIONS; i++) {
+        set_number_of_people_in_state(state_counters[i], get_state_color_code(i));
+    }
+
+}
+
+
+
+/* TO DELETE AFTER BEING LINKED */
 tile_t init_tile(unsigned int x, unsigned int y, int capacity,
                  building_type_e type)
 {
@@ -172,6 +199,8 @@ tile_t init_tile(unsigned int x, unsigned int y, int capacity,
     
     return tile;
 }
+/* TO DELETE AFTER BEING LINKED */
+
 
 int main(void)
 {    
@@ -186,12 +215,12 @@ int main(void)
                                         "Maison",
                                         "Hôpital",
                                         "Caserne"};
+   
 
 
 
-    /* city example generated */
-    city_t *city;
-    city = malloc(sizeof(tile_t)*7*7);
+   /* TO DELETE AFTER BEING LINKED */
+   city = malloc(sizeof(tile_t)*7*7 + sizeof(status_t)*CITIZENS_NB);
 
     for (int i = 0; i < MAP_HEIGHT; i++) {
         for (int j = 0; j < MAP_HEIGHT; j++) {
@@ -209,7 +238,8 @@ int main(void)
     city->map[2][5].type = HOUSE;
     city->map[3][4].type = HOUSE;
     city->map[5][4].type = HOUSE;
-    
+    /* TO DELETE AFTER BEING LINKED */
+
     
     initscr();
 
@@ -247,7 +277,7 @@ int main(void)
                            (COLS / 2) + MARGIN);
         
         people = newwin(2 * NUMBER_OF_SITUATIONS - 1,
-                        (int)log10(POPULATION_NUMBER) + 1,
+                        (int)log10(CITIZENS_NB) + 1,
                         HEADER_HEIGHT + 2 * TITLES_HEIGHT + MAP_HEIGHT + VERTICAL_MARGIN,
                         (COLS / 2) + MARGIN
                         + size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS)
@@ -272,6 +302,7 @@ int main(void)
         wattron(main_title, COLOR_PAIR(TITLE));        
         mvwprintw(main_title, 1, (COLS / 2) - (strlen(title) / 2), title);
         wattroff(main_title, COLOR_PAIR(TITLE));
+        
         next_day();
 
         wattron(titles, A_UNDERLINE);
@@ -292,7 +323,7 @@ int main(void)
         }
         
         for (int i = 0; i < NUMBER_OF_DIF_TILES; i++) {
-            write_spaces(legend, i*2, 0, 1, HOUSE + i);
+            write_space(legend, i*2, 0, HOUSE + i);
             mvwprintw(legend, i*2, 3, tiles[i]);
         }
 
@@ -300,7 +331,7 @@ int main(void)
             mvwprintw(situation, i*2, 0, situations_title[i]);
         }
         
-        set_number_of_people_in_state(POPULATION_NUMBER, HEALTHY_CODE);
+        set_number_of_people_in_state(CITIZENS_NB, HEALTHY_CODE);
         set_number_of_people_in_state(0, SICK_CODE);
         set_number_of_people_in_state(0, DEAD_CODE);
         set_number_of_people_in_state(0, BURNED_CODE);
@@ -339,15 +370,7 @@ int main(void)
 
     endwin();
 
-    /*
-    free(people);
-    free(situation);
-    free(citizens);
-    free(titles_2);
-    free(legend);
-    free(places);
-    free(titles);
-    free(main_title);*/
+    free(city);
  
     return 0;
 }
