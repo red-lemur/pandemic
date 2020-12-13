@@ -173,7 +173,9 @@ void update() {
     for (i = 0; i < MAP_HEIGHT; i++) {
         for (j = 0; j < MAP_HEIGHT; j++) {
             for (k = 0; k < NUMBER_OF_SITUATIONS; k++) {
-                set_citizen_on_tile(i, j, population[i][j][k], get_state_color_code(k));
+                if(population[i][j][k]) {
+                    set_citizen_on_tile(i, j, population[i][j][k], get_state_color_code(k));
+                }
             }
         }
     }
