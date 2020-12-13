@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-12
+ * @version 1.0.0 - 2020-12-13
  */
 
 /**
@@ -42,6 +42,7 @@ typedef enum { SIMPLE_CITIZEN, FIREMAN, DOCTOR, JOURNALIST, DEAD, BURNED } citiz
  * @param sickness_duration The number of days the citizen have been sick.
  * @param type The type of the citizen.
  * @param days_spend_in_hospital_healthy the number of days spent in the hospital while not being sick.
+ * @param must_leave Indicates if the citizen must leave his tile.
  */
 typedef struct status {
     unsigned int x;
@@ -51,6 +52,7 @@ typedef struct status {
     int sickness_duration;
     citizen_type_e type;
     int days_spent_in_hospital_healthy;
+    int must_leave;
 } status_t;
 
 /**

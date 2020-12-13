@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-12
+ * @version 1.0.0 - 2020-12-13
  */
 
 /**
@@ -33,6 +33,11 @@
 #include "citizen_manager.h"
 #include "exchanges_between_processes.h"
 #include "util.h"
+#include "city_sim.h"
+
+int fifo_from_epidemic_sim;
+
+fifo_message_e message_from_epidemic_sim[1];
 
 city_t *city;
 
@@ -71,7 +76,7 @@ void *doctor_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
-            //printf("Je soigne\n"); ///
+            move_citizen(st);
         }
     }
     
@@ -99,7 +104,7 @@ void *fireman_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
-            // BLABLA
+            move_citizen(st);
         }
     }
     
@@ -125,7 +130,7 @@ void *journalist_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
-            // BLABLA
+            move_citizen(st);
         }
     }
     
@@ -151,7 +156,7 @@ void *simple_citizen_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
-            // BLABLA
+            move_citizen(st);
         }
     }
     
@@ -237,7 +242,7 @@ void init_citizen(status_t *status, citizen_type_e type)
         row = generate_random_index(CITY_HEIGHT);
         col = generate_random_index(CITY_WIDTH);
     } while (tile_is_full(city->map[col][row])
-             || (type != FIREMAN && firemen_nb_in_firestation(row, col) == 0)
+             || (type != FIREMAN && firemen_nb_in_firestation(col, row) == 0)
              || (city->map[col][row].type == HOSPITAL
                  && !is_allowed_to_enter_in_a_hospital(status)));
     
@@ -255,6 +260,7 @@ void init_citizen_status(status_t *status, int x, int y, citizen_type_e type)
     status->sickness_duration = 0;
     status->type = type;
     status->days_spent_in_hospital_healthy = 0;
+    status->must_leave = 0;
     pthread_mutex_unlock(&mutex);
 }
 
@@ -279,7 +285,7 @@ void increment_init_firemen_in_firestation()
     pthread_mutex_unlock(&mutex);
 }
 
-int firemen_nb_in_firestation(unsigned int row, unsigned int col)
+int firemen_nb_in_firestation(unsigned int col, unsigned int row)
 {
     int counter;
     int i;
@@ -299,7 +305,7 @@ int firemen_nb_in_firestation(unsigned int row, unsigned int col)
     return counter;
 }
 
-int visitors_nb_in_firestation(unsigned int row, unsigned int col)
+int visitors_nb_in_firestation(unsigned int col, unsigned int row)
 {
     int counter;
     int i;
@@ -319,15 +325,75 @@ int visitors_nb_in_firestation(unsigned int row, unsigned int col)
     return counter;
 }
 
-int is_allowed_to_enter_in_a_hospital(status_t *status) {
+int is_allowed_to_enter_in_a_hospital(status_t *status)
+{
     return status->type == DOCTOR || status->type == FIREMAN || status->is_sick;
 }
 
-void move_citizen()
+void move_citizen(status_t *status)
 {
-    pthread_mutex_lock(&mutex);
+    if (status->type == DEAD || status->type == BURNED) {
+        return;
+    }
     
-    // Blabla
+    for (;;) {
+        if (status->must_leave || generate_random_percentage() > PROB_TO_STAY_ON_TILE) {
+            int a = 0; /////
+            // MOVE
+        } else {
+            increase_citizen_and_tile_contamination(status, STAY);
+            return;
+        }
+    }
+}
+
+void increase_citizen_and_tile_contamination(status_t *status, int move)
+{
+    unsigned int x;
+    unsigned int y;
+    
+    double citizen_contamination;
+    double contamination_reduction;
+    
+    pthread_mutex_lock(&mutex);
+
+    x = status->x;
+    y = status->y;
+
+    citizen_contamination = status->contamination;
+    
+    if (move == MOVE) {
+        status->contamination += city->map[x][y].contamination
+            * CONTAMINATION_INCREASE_MOVE_CITIZEN;
+
+        if (status->contamination > MAX_CONTAMINATION) {
+            status->contamination = MAX_CONTAMINATION;
+        }
+        
+        if (city->map[x][y].type == FIRESTATION) {
+            pthread_mutex_unlock(&mutex);
+            return;
+        }
+
+        contamination_reduction = 1;
+        if (city->map[x][y].type == HOSPITAL) {
+            contamination_reduction = HOSPITAL_CONTAMINATION_REDUCTION;
+        }
+        
+        city->map[x][y].contamination += citizen_contamination
+            * CONTAMINATION_INCREASE_TILE * contamination_reduction;
+
+        if (city->map[x][y].contamination > MAX_CONTAMINATION) {
+            city->map[x][y].contamination = MAX_CONTAMINATION;
+        }
+    } else {
+        status->contamination += city->map[x][y].contamination
+            * CONTAMINATION_INCREASE_STAY_CITIZEN;
+
+        if (status->contamination > MAX_CONTAMINATION) {
+            status->contamination = MAX_CONTAMINATION;
+        }
+    }
     
     pthread_mutex_unlock(&mutex);
 }
@@ -374,13 +440,35 @@ int tile_is_full(tile_t tile)
     return tile.citizens_nb == tile.capacity;
 }
 
+void citizens_simulation()
+{
+    for (;;) {
+        read(fifo_from_epidemic_sim, message_from_epidemic_sim, sizeof(int));
+        
+        if (*message_from_epidemic_sim == END_OF_SIMULATION) {
+            citizen_round = -1;
+            
+            break;
+        }
+        
+        if (*message_from_epidemic_sim == NEXT_ROUND) {
+            citizen_round++;
+        }
+    }
+}
+
+void wait_for_citizens_to_end()
+{
+    for (;;) {
+        if (citizen_ended_nb == CITIZENS_NB) {
+            break;
+        }
+    }
+}
+
 int main(void)
 {
     int shared_memory;
-
-    int fifo_from_epidemic_sim;
-    
-    fifo_message_e message_from_epidemic_sim[1];
 
     srand(time(NULL));
     
@@ -398,25 +486,9 @@ int main(void)
     
     init_population();
 
-    for (;;) {
-        read(fifo_from_epidemic_sim, message_from_epidemic_sim, sizeof(int));
-        
-        if (*message_from_epidemic_sim == END_OF_SIMULATION) {
-            citizen_round = -1;
-                
-            break;
-        }
-        
-        if (*message_from_epidemic_sim == NEXT_ROUND) {
-            citizen_round++;
-        }
-    }
+    citizens_simulation();
 
-    for (;;) {
-        if (citizen_ended_nb == CITIZENS_NB) {
-            break;
-        }
-    }
+    wait_for_citizens_to_end();
     
     close(fifo_from_epidemic_sim);
     

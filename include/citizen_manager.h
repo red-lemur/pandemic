@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-12
+ * @version 1.0.0 - 2020-12-13
  */
 
 /**
@@ -36,6 +36,16 @@
 
 #define TREATMENT_POUCHES_NB_AT_BEGINNING 5
 #define SPRAYER_CAPACITY_AT_BEGINNING 5
+
+#define PROB_TO_STAY_ON_TILE 0.6
+
+#define CONTAMINATION_INCREASE_MOVE_CITIZEN 0.02
+#define CONTAMINATION_INCREASE_STAY_CITIZEN 0.05
+#define CONTAMINATION_INCREASE_TILE 0.1
+
+#define HOSPITAL_CONTAMINATION_REDUCTION 0.25
+
+enum { STAY, MOVE };
 
 /**
  * @brief Handler function for a doctor thread.
@@ -113,7 +123,7 @@ void increment_init_firemen_in_firestation();
  * @param row The y coordinate in the city.
  * @return -1 if the tile is not a FIRESTATION / else the number of firemen.
  */
-int firemen_nb_in_firestation(unsigned int row, unsigned int col);
+int firemen_nb_in_firestation(unsigned int col, unsigned int row);
 
 /**
  * @brief Count the number of visitors in a firestation.
@@ -121,7 +131,7 @@ int firemen_nb_in_firestation(unsigned int row, unsigned int col);
  * @param row The y coordinate in the city.
  * @return -1 if the tile is not a FIRESTATION / else the number of visitors.
  */
-int visitors_nb_in_firestation(unsigned int row, unsigned int col);
+int visitors_nb_in_firestation(unsigned int col, unsigned int row);
 
 /**
  * @brief Test if a citizen is allowed to enter in a hospital.
@@ -129,8 +139,18 @@ int visitors_nb_in_firestation(unsigned int row, unsigned int col);
  */
 int is_allowed_to_enter_in_a_hospital(status_t *status);
 
-/**/
-void move_citizen();
+/**
+ * @brief Citizen move from or stay on his tile dependending on chance and on his status.
+ * @param status Status of the citizen.
+ */
+void move_citizen(status_t *status);
+
+/**
+ * @brief Increase the contamination of both the citizen and the tile on which he is.
+ * @param status Status of the citizen.
+ * @param move Indicate if the citizen has moved or not.
+ */
+void increase_citizen_and_tile_contamination(status_t *status, int move);
 
 /**
  * @brief Initialize all the threads of the citizens.
@@ -148,5 +168,15 @@ void citizen_ended();
  * @return 1 if the tile is full of citizen / 0 if not.
  */
 int tile_is_full(tile_t tile);
+
+/**
+ * @brief Unblocks citizens at each new round.
+ */
+void citizens_simulation();
+
+/**
+ * @brief Wait for all the citizens to end.
+ */
+void wait_for_citizens_to_end();
 
 #endif
