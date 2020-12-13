@@ -37,7 +37,11 @@
 
 #define NUMBER_OF_DAYS 10
 
-enum { DEFAULT, HOUSE, HOSPITAL, FIRESTATION, WASTELAND, HEALTHY, SICK, DEAD, BURNT };
+
+#define HEALTHY 6
+#define SICK 7
+
+enum { DEFAULT, WASTELAND_CODE, HOUSE_CODE, HOSPITAL_CODE, FIRESTATION_CODE, HEALTHY_CODE, SICK_CODE, DEAD_CODE, BURNED_CODE, TITLE };
 enum { UP_LEFT, UP, UP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT };
 
 /* COMMENTAIRES */
@@ -52,5 +56,23 @@ void set_number_of_people_in_state(int number, int state);
 void set_citizen_on_tile(int tile_x, int tile_y, int number, int state);
 
 void set_type_of_tile(int tile_x, int tile_y, int type);
+
+
+typedef enum { WASTELAND, HOUSE, HOSPITAL, FIRESTATION } building_type_e;
+typedef enum { SIMPLE_CITIZEN, FIREMAN, DOCTOR, JOURNALIST, DEAD, BURNED } citizen_type_e;
+
+typedef struct tile {
+    unsigned int x;
+    unsigned int y;
+    int capacity;
+    int citizens_nb;
+    building_type_e type;
+    double contamination;
+} tile_t;
+
+typedef struct city {
+    tile_t map[7][7];
+    /*status_t citizens[CITIZENS_NB];*/
+} city_t;
 
 #endif
