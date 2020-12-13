@@ -32,20 +32,9 @@ WINDOW *main_title, *titles, *places, *legend, *titles_2, *citizens, *situation,
 
 int day = 0;
 
-//city->map[col][row].type
 
 int get_tile_color_code(int tile) {
     return tile + 1;
-}
-
-int get_state_color_code(int state) {
-    switch (state) {
-        case HEALTHY: return HEALTHY_CODE; break;
-        case SICK: return SICK_CODE; break;
-        case DEAD: return DEAD_CODE; break;
-        case BURNED: return BURNED_CODE; break;
-        default: return state; break;
-    }
 }
 
 
@@ -98,21 +87,12 @@ void next_day()
     wattroff(main_title, COLOR_PAIR(TITLE));
 }
 
-void set_number_of_people_in_state(int number, int state)
+void set_number_of_people_in_state(int number, int state_code)
 {
     char str[(int) log10(POPULATION_NUMBER) + 1];
     int y;
 
-
-
-    state = get_state_color_code(state);
-
-    //if (state == HEALTHY) mvwprintw(situation, 2, 0, "rr");
-
-    //printf("state : %d\n", state);
-    
-
-    switch (state) {
+    switch (state_code) {
         case HEALTHY_CODE : y = 0; break;
         case SICK_CODE : y = 2; break;
         case DEAD_CODE : y = 4; break;
@@ -120,23 +100,15 @@ void set_number_of_people_in_state(int number, int state)
     }
 
     sprintf(str, "%d", number);
+   
 
-    //printf("STR : %d\n", number);
-
-    char statestr[2];
-
-    sprintf(statestr, "%d", state);
-
-    /*if (state == HEALTHY)*/ //printf("STR : %s\n", str);
-    
-
-    wattron(people, COLOR_PAIR(state));
+    wattron(people, COLOR_PAIR(state_code));
     mvwprintw(people, y, 0, str);
-    wattroff(people, COLOR_PAIR(state));
+    wattroff(people, COLOR_PAIR(state_code));
 
 }
 
-void set_citizen_on_tile(int tile_x, int tile_y, int number, int state)
+void set_citizen_on_tile(int tile_x, int tile_y, int number, int state_code)
 {
     int shift_right;
     int shift_bottom;
@@ -144,21 +116,21 @@ void set_citizen_on_tile(int tile_x, int tile_y, int number, int state)
     char str[(int) log10(POPULATION_NUMBER) + 1];
     sprintf(str, "%d", number);
 
-    if (state == SICK_CODE || state == BURNED_CODE) {
+    if (state_code == SICK_CODE || state_code == BURNED_CODE) {
         shift_right = 1;
     } else {
         shift_right = 0;
     }
 
-    if (state == DEAD_CODE || state == BURNED_CODE) {
+    if (state_code == DEAD_CODE || state_code == BURNED_CODE) {
         shift_bottom = 1;
     } else {
         shift_bottom = 0;
     }
 
-    wattron(citizens, COLOR_PAIR(state));
+    wattron(citizens, COLOR_PAIR(state_code));
     mvwprintw(citizens, tile_y*3 + shift_bottom, tile_x*6 + shift_right, str);
-    wattroff(citizens, COLOR_PAIR(state));
+    wattroff(citizens, COLOR_PAIR(state_code));
 }
 
 void set_type_of_tile(int tile_x, int tile_y, int type)
@@ -188,11 +160,21 @@ void set_type_of_tile(int tile_x, int tile_y, int type)
     set_citizen_on_tile()
 }*/
 
+tile_t init_tile(unsigned int x, unsigned int y, int capacity,
+                 building_type_e type)
+{
+    tile_t tile;
+    
+    tile.x = x;
+    tile.y = y;
+    tile.capacity = capacity;
+    tile.type = type;
+    
+    return tile;
+}
+
 int main(void)
 {    
-
-    printf("WASTELAND_CODE : %d\n", WASTELAND_CODE);
-    //printf("HEALTHY : %d\n", HEALTHY);
 
 
     char *title = "Simulation épidémie - Jour n°";
@@ -204,6 +186,30 @@ int main(void)
                                         "Maison",
                                         "Hôpital",
                                         "Caserne"};
+
+
+
+    /* city example generated */
+    city_t *city;
+    city = malloc(sizeof(tile_t)*7*7);
+
+    for (int i = 0; i < MAP_HEIGHT; i++) {
+        for (int j = 0; j < MAP_HEIGHT; j++) {
+            city->map[i][j] = init_tile(i, j, 16, WASTELAND); 
+        }
+    }
+
+    city->map[0][6].type = FIRESTATION; 
+    city->map[6][0].type = FIRESTATION;
+    city->map[3][3].type = HOSPITAL;  
+    city->map[1][1].type = HOUSE; 
+    city->map[4][0].type = HOUSE;
+    city->map[0][4].type = HOUSE;
+    city->map[1][2].type = HOUSE;
+    city->map[2][5].type = HOUSE;
+    city->map[3][4].type = HOUSE;
+    city->map[5][4].type = HOUSE;
+    
     
     initscr();
 
@@ -278,14 +284,12 @@ int main(void)
         mvwprintw(titles_2, 1, (COLS/2) + MARGIN, "Evolution de l'épidémie");
         wattroff(titles_2, A_UNDERLINE);
         
-        /* This will be replaced by sth with the text file */
-        write_spaces(places, 0, 0, 6, WASTELAND_CODE);
-        write_spaces(places, 0, 12, 1, FIRESTATION_CODE);
-        write_spaces(places, 1, 0, 18, WASTELAND_CODE);
-        write_spaces(places, 3, 6, 1, HOSPITAL_CODE);
-        write_spaces(places, 3, 8, 18, WASTELAND_CODE);
-        write_spaces(places, 6, 0, 1, FIRESTATION_CODE);
-        write_spaces(places, 6, 2, 6, WASTELAND_CODE);
+
+        for (int i = 0; i < MAP_HEIGHT; i++) {
+            for (int j = 0; j < MAP_HEIGHT; j++) {
+                set_type_of_tile(i, j, city->map[i][j].type);
+            }            
+        }
         
         for (int i = 0; i < NUMBER_OF_DIF_TILES; i++) {
             write_spaces(legend, i*2, 0, 1, HOUSE + i);
@@ -296,10 +300,10 @@ int main(void)
             mvwprintw(situation, i*2, 0, situations_title[i]);
         }
         
-        set_number_of_people_in_state(POPULATION_NUMBER, HEALTHY);
-        set_number_of_people_in_state(0, SICK);
-        set_number_of_people_in_state(0, DEAD);
-        set_number_of_people_in_state(0, BURNED);
+        set_number_of_people_in_state(POPULATION_NUMBER, HEALTHY_CODE);
+        set_number_of_people_in_state(0, SICK_CODE);
+        set_number_of_people_in_state(0, DEAD_CODE);
+        set_number_of_people_in_state(0, BURNED_CODE);
 
         for (int s = HEALTHY_CODE; s <= BURNED_CODE; s++) {
             for (int i=0; i < MAP_HEIGHT; i++) {

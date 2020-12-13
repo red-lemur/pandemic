@@ -38,9 +38,6 @@
 #define NUMBER_OF_DAYS 10
 
 
-#define HEALTHY 6
-#define SICK 7
-
 enum { DEFAULT, WASTELAND_CODE, HOUSE_CODE, HOSPITAL_CODE, FIRESTATION_CODE, HEALTHY_CODE, SICK_CODE, DEAD_CODE, BURNED_CODE, TITLE };
 enum { UP_LEFT, UP, UP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT };
 
@@ -67,7 +64,6 @@ typedef struct tile {
     int capacity;
     int citizens_nb;
     building_type_e type;
-    double contamination;
 } tile_t;
 
 typedef struct city {
