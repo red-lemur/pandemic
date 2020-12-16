@@ -351,6 +351,22 @@ int visitors_nb_in_firestation(unsigned int col, unsigned int row)
     return counter;
 }
 
+int doctor_nb_in_tile(tile_t* tile)
+{
+    int counter;
+    int i;
+    
+    counter = 0;
+    for (i = 0; i < CITIZENS_NB; i++) {
+        if (city->citizens[i].x == tile->x && city->citizens[i].y == tile->y
+            && city->citizens[i].type == DOCTOR) {
+            counter++;
+        }
+    }
+    
+    return counter;
+}
+
 int is_allowed_to_enter_in_a_hospital(status_t *status)
 {
     return status->type == DOCTOR || status->type == FIREMAN || status->is_sick;
@@ -506,13 +522,21 @@ void increment_sickness_duration(status_t *status)
 
 void risk_of_death(status_t *status)
 {
+    double death_reduction;
+    
     if (status->type == DEAD || status->type == BURNED
         || !status->is_sick || status->sickness_duration < DAYS_NB_DISEASE_DEADLY) {
         return;
     }
     
-    if (generate_random_percentage() <=
-        (status->sickness_duration - DAYS_NB_DISEASE_DEADLY + 1) * PROB_OF_DEATH_BY_DAY) {
+    if (city->map[status->x][status->y].type == HOSPITAL) {
+        death_reduction = DEATH_REDUCTION_IF_HOSPITAL;
+    } else if (doctor_nb_in_tile(&(city->map[status->x][status->y]))) {
+        death_reduction = DEATH_REDUCTION_IF_DOCTOR;
+    }
+    
+    if (generate_random_percentage() <= death_reduction
+        * (status->sickness_duration - DAYS_NB_DISEASE_DEADLY + 1) * PROB_OF_DEATH_BY_DAY) {
         pthread_mutex_lock(&mutex);
         status->type = DEAD;
         pthread_mutex_unlock(&mutex);

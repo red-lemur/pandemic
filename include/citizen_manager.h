@@ -50,6 +50,9 @@
 #define DAYS_NB_DISEASE_DEADLY 5
 #define PROB_OF_DEATH_BY_DAY 0.05
 
+#define DEATH_REDUCTION_IF_DOCTOR 0.5
+#define DEATH_REDUCTION_IF_HOSPITAL 0.25
+
 enum { STAY, MOVE };
 
 /**
@@ -151,6 +154,13 @@ int firemen_nb_in_firestation(unsigned int col, unsigned int row);
  * @return -1 if the tile is not a FIRESTATION / else the number of visitors.
  */
 int visitors_nb_in_firestation(unsigned int col, unsigned int row);
+
+/**
+ * @brief Count the number of doctors in a tile.
+ * @param tile Tile where to count the doctors.
+ * @return The number of doctors.
+ */
+int doctor_nb_in_tile(tile_t* tile);
 
 /**
  * @brief Test if a citizen is allowed to enter in a hospital.
