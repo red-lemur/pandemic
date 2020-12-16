@@ -34,6 +34,7 @@
 #include "epidemic_sim.h"
 #include "exchanges_between_processes.h"
 #include "util.h"
+#include "interface.h"
 
 struct sigaction action_sigusr1;
 struct sigaction action_sigusr2;
@@ -118,6 +119,22 @@ void increase_wasteland_contamination(tile_t *tile, double other_tile_contaminat
     }
 }
 
+/*void launch_interface()
+{
+    int pid;
+    
+    pid = fork();
+    
+    switch (pid) {
+    case -1:
+        perror("Error on fork()\n");
+        exit(EXIT_FAILURE);
+    case 0:
+        execl(INTERFACE_URL, INTERFACE_NAME, NULL);
+        exit(EXIT_FAILURE);
+        }
+}*/
+
 void launch_simulation()
 {
     for(;;) {
@@ -131,14 +148,14 @@ void launch_simulation()
 
 void simulation_round()
 {
-    printf("Round\n"); ///
+    //printf("Round\n"); ///
     
     // write in evolution.txt
 
     update_wastelands_contamination();
 
     /* DEBUG */
-    int row, col;
+    /*int row, col;
     printf("=====================================================\n");
     for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_WIDTH; col++) {
@@ -152,12 +169,13 @@ void simulation_round()
         printf("%d %d %.3lf | ", city->citizens[i].x, city->citizens[i].y,
                city->citizens[i].contamination);
     }
-    printf("\n");
+    printf("\n");*/
+    /* ----- */
     
     *message_to_citizen_manager = NEXT_ROUND;
     write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));
 
-    // update interface
+    update_interface();
 }
 
 void end_of_simulation()
@@ -175,7 +193,7 @@ void end_of_simulation()
 int main(void)
 {
     int shared_memory;
-
+    
     /*mqd_t mqueue;*/
     
     srand(time(NULL));
@@ -206,7 +224,7 @@ int main(void)
     }
     
     /* TEST DEBUG MAP */
-    int row, col;
+    /*int row, col;
     for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_HEIGHT; col++) {
             printf("%d", city->map[col][row].type);
@@ -218,9 +236,14 @@ int main(void)
             printf("%.3lf ", city->map[col][row].contamination);
         }
         printf("\n");
-    }
+        }*/
+    /* ----- */
+    
+    create_interface(city);
     
     launch_simulation();
+
+    end_interface();
 
     close(fifo_to_citizen_manager);
     unlink(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);

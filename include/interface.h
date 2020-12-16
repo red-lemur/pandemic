@@ -23,6 +23,8 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
+#include <ncurses.h>
+
 #include "city.h"
 
 #define MARGIN 10
@@ -61,6 +63,10 @@ void set_number_of_people_in_state(int number, int state);
 
 void set_citizen_on_tile(int tile_x, int tile_y, int number, int state);
 
-void set_type_of_tile(int tile_x, int tile_y, int type);
+void update_interface();
+
+void create_interface(city_t *city);
+
+void end_interface();
 
 #endif

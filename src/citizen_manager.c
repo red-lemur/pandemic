@@ -537,7 +537,7 @@ void wait_for_citizens_to_end()
 int main(void)
 {
     int shared_memory;
-
+    
     srand(time(NULL));
     
     do {

@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-12
+ * @version 1.0.0 - 2020-12-16
  */
 
 /**
@@ -48,6 +48,11 @@ void update_wastelands_contamination();
  * @param other_tile_contamination Contamination of another tile.
  */
 void increase_wasteland_contamination(tile_t *tile, double other_tile_contamination);
+
+/**
+ * @brief Create and launch the interface.
+ */
+void launch_interface();
 
 /**
  * @brief Infinite loop while the simulation is not over.
