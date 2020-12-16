@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-13
+ * @version 1.0.0 - 2020-12-16
  */
 
 /**
@@ -28,13 +28,14 @@
 #define CITY_HEIGHT 7
 
 #define CITIZENS_NB 37
-#define CITIZEN_NAME_MAX_LENGTH 30
+#define CITIZEN_NAME_MAX_LENGTH 42
 
 typedef enum { WASTELAND, HOUSE, HOSPITAL, FIRESTATION } building_type_e;
 typedef enum { SIMPLE_CITIZEN, FIREMAN, DOCTOR, JOURNALIST, DEAD, BURNED } citizen_type_e;
 
 /**
  * @brief Defines the status of a citizen.
+ * @param name The name of the citizen.
  * @param x The x coordinate in the city.
  * @param y The y coordinate in the city.
  * @param contamination The level of contamination (between 0 and 1).
@@ -45,6 +46,7 @@ typedef enum { SIMPLE_CITIZEN, FIREMAN, DOCTOR, JOURNALIST, DEAD, BURNED } citiz
  * @param must_leave Indicates if the citizen must leave his tile.
  */
 typedef struct status {
+    char name[CITIZEN_NAME_MAX_LENGTH];
     unsigned int x;
     unsigned int y;
     double contamination;

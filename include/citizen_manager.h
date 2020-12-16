@@ -47,6 +47,9 @@
 
 #define FIREMAN_PROTECTION_FACTOR 0.1
 
+#define DAYS_NB_DISEASE_DEADLY 5
+#define PROB_OF_DEATH_BY_DAY 0.05
+
 enum { STAY, MOVE };
 
 /**
@@ -104,6 +107,16 @@ void init_citizen(status_t *status, citizen_type_e type);
 void init_citizen_status(status_t *status, int x, int y, citizen_type_e type);
 
 /**
+ * @brief Increment a global variable that counts the number of doctors initialized in a hospital.
+ */
+void increment_init_doctors_in_hospital();
+
+/**
+ * @brief Increment a global variable that counts the number of firemen initialized in a firestation.
+ */
+void increment_init_firemen_in_firestation();
+
+/**
  * @brief Add a citizen in a tile.
  * @param tile Tile where to add the citizen.
  */
@@ -122,16 +135,6 @@ void remove_citizen_from_tile(tile_t *tile);
  * @param y The new y coordinate in the city.
  */
 void update_citizen_coords(status_t *status, unsigned int x, unsigned int y);
-
-/**
- * @brief Increment a global variable that counts the number of doctors initialized in a hospital.
- */
-void increment_init_doctors_in_hospital();
-
-/**
- * @brief Increment a global variable that counts the number of firemen initialized in a firestation.
- */
-void increment_init_firemen_in_firestation();
 
 /**
  * @brief Count the number of firemen in a firestation.
@@ -196,6 +199,24 @@ void increase_tile_contamination(status_t *status);
  * @param move Indicate if the citizen has moved or not.
  */
 void increase_citizen_contamination(status_t *status, int move);
+
+/**
+ * @brief A citizen gets sick if he is too contaminated.
+ * @param status Status of the citizen.
+ */
+void risk_of_disease(status_t *status);
+
+/**
+ * @brief Increment the number of days a citizen has been sick.
+ * @param status Status of the citizen.
+ */
+void increment_sickness_duration(status_t *status);
+
+/**
+ * @brief A citizen dies if he is too sick.
+ * @param status Status of the citizen.
+ */
+void risk_of_death(status_t *status);
 
 /**
  * @brief Initialize all the threads of the citizens.

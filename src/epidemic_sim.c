@@ -155,7 +155,7 @@ void simulation_round()
     update_wastelands_contamination();
 
     /* DEBUG */
-    /*int row, col;
+    int row, col;
     printf("=====================================================\n");
     for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_WIDTH; col++) {
@@ -166,16 +166,16 @@ void simulation_round()
         }
     int i;
     for (i = 0; i < CITIZENS_NB; i++) {
-        printf("%d %d %.3lf | ", city->citizens[i].x, city->citizens[i].y,
-               city->citizens[i].contamination);
+        printf("%d %d %.3lf T%d S%d %s\n", city->citizens[i].x, city->citizens[i].y,
+               city->citizens[i].contamination, city->citizens[i].type,
+               city->citizens[i].is_sick, city->citizens[i].name);
     }
-    printf("\n");*/
     /* ----- */
     
     *message_to_citizen_manager = NEXT_ROUND;
     write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));
 
-    update_interface();
+    //update_interface();
 }
 
 void end_of_simulation()
@@ -239,11 +239,11 @@ int main(void)
         }*/
     /* ----- */
     
-    create_interface(city);
+    //create_interface(city);
     
     launch_simulation();
 
-    end_interface();
+    //end_interface();
 
     close(fifo_to_citizen_manager);
     unlink(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);

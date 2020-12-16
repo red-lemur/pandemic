@@ -29,11 +29,13 @@
 #include <sys/stat.h>
 #include <pthread.h>
 #include <time.h>
+#include <string.h>
 
 #include "citizen_manager.h"
 #include "exchanges_between_processes.h"
 #include "util.h"
 #include "city_sim.h"
+#include "names.h"
 
 int fifo_from_epidemic_sim;
 
@@ -74,8 +76,11 @@ void *doctor_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
+            increment_sickness_duration(st);
             increase_tile_contamination(st);
             move_citizen(st);
+            risk_of_death(st);
+            risk_of_disease(st);
         }
     }
     
@@ -101,8 +106,11 @@ void *fireman_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
+            increment_sickness_duration(st);
             increase_tile_contamination(st);
             move_citizen(st);
+            risk_of_death(st);
+            risk_of_disease(st);
         }
     }
     
@@ -126,8 +134,11 @@ void *journalist_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
+            increment_sickness_duration(st);
             increase_tile_contamination(st);
             move_citizen(st);
+            risk_of_death(st);
+            risk_of_disease(st);
         }
     }
     
@@ -151,8 +162,11 @@ void *simple_citizen_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
+            increment_sickness_duration(st);
             increase_tile_contamination(st);
             move_citizen(st);
+            risk_of_death(st);
+            risk_of_disease(st);
         }
     }
     
@@ -249,6 +263,7 @@ void init_citizen(status_t *status, citizen_type_e type)
 void init_citizen_status(status_t *status, int x, int y, citizen_type_e type)
 {
     pthread_mutex_lock(&mutex);
+    strcpy(status->name, CITIZEN_NAMES[generate_random_index(NAMES_NB)]);
     status->x = x;
     status->y = y;
     status->contamination = 0;
@@ -257,6 +272,20 @@ void init_citizen_status(status_t *status, int x, int y, citizen_type_e type)
     status->type = type;
     status->days_spent_in_hospital_healthy = 0;
     status->must_leave = 0;
+    pthread_mutex_unlock(&mutex);
+}
+
+void increment_init_doctors_in_hospital()
+{
+    pthread_mutex_lock(&mutex);
+    init_doctors_in_hospital++;
+    pthread_mutex_unlock(&mutex);
+}
+
+void increment_init_firemen_in_firestation()
+{
+    pthread_mutex_lock(&mutex);
+    init_firemen_in_firestation++;
     pthread_mutex_unlock(&mutex);
 }
 
@@ -279,20 +308,6 @@ void update_citizen_coords(status_t *status, unsigned int x, unsigned int y)
     pthread_mutex_lock(&mutex);
     status->x = x;
     status->y = y;
-    pthread_mutex_unlock(&mutex);
-}
-
-void increment_init_doctors_in_hospital()
-{
-    pthread_mutex_lock(&mutex);
-    init_doctors_in_hospital++;
-    pthread_mutex_unlock(&mutex);
-}
-
-void increment_init_firemen_in_firestation()
-{
-    pthread_mutex_lock(&mutex);
-    init_firemen_in_firestation++;
     pthread_mutex_unlock(&mutex);
 }
 
@@ -464,6 +479,45 @@ void increase_citizen_contamination(status_t *status, int move)
     }
     
     pthread_mutex_unlock(&mutex);
+}
+
+void risk_of_disease(status_t *status)
+{
+    if (status->type == BURNED || status->is_sick) {
+        return;
+    }
+    
+    if (generate_random_percentage() <= status->contamination) {
+        pthread_mutex_lock(&mutex);
+        status->is_sick = 1;
+        pthread_mutex_unlock(&mutex);
+        
+    }
+}
+
+void increment_sickness_duration(status_t *status)
+{
+    if (status->is_sick) {
+        pthread_mutex_lock(&mutex);
+        status->sickness_duration++;
+        pthread_mutex_unlock(&mutex);
+    }
+}
+
+void risk_of_death(status_t *status)
+{
+    if (status->type == DEAD || status->type == BURNED
+        || !status->is_sick || status->sickness_duration < DAYS_NB_DISEASE_DEADLY) {
+        return;
+    }
+    
+    if (generate_random_percentage() <=
+        (status->sickness_duration - DAYS_NB_DISEASE_DEADLY + 1) * PROB_OF_DEATH_BY_DAY) {
+        pthread_mutex_lock(&mutex);
+        status->type = DEAD;
+        pthread_mutex_unlock(&mutex);
+        printf("=====> %s    %d\n", status->name, status->sickness_duration);
+    }
 }
 
 void init_population()
