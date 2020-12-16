@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-12
+ * @version 1.0.0 - 2020-12-16
  */
 
 /**
@@ -23,22 +23,26 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
+#include "city.h"
+
 #define MARGIN 10
 #define VERTICAL_MARGIN 2
+#define BOTTOM_MARGIN 5
+
 #define HEADER_HEIGHT 3
 #define TITLES_HEIGHT 3
-#define MAP_HEIGHT 7
+
 #define SPACE_SITUATION 3
-#define BOTTOM_MARGIN 5
-#define CITIZENS_NB 25
+
 #define NUMBER_OF_DIF_TILES 4
 #define NUMBER_OF_SITUATIONS 4
+
 #define SIZE_OF_TITLE 32
 
 #define NUMBER_OF_DAYS 10
 
-
-enum { DEFAULT, WASTELAND_CODE, HOUSE_CODE, HOSPITAL_CODE, FIRESTATION_CODE, HEALTHY_CODE, SICK_CODE, DEAD_CODE, BURNED_CODE, TITLE };
+enum { DEFAULT, WASTELAND_CODE, HOUSE_CODE, HOSPITAL_CODE, FIRESTATION_CODE, HEALTHY_CODE,
+       SICK_CODE, DEAD_CODE, BURNED_CODE, TITLE };
 enum { UP_LEFT, UP, UP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT };
 enum { HEALTHY_STATE, SICK_STATE, DEAD_STATE, BURNED_STATE };
 
@@ -58,30 +62,5 @@ void set_number_of_people_in_state(int number, int state);
 void set_citizen_on_tile(int tile_x, int tile_y, int number, int state);
 
 void set_type_of_tile(int tile_x, int tile_y, int type);
-
-
-typedef enum { WASTELAND, HOUSE, HOSPITAL, FIRESTATION } building_type_e;
-typedef enum { SIMPLE_CITIZEN, FIREMAN, DOCTOR, JOURNALIST, DEAD, BURNED } citizen_type_e;
-
-
-typedef struct status {
-    unsigned int x;
-    unsigned int y;
-    int is_sick;
-    citizen_type_e type;
-} status_t;
-
-typedef struct tile {
-    unsigned int x;
-    unsigned int y;
-    int capacity;
-    int citizens_nb;
-    building_type_e type;
-} tile_t;
-
-typedef struct city {
-    tile_t map[7][7];
-    status_t citizens[CITIZENS_NB];
-} city_t;
 
 #endif

@@ -439,17 +439,24 @@ void increase_citizen_contamination(status_t *status, int move)
     unsigned int x;
     unsigned int y;
 
+    double protection_factor;
+
     x = status->x;
     y = status->y;
+
+    protection_factor = 1;
+    if (status->type == FIREMAN) {
+        protection_factor = FIREMAN_PROTECTION_FACTOR;
+    }
 
     pthread_mutex_lock(&mutex);
     
     if (move == MOVE) {
         status->contamination += city->map[x][y].contamination
-            * CONTAMINATION_INCREASE_MOVE_CITIZEN;
+            * CONTAMINATION_INCREASE_MOVE_CITIZEN * protection_factor;
     } else {
         status->contamination += city->map[x][y].contamination
-            * CONTAMINATION_INCREASE_STAY_CITIZEN;
+            * CONTAMINATION_INCREASE_STAY_CITIZEN * protection_factor;
     }
     
     if (status->contamination > MAX_CONTAMINATION) {
