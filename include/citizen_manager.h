@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-13
+ * @version 1.0.0 - 2020-12-16
  */
 
 /**
@@ -144,6 +144,14 @@ int is_allowed_to_enter_in_a_hospital(status_t *status);
  * @param status Status of the citizen.
  */
 void move_citizen(status_t *status);
+
+/**
+ * Generate a possible new position for a citizen.
+ * @param status Status of the citizen.
+ * @param new_x Possible new x coordinate in the city.
+ * @param new_y Possible new y coordinate in the city.
+ */
+void generate_new_citizen_position(status_t *status, int* new_x, int* new_y);
 
 /**
  * @brief Increase the contamination of both the citizen and the tile on which he is.

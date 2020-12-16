@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-08
+ * @version 1.0.0 - 2020-12-16
  */
 
 /**
@@ -22,6 +22,14 @@
 
 #ifndef UTIL_H
 #define UTIL_H
+
+/**
+ * @brief Generate a random int in an interval.
+ * @param min Lower bound of the interval.
+ * @param max Upper bound of the interval.
+ * @return An int between min and max included.
+ */
+int generate_random_int_in_interval(int min, int max);
 
 /**
  * @brief Generate a random index for an array.

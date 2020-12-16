@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-08
+ * @version 1.0.0 - 2020-12-16
  */
 
 /**
@@ -23,6 +23,11 @@
 #include <stdlib.h>
 
 #include "util.h"
+
+int generate_random_int_in_interval(int min, int max)
+{
+    return (int)(rand()/(double)RAND_MAX * (max + 1 - min) + min);
+}
 
 int generate_random_index(int ind_max)
 {

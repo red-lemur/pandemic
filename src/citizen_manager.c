@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-13
+ * @version 1.0.0 - 2020-12-16
  */
 
 /**
@@ -332,19 +332,37 @@ int is_allowed_to_enter_in_a_hospital(status_t *status)
 
 void move_citizen(status_t *status)
 {
+    int new_x;
+    int new_y;
+    
     if (status->type == DEAD || status->type == BURNED) {
         return;
     }
     
     for (;;) {
         if (status->must_leave || generate_random_percentage() > PROB_TO_STAY_ON_TILE) {
-            int a = 0; /////
-            // MOVE
+            generate_new_citizen_position(status, &new_x, &new_y);
+            
+            // CONTINUE
         } else {
             increase_citizen_and_tile_contamination(status, STAY);
             return;
         }
     }
+}
+
+void generate_new_citizen_position(status_t *status, int* new_x, int* new_y) {
+    int min_x;
+    int min_y;
+    int max_x;
+    int max_y;
+
+    min_x = status->x == 0 ? 0 : -1;
+    min_y = status->y == 0 ? 0 : -1;
+    max_x = status->x == CITY_WIDTH - 1 ? 0 : 1;
+    max_y = status->y == CITY_HEIGHT - 1 ? 0 : 1;
+    *new_x = status->x + generate_random_int_in_interval(min_x, max_x);
+    *new_y = status->y + generate_random_int_in_interval(min_y, max_y);
 }
 
 void increase_citizen_and_tile_contamination(status_t *status, int move)
