@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-13
+ * @version 1.0.0 - 2020-12-16
  */
 
 /**
@@ -142,18 +142,11 @@ void simulation_round()
     printf("=====================================================\n");
     for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_WIDTH; col++) {
-            printf("%.3lf ", city->map[col][row].contamination);
+            printf("[%d %.3lf %d] ", city->map[col][row].type,
+                   city->map[col][row].contamination, city->map[col][row].citizens_nb);
         }
         printf("\n");
         }
-        //int row, col;
-    //printf("=====================================================\n");
-    for (row = 0; row < CITY_HEIGHT; row++) {
-        for (col = 0; col < CITY_WIDTH; col++) {
-            printf("%d ", city->map[col][row].citizens_nb);
-        }
-        printf("\n");
-    }
     int i;
     for (i = 0; i < CITIZENS_NB; i++) {
         printf("%d %d %.3lf | ", city->citizens[i].x, city->citizens[i].y,

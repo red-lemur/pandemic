@@ -108,6 +108,20 @@ void init_citizen_status(status_t *status, int x, int y, citizen_type_e type);
 void add_citizen_in_tile(tile_t *tile);
 
 /**
+ * @brief Remove a citizen from a tile.
+ * @param tile Tile where to remove a citizen.
+ */
+void remove_citizen_from_tile(tile_t *tile);
+
+/**
+ * @brief Update the coordinates of a citizen.
+ * @param status Status of the citizen.
+ * @param x The new x coordinate in the city.
+ * @param y The new y coordinate in the city.
+ */
+void update_citizen_coords(status_t *status, unsigned int x, unsigned int y);
+
+/**
  * @brief Increment a global variable that counts the number of doctors initialized in a hospital.
  */
 void increment_init_doctors_in_hospital();
@@ -146,6 +160,21 @@ int is_allowed_to_enter_in_a_hospital(status_t *status);
 void move_citizen(status_t *status);
 
 /**
+ * @brief Test if a citizen can leave a tile.
+ * @param status Status of the citizen.
+ * @return 1 if the citizen can leave / 0 if not.
+ */
+int citizen_can_leave_tile(status_t *status);
+
+/**
+ * @brief Test if a citizen can enter a tile.
+ * @param status Status of the citizen.
+ * @param tile Tile where the citizen want to enter.
+ * @return 1 if the citizen can enter / 0 if not.
+ */
+int citizen_can_enter_tile(status_t *status, tile_t *tile);
+
+/**
  * Generate a possible new position for a citizen.
  * @param status Status of the citizen.
  * @param new_x Possible new x coordinate in the city.
@@ -154,11 +183,17 @@ void move_citizen(status_t *status);
 void generate_new_citizen_position(status_t *status, int* new_x, int* new_y);
 
 /**
- * @brief Increase the contamination of both the citizen and the tile on which he is.
+ * @brief Increase the contamination of a tile with the contamination level of a citizen.
+ * @param status Status of the citizen.
+ */
+void increase_tile_contamination(status_t *status);
+
+/**
+ * @brief Increase the contamination of a citizen.
  * @param status Status of the citizen.
  * @param move Indicate if the citizen has moved or not.
  */
-void increase_citizen_and_tile_contamination(status_t *status, int move);
+void increase_citizen_contamination(status_t *status, int move);
 
 /**
  * @brief Initialize all the threads of the citizens.
@@ -175,7 +210,7 @@ void citizen_ended();
  * @param tile Tile to check.
  * @return 1 if the tile is full of citizen / 0 if not.
  */
-int tile_is_full(tile_t tile);
+int tile_is_full(tile_t *tile);
 
 /**
  * @brief Unblocks citizens at each new round.
