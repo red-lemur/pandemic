@@ -294,25 +294,52 @@ void initialize_situations()
     wrefresh(situation);
 }
 
+void reset_array(int *tab, int size)
+{
+    int i;
+
+    for (i = 0; i < size; i++) {
+        tab[i] = 0;
+    }
+}
+
+void update_population_states(int *state_counters)
+{
+    int i;
+
+    for (i = 0; i < NUMBER_OF_SITUATIONS; i++) {
+        set_number_of_people_in_state(state_counters[i], get_state_color_code(i));
+    }
+}
+
+/*void update_population_map(int ***population)
+{
+    
+}*/
+
+/*void fill_arrays_with_city(int ***population, int *state_counters)
+{
+    
+}*/
+
 void update_interface()
 {
     int i;
     int j;
-    int k;
     int population[CITY_WIDTH][CITY_HEIGHT][NUMBER_OF_SITUATIONS];
     int state_counters[NUMBER_OF_SITUATIONS];
 
-    for (i = 0; i < NUMBER_OF_SITUATIONS; i++) {
-        state_counters[i] = 0;
-    }
+    reset_array(state_counters, NUMBER_OF_SITUATIONS);
+    
 
     for (i = 0; i < CITY_WIDTH; i++) {
         for (j = 0; j < CITY_HEIGHT; j++) {
-            for (k = 0; k < NUMBER_OF_SITUATIONS; k++) {
-                population[i][j][k] = 0;
-            }
+            reset_array(population[i][j], NUMBER_OF_SITUATIONS);
         }
     }
+
+    //fill_arrays_with_city(population, state_counters);
+    //int i;
 
     for (i = 0; i < CITIZENS_NB; i++) {
         if (city->citizens[i].type == BURNED) {
@@ -333,6 +360,12 @@ void update_interface()
         }
     }
 
+    update_population_states(state_counters);
+    //update_population_map(population);
+    //int i;
+    //int j;
+    int k;
+
     for (i = 0; i < CITY_WIDTH; i++) {
         for (j = 0; j < CITY_HEIGHT; j++) {
             for (k = 0; k < NUMBER_OF_SITUATIONS; k++) {
@@ -342,14 +375,9 @@ void update_interface()
             }
         }
     }
-    
-    for (i = 0; i < NUMBER_OF_SITUATIONS; i++) {
-        set_number_of_people_in_state(state_counters[i], get_state_color_code(i));
-    }
 
     next_day();
 
-    
     wrefresh(citizens);
     wrefresh(people);
     wrefresh(main_title);
