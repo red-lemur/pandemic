@@ -124,6 +124,176 @@ void set_type_of_tile(int tile_x, int tile_y, int type)
     write_space(places, tile_y, tile_x*2, get_tile_color_code(type));
 }
 
+void create_interface()
+{    
+    initialize_interface();
+    initialize_main_title();
+    initialize_titles();
+    initialize_situations();    
+    initialize_places();
+    initialize_legend();
+    initialize_citizens();   
+}
+
+void initialize_interface() 
+{
+    initscr();
+    start_color();
+    init_pair(TITLE, COLOR_BLACK, COLOR_WHITE);
+    
+    init_pair(HOUSE_CODE, COLOR_BLACK, COLOR_GREEN);
+    init_pair(HOSPITAL_CODE, COLOR_BLACK, COLOR_BLUE);
+    init_pair(FIRESTATION_CODE, COLOR_BLACK, COLOR_RED);
+    init_pair(WASTELAND_CODE, COLOR_BLACK, COLOR_YELLOW);
+    
+    init_pair(HEALTHY_CODE, COLOR_GREEN, COLOR_BLACK);
+    init_pair(SICK_CODE, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(DEAD_CODE, COLOR_BLUE, COLOR_BLACK);
+    init_pair(BURNED_CODE, COLOR_RED, COLOR_BLACK);
+    
+    refresh();
+}
+
+void initialize_main_title() 
+{
+    char *title = "Simulation épidémie - Jour n°";
+    main_title = newwin(HEADER_HEIGHT, COLS, 0, 0);
+    box(main_title,0,0);
+            
+    wattron(main_title, COLOR_PAIR(TITLE));        
+    mvwprintw(main_title, 1, (COLS / 2) - (strlen(title) / 2), title);
+    wattroff(main_title, COLOR_PAIR(TITLE));
+        
+    next_day();
+
+    wrefresh(main_title);
+}
+
+void initialize_titles() 
+{
+    titles = newwin(TITLES_HEIGHT,
+                    COLS,
+                    HEADER_HEIGHT,
+                    0);
+    titles_2 = newwin(TITLES_HEIGHT,
+                      COLS,
+                      HEADER_HEIGHT + TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
+                      0);
+    wattron(titles, A_UNDERLINE);
+    mvwprintw(titles, 1, (COLS/2) - CITY_WIDTH * 2 - MARGIN, "Cartes des lieux");
+    mvwprintw(titles, 1, (COLS/2) + MARGIN, "Légende");
+    wattroff(titles, A_UNDERLINE);
+    
+    wattron(titles_2, A_UNDERLINE);
+    mvwprintw(titles_2, 1, (COLS/2) - ((CITY_WIDTH * 2 + (CITY_WIDTH - 1)) * 2) - MARGIN,
+              "Cartes des citoyens");
+    mvwprintw(titles_2, 1, (COLS/2) + MARGIN, "Evolution de l'épidémie");
+    wattroff(titles_2, A_UNDERLINE);
+
+    wrefresh(titles);
+    wrefresh(titles_2);
+}
+
+void initialize_places() 
+{
+    int i;
+    int j;
+
+    places = newwin(NUMBER_OF_DIF_TILES * 2 - 1,
+                    CITY_WIDTH * 2,
+                    HEADER_HEIGHT + TITLES_HEIGHT,
+                    (COLS / 2) - CITY_WIDTH * 2 - MARGIN);
+
+    for (i = 0; i < CITY_WIDTH; i++) {
+        for (j = 0; j < CITY_HEIGHT; j++) {
+            set_type_of_tile(i, j, city->map[i][j].type);
+        }            
+    }
+
+    wrefresh(places);
+}
+
+void initialize_legend() 
+{
+    char *tiles[NUMBER_OF_DIF_TILES] = { "Terrain vague",
+                                         "Maison",
+                                         "Hôpital",
+                                         "Caserne" };
+
+    int i;
+
+    legend = newwin(CITY_HEIGHT,
+                    (COLS / 2) - MARGIN,
+                    HEADER_HEIGHT + TITLES_HEIGHT,
+                    (COLS / 2) + MARGIN);
+
+    for (i = 0; i < NUMBER_OF_DIF_TILES; i++) {
+        write_space(legend, i*2, 0, HOUSE + i);
+        mvwprintw(legend, i*2, 3, tiles[i]);
+    }
+
+    wrefresh(legend);
+}
+
+void initialize_citizens()
+{
+    int i;
+    int j;
+    int state;
+
+    citizens = newwin(CITY_HEIGHT * 2 + (CITY_HEIGHT - 1),
+                      (CITY_WIDTH * 2 + (CITY_WIDTH - 1)) * 2,
+                      HEADER_HEIGHT + 2 * TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
+                      (COLS / 2) - ((CITY_WIDTH * 2 + (CITY_WIDTH - 1)) * 2) - MARGIN);
+
+    for (state = HEALTHY_CODE; state <= BURNED_CODE; state++) {
+        for (i = 0; i < CITY_WIDTH; i++) {
+            for (j = 0; j< CITY_HEIGHT; j++) {
+                set_citizen_on_tile(i, j, 0, state);
+            }        
+        } 
+    }
+    
+    wrefresh(citizens);   
+}
+
+void initialize_situations() 
+{
+    int i;
+
+    char *situations_title[NUMBER_OF_SITUATIONS] = { "Personnes en bonne santé",
+                                                     "Personnes malades",
+                                                     "Personnes décédées",
+                                                     "Cadavres brûlés" };
+
+    situation = newwin(2 * NUMBER_OF_SITUATIONS - 1,
+                       size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS),
+                       HEADER_HEIGHT + 2*TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
+                       (COLS / 2) + MARGIN);
+    people = newwin(2 * NUMBER_OF_SITUATIONS - 1,
+                    (int) log10(CITIZENS_NB) + 1,
+                    HEADER_HEIGHT + 2 * TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
+                    (COLS / 2) + MARGIN
+                    + size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS)
+                    + SPACE_SITUATION);
+
+
+
+    for (i = 0; i < NUMBER_OF_SITUATIONS; i++) {
+        mvwprintw(situation, i*2, 0, situations_title[i]);
+    }
+
+    set_number_of_people_in_state(CITIZENS_NB, HEALTHY_CODE);
+    set_number_of_people_in_state(0, SICK_CODE);
+    set_number_of_people_in_state(0, DEAD_CODE);
+    set_number_of_people_in_state(0, BURNED_CODE);
+
+    //wbkgd(situation, COLOR_PAIR(FIRESTATION_CODE));
+
+    wrefresh(people);
+    wrefresh(situation);
+}
+
 void update_interface()
 {
     int i;
@@ -176,138 +346,11 @@ void update_interface()
     for (i = 0; i < NUMBER_OF_SITUATIONS; i++) {
         set_number_of_people_in_state(state_counters[i], get_state_color_code(i));
     }
-    
-    wrefresh(citizens);
-    wrefresh(people);
-    wrefresh(main_title);
-}
 
-void create_interface(city_t *city_origin)
-{
-    char *title = "Simulation épidémie - Jour n°";
-    char *situations_title[NUMBER_OF_SITUATIONS] = { "Personnes en bonne santé",
-                                                     "Personnes malades",
-                                                     "Personnes décédées",
-                                                     "Cadavres brûlés" };
-    char *tiles[NUMBER_OF_DIF_TILES] = { "Terrain vague",
-                                         "Maison",
-                                         "Hôpital",
-                                         "Caserne" };
-    
-    int state;
-    int i;
-    int j;
-    
-    city = city_origin;
-    
-    initscr();
-    
-    main_title = newwin(HEADER_HEIGHT, COLS, 0, 0);
-    
-    titles = newwin(TITLES_HEIGHT,
-                    COLS,
-                    HEADER_HEIGHT,
-                    0);
-    
-    places = newwin(NUMBER_OF_DIF_TILES * 2 - 1,
-                    CITY_WIDTH * 2,
-                    HEADER_HEIGHT + TITLES_HEIGHT,
-                    (COLS / 2) - CITY_WIDTH * 2 - MARGIN);
-        
-    legend = newwin(CITY_HEIGHT,
-                    (COLS / 2) - MARGIN,
-                    HEADER_HEIGHT + TITLES_HEIGHT,
-                    (COLS / 2) + MARGIN);
-    
-    titles_2 = newwin(TITLES_HEIGHT,
-                      COLS,
-                      HEADER_HEIGHT + TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
-                      0);
-        
-    citizens = newwin(CITY_HEIGHT * 2 + (CITY_HEIGHT - 1),
-                      (CITY_WIDTH * 2 + (CITY_WIDTH - 1)) * 2,
-                      HEADER_HEIGHT + 2 * TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
-                      (COLS / 2) - ((CITY_WIDTH * 2 + (CITY_WIDTH - 1)) * 2) - MARGIN);
-    
-    situation = newwin(2 * NUMBER_OF_SITUATIONS - 1,
-                       size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS),
-                       HEADER_HEIGHT + 2*TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
-                       (COLS / 2) + MARGIN);
-    
-    people = newwin(2 * NUMBER_OF_SITUATIONS - 1,
-                    (int) log10(CITIZENS_NB) + 1,
-                    HEADER_HEIGHT + 2 * TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
-                    (COLS / 2) + MARGIN
-                    + size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS)
-                    + SPACE_SITUATION);
-    
-    start_color();
-    init_pair(TITLE, COLOR_BLACK, COLOR_WHITE);
-    
-    init_pair(HOUSE_CODE, COLOR_BLACK, COLOR_GREEN);
-    init_pair(HOSPITAL_CODE, COLOR_BLACK, COLOR_BLUE);
-    init_pair(FIRESTATION_CODE, COLOR_BLACK, COLOR_RED);
-    init_pair(WASTELAND_CODE, COLOR_BLACK, COLOR_YELLOW);
-    
-    init_pair(HEALTHY_CODE, COLOR_GREEN, COLOR_BLACK);
-    init_pair(SICK_CODE, COLOR_YELLOW, COLOR_BLACK);
-    init_pair(DEAD_CODE, COLOR_BLUE, COLOR_BLACK);
-    init_pair(BURNED_CODE, COLOR_RED, COLOR_BLACK);
-    
-    refresh();
-    
-    box(main_title,0,0);        
-    wattron(main_title, COLOR_PAIR(TITLE));        
-    mvwprintw(main_title, 1, (COLS / 2) - (strlen(title) / 2), title);
-    wattroff(main_title, COLOR_PAIR(TITLE));
-        
     next_day();
+
     
-    wattron(titles, A_UNDERLINE);
-    mvwprintw(titles, 1, (COLS/2) - CITY_WIDTH * 2 - MARGIN, "Cartes des lieux");
-    mvwprintw(titles, 1, (COLS/2) + MARGIN, "Légende");
-    wattroff(titles, A_UNDERLINE);
-    
-    wattron(titles_2, A_UNDERLINE);
-    mvwprintw(titles_2, 1, (COLS/2) - ((CITY_WIDTH * 2 + (CITY_WIDTH - 1)) * 2) - MARGIN,
-              "Cartes des citoyens");
-    mvwprintw(titles_2, 1, (COLS/2) + MARGIN, "Evolution de l'épidémie");
-    wattroff(titles_2, A_UNDERLINE);
-    
-    for (i = 0; i < CITY_WIDTH; i++) {
-        for (j = 0; j < CITY_HEIGHT; j++) {
-            set_type_of_tile(i, j, city->map[i][j].type);
-        }            
-    }
-    
-    for (i = 0; i < NUMBER_OF_DIF_TILES; i++) {
-        write_space(legend, i*2, 0, HOUSE + i);
-        mvwprintw(legend, i*2, 3, tiles[i]);
-    }
-    
-    for (i = 0; i < NUMBER_OF_SITUATIONS; i++) {
-        mvwprintw(situation, i*2, 0, situations_title[i]);
-    }
-    
-    set_number_of_people_in_state(CITIZENS_NB, HEALTHY_CODE);
-    set_number_of_people_in_state(0, SICK_CODE);
-    set_number_of_people_in_state(0, DEAD_CODE);
-    set_number_of_people_in_state(0, BURNED_CODE);
-    
-    for (state = HEALTHY_CODE; state <= BURNED_CODE; state++) {
-        for (i = 0; i < CITY_WIDTH; i++) {
-            for (j = 0; j< CITY_HEIGHT; j++) {
-                set_citizen_on_tile(i, j, 0, state);
-            }        
-        } 
-    }
-    
-    wrefresh(titles);
-    wrefresh(places);
-    wrefresh(legend);
-    wrefresh(titles_2);
     wrefresh(citizens);
-    wrefresh(situation);
     wrefresh(people);
     wrefresh(main_title);
 }
