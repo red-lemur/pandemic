@@ -289,6 +289,8 @@ void refill_treatment_pouches(status_t *status)
     pthread_mutex_lock(&mutex);
     status->treatment_pouches_nb = MAX_TREATMENT_POUCHES_NB;
     pthread_mutex_unlock(&mutex);
+
+    //printf("%s REFILL TREATMENT\n", status->name); ///
 }
 
 void refill_sprayer(status_t *status)
@@ -296,6 +298,8 @@ void refill_sprayer(status_t *status)
     pthread_mutex_lock(&mutex);
     status->sprayer_capacity = MAX_SPRAYER_CAPACITY;
     pthread_mutex_unlock(&mutex);
+
+    //printf("%s REFILL SPRAYER\n", status->name); ///
 }
 
 void add_citizen_in_tile(tile_t *tile)
@@ -416,12 +420,21 @@ void move_citizen(status_t *status)
                     pthread_mutex_lock(&mutex);
                     status->doctor_can_enter_hospital = DAYS_NB_DOCTOR_HAS_TO_WAIT;
                     pthread_mutex_unlock(&mutex);
-                    printf("%s LEFT THE HOSPITAL\n", status->name); ////
                 }
                 
                 update_citizen_coords(status, new_x, new_y);
                 increase_citizen_contamination(status, MOVE);
 
+                if (city->map[status->x][status->y].type == HOSPITAL
+                    && status->type == DOCTOR) {
+                    refill_treatment_pouches(status);
+                }
+
+                if (city->map[status->x][status->y].type == FIRESTATION
+                    && status->type == FIREMAN) {
+                    refill_sprayer(status);
+                }
+                
                 burn_the_dead(status);
                 return;
             }
@@ -480,7 +493,6 @@ void tile_decrease_citizen_contamination(status_t *status)
         pthread_mutex_lock(&mutex);
         status->contamination -= CONTAMINATION_DECREASE_IN_FIRESTATION;
         pthread_mutex_unlock(&mutex);
-        printf("%s DECREASE IN FIRESTATION\n", status->name);///
     }
     
     if (city->map[status->x][status->y].type == HOSPITAL
@@ -488,7 +500,6 @@ void tile_decrease_citizen_contamination(status_t *status)
         pthread_mutex_lock(&mutex);
         status->contamination -= CONTAMINATION_DECREASE_IN_HOSPITAL;
         pthread_mutex_unlock(&mutex);
-        printf("%s DECREASE IN HOSPITAL\n", status->name);///
 
         if (status->contamination < city->map[status->x][status->y].contamination) {
             status->contamination = city->map[status->x][status->y].contamination;
