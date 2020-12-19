@@ -11,13 +11,13 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-16
+ * @version 1.0.0 - 2020-12-19
  */
 
 /**
  * @file interface.c
  *
- *
+ * Interface between the user and the simulation.
  */
 
 #include <stdlib.h>
@@ -26,9 +26,14 @@
 
 #include "interface.h"
 
-WINDOW *main_title, *titles, *places, *legend, *titles_2, *citizens, *situation, *people;
-
-int day = 0;
+WINDOW *main_title;
+WINDOW *titles;
+WINDOW *places;
+WINDOW *legend;
+WINDOW *titles_2;
+WINDOW *citizens;
+WINDOW *situation;
+WINDOW *people;
 
 city_t *city;
 
@@ -63,12 +68,11 @@ int size_of_longest_string(char **strings, int size)
     return longest;
 }
 
-void next_day()
+void next_day(int round_nb)
 {
     char day_str[(int) log10(NUMBER_OF_DAYS) + 1];
     
-    day++;
-    sprintf(day_str, "%d", day);
+    sprintf(day_str, "%d", round_nb);
 
     wattron(main_title, COLOR_PAIR(TITLE));        
     mvwprintw(main_title, 1, (COLS / 2) + SIZE_OF_TITLE / 2, day_str);
@@ -88,7 +92,7 @@ void set_number_of_people_in_state(int number, int state_code)
     }
 
     sprintf(str, "%d", number);
-   
+    
     wattron(people, COLOR_PAIR(state_code));
     mvwprintw(people, y, 0, str);
     wattroff(people, COLOR_PAIR(state_code));
@@ -139,6 +143,7 @@ void initialize_interface()
 {
     initscr();
     start_color();
+    
     init_pair(TITLE, COLOR_BLACK, COLOR_WHITE);
     
     init_pair(HOUSE_CODE, COLOR_BLACK, COLOR_GREEN);
@@ -150,7 +155,7 @@ void initialize_interface()
     init_pair(SICK_CODE, COLOR_YELLOW, COLOR_BLACK);
     init_pair(DEAD_CODE, COLOR_BLUE, COLOR_BLACK);
     init_pair(BURNED_CODE, COLOR_RED, COLOR_BLACK);
-
+    
     curs_set(0);
     
     refresh();
@@ -160,14 +165,14 @@ void initialize_main_title()
 {
     char *title = "Simulation épidémie - Jour n°";
     main_title = newwin(HEADER_HEIGHT, COLS, 0, 0);
-    box(main_title,0,0);
-            
+    box(main_title, 0, 0);
+    
     wattron(main_title, COLOR_PAIR(TITLE));        
-    mvwprintw(main_title, 1, (COLS / 2) - (strlen(title) / 2), title);
+    mvwprintw(main_title, 1, (COLS / 2) - round(SIZE_OF_TITLE / 2.0), title);
     wattroff(main_title, COLOR_PAIR(TITLE));
-        
-    next_day();
-
+    
+    wrefresh(main_title);
+    next_day(0);
     wrefresh(main_title);
 }
 
@@ -205,13 +210,13 @@ void initialize_places()
                     CITY_WIDTH * 2,
                     HEADER_HEIGHT + TITLES_HEIGHT,
                     (COLS / 2) - CITY_WIDTH * 2 - MARGIN);
-
+    
     for (i = 0; i < CITY_WIDTH; i++) {
         for (j = 0; j < CITY_HEIGHT; j++) {
             set_type_of_tile(i, j, city->map[i][j].type);
-        }            
+        }
     }
-
+    
     wrefresh(places);
 }
 
@@ -277,7 +282,7 @@ void initialize_situations()
                     (COLS / 2) + MARGIN
                     + size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS)
                     + SPACE_SITUATION);
-
+    
     for (i = 0; i < NUMBER_OF_SITUATIONS; i++) {
         mvwprintw(situation, i*2, 0, situations_title[i]);
     }
@@ -285,12 +290,13 @@ void initialize_situations()
     set_number_of_people_in_state(CITIZENS_NB, HEALTHY_CODE);
     set_number_of_people_in_state(0, SICK_CODE);
     set_number_of_people_in_state(0, DEAD_CODE);
-    set_number_of_people_in_state(0, BURNED_CODE);    
-
-    refresh();
+    set_number_of_people_in_state(0, BURNED_CODE);
+    ///wbkgd(people, COLOR_PAIR(FIRESTATION_CODE));///
+    wrefresh(situation);
 
     wrefresh(people);
-    wrefresh(situation);
+
+    refresh();
 }
 
 void update_population_states(int *state_counters)
@@ -327,29 +333,26 @@ void fill_arrays_with_city(int ***population, int *state_counters)
         if (city->citizens[i].type == BURNED) {
             population[city->citizens[i].x][city->citizens[i].y][BURNED_STATE]++;
             state_counters[BURNED_STATE]++;
-        }
-        else if (city->citizens[i].type == DEAD) {
+        } else if (city->citizens[i].type == DEAD) {
             population[city->citizens[i].x][city->citizens[i].y][DEAD_STATE]++;
             state_counters[DEAD_STATE]++;
-        }
-        else if (city->citizens[i].is_sick) {
+        } else if (city->citizens[i].is_sick) {
             population[city->citizens[i].x][city->citizens[i].y][SICK_STATE]++;
             state_counters[SICK_STATE]++;
-        }
-        else {
+        } else {
             population[city->citizens[i].x][city->citizens[i].y][HEALTHY_STATE]++;
             state_counters[HEALTHY_STATE]++;
         }
     }   
 }
 
-void update_interface()
+void update_interface(int round_nb)
 {
     int i;
     int j;
     int ***population;
     int *state_counters;
-
+    
     state_counters = (int*) calloc(NUMBER_OF_SITUATIONS, sizeof(int));
     
     population = (int***) calloc(CITY_WIDTH, sizeof(int**));
@@ -359,16 +362,24 @@ void update_interface()
             population[i][j] = (int*) calloc(NUMBER_OF_SITUATIONS, sizeof(int));
         }
     }
-
+    
     fill_arrays_with_city(population, state_counters);
     update_population_states(state_counters);
     update_population_map(population);
 
-    next_day();
+    next_day(round_nb);
 
     wrefresh(citizens);
     wrefresh(people);
     wrefresh(main_title);
+
+    for (i = 0; i < CITY_WIDTH; i++) {
+        for (j = 0; j < CITY_HEIGHT; j++) {
+            free(population[i][j]);
+        }
+        free(population[i]);
+    }
+    free(population);
 }
 
 void end_interface()

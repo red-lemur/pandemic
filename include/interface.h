@@ -11,13 +11,13 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-16
+ * @version 1.0.0 - 2020-12-19
  */
 
 /**
  * @file interface.h
  *
- *
+ * Interface between the user and the simulation.
  */
 
 #ifndef INTERFACE_H
@@ -39,7 +39,7 @@
 #define NUMBER_OF_DIF_TILES 4
 #define NUMBER_OF_SITUATIONS 4
 
-#define SIZE_OF_TITLE 32
+#define SIZE_OF_TITLE 29
 
 #define NUMBER_OF_DAYS 10
 
@@ -49,121 +49,122 @@ enum { UP_LEFT, UP, UP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT };
 enum { HEALTHY_STATE, SICK_STATE, DEAD_STATE, BURNED_STATE };
 
 /**
- * @brief Converts a tile code into its color code
- * @param tile code of the tile.
+ * @brief Convert a tile code into its color code.
+ * @param tile Code of the tile.
  */
 int get_tile_color_code(int tile);
 
 /**
- * @brief Converts a state code into its color code
- * @param state code of the state
+ * @brief Convert a state code into its color code.
+ * @param state Code of the state.
  */
 int get_state_color_code(int state);
 
-
 /**
- * @brief write an empty space to symbolize a tile on given coordinates
- * @param win windows in which the space will be added
- * @param y y coordinate where the space will be added
- * @param x x coordinate where the space will be added
- * @param color_index color code of the space
+ * @brief Write an empty space to symbolize a tile on given coordinates.
+ * @param win Windows in which the space will be added.
+ * @param y Y coordinate where the space will be added.
+ * @param x X coordinate where the space will be added.
+ * @param color_index Color code of the space.
  */
 void write_space(WINDOW *win, int y, int x, int color_index);
 
 /**
- * @brief Returns the size of the longest string among an array of strings
- * @param strings array containing all of the strings
- * @param size size of the array
+ * @brief Return the size of the longest string among an array of strings.
+ * @param strings Array containing all of the strings.
+ * @param size Size of the array.
  */
 int size_of_longest_string(char **strings, int size);
 
 /**
- * @brief Replace the display of the current day by the next one at the top of the window
+ * @brief Replace the display of the current day by the next one at the top of the window.
+ * @param round_nb Num of the round.
  */
-void next_day();
+void next_day(int round_nb);
 
 /**
- * @brief Changes the total number of people in a specified state
- * @param number the new number of people in the specified state
- * @param state code of the state
+ * @brief Change the total number of people in a specified state.
+ * @param number The new number of people in the specified state.
+ * @param state Code of the state.
  */
 void set_number_of_people_in_state(int number, int state);
 
 /**
- * @brief Changes the total number of people on a specified tile
- * @param tile_x x coordinate of the tile
- * @param tile_y y coordinate of the tile
- * @param number the new number of people on the specified tile
- * @param state code of the state
+ * @brief Change the total number of people on a specified tile.
+ * @param tile_x X coordinate of the tile.
+ * @param tile_y Y coordinate of the tile.
+ * @param number The new number of people on the specified tile.
+ * @param state Code of the state.
  */
 void set_citizen_on_tile(int tile_x, int tile_y, int number, int state);
 
 /**
- * @brief Calls every functions that will initialize each part of the interface
+ * @brief Call every functions that will initialize each part of the interface.
  */
 void create_interface();
 
 /**
- * @brief Initializes the interface, every color code and clears the screen
+ * @brief Initialize the interface, every color code and clears the screen.
  */
 void initialize_interface();
 
 /**
- * @brief Initializes a window at the top and writes the title into it
+ * @brief Initialize a window at the top and writes the title into it.
  */
 void initialize_main_title();
 
 /**
- * @brief Initializes two windows and writes four titles that will correspond to the four main windows
+ * @brief Initialize two windows and writes four titles that will correspond to the four main windows.
  */
 void initialize_titles();
 
 /**
- * @brief Initializes a window at the top left of the window and displays the map into it
+ * @brief Initialize a window at the top left of the window and displays the map into it.
  */
 void initialize_places();
 
 /**
- * @brief Initializes a window at the right of the map and writes a legend for the map
+ * @brief Initialize a window at the right of the map and writes a legend for the map.
  */
 void initialize_legend();
 
 /**
- * @brief Initializes a window at the bottom left of the window and displays the location of every citizen into it
+ * @brief Initialize a window at the bottom left of the window and displays the location of every citizen into it.
  */
 void initialize_citizens();
 
 /**
- * @brief Initializes a window at the right of the citizen map and writes how many citizen are in what state
+ * @brief Initialize a window at the right of the citizen map and writes how many citizen are in what state.
  */
 void initialize_situations();
 
 /**
- * @brief Changes the population states with the array given
- * @param state_counters array with the number of people in each state
+ * @brief Change the population states with the array given.
+ * @param state_counters Array with the number of people in each state.
  */
 void update_population_states(int *state_counters);
 
 /**
- * @brief Changes the population map with the array given
- * @param population array with the number of people on each tile and different state
+ * @brief Change the population map with the array given.
+ * @param population Array with the number of people on each tile and different state.
  */
 void update_population_map(int ***population);
 
 /**
- * @brief Fills the two arrays with the city in shared memory
- * @param population array that will contain the number of people on each tile and different state
- * @param state_counters that will contain the number of people in each state
+ * @brief Fill the two arrays with the city in shared memory.
+ * @param population Array that will contain the number of people on each tile and different state.
+ * @param state_counters Array that will contain the number of people in each state.
  */
 void fill_arrays_with_city(int ***population, int *state_counters);
 
 /**
- * @brief Updates the place of citizens and their states with the city in the shared memory
+ * @brief Update the place of citizens and their states with the city in the shared memory.
+ * @param round_nb Num of the round.
  */
-void update_interface();
+void update_interface(int round_nb);
 
 /**
- * @brief Deletes all windows and quits the interface
+ * @brief Delete all windows and quit the interface.
  */
 void end_interface();
 

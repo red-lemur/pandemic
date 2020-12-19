@@ -411,9 +411,9 @@ void move_citizen(status_t *status)
                 add_citizen_in_tile(&(city->map[new_x][new_y]));
 
                 /////
-                if (city->map[new_x][new_y].type == HOSPITAL) {
+                /*if (city->map[new_x][new_y].type == HOSPITAL) {
                     printf("%s ENTERED THE HOSPITAL\n", status->name);
-                }
+                    }*/
                 /////
                 
                 if (city->map[status->x][status->y].type == HOSPITAL
@@ -705,7 +705,7 @@ void contaminate_citizens_in_same_tile(status_t *status)
         city->citizens[i].contamination += status->contamination
             * CONTAMINATION_CITIZEN_BY_CITIZEN;
         
-        printf("%s CONTAMINATE_TILE %s\n", status->name, city->citizens[i].name);///
+        //printf("%s CONTAMINATE_TILE %s\n", status->name, city->citizens[i].name);///
         
         if (city->citizens[i].contamination > MAX_CONTAMINATION) {
             city->citizens[i].contamination = MAX_CONTAMINATION;
@@ -746,7 +746,7 @@ void contaminate_citizens_in_wastelands_around(status_t *status)
         city->citizens[i].contamination += status->contamination
             * CONTAMINATION_CITIZEN_BY_CITIZEN;
         
-        printf("%s CONTAMINATE_WASTELAND %s\n", status->name, city->citizens[i].name);///
+        //printf("%s CONTAMINATE_WASTELAND %s\n", status->name, city->citizens[i].name);///
         
         if (city->citizens[i].contamination > MAX_CONTAMINATION) {
             city->citizens[i].contamination = MAX_CONTAMINATION;
@@ -772,7 +772,7 @@ void burn_the_dead(status_t *status)
             city->citizens[i].type = BURNED;
             city->citizens[i].is_sick = 0;
             pthread_mutex_unlock(&mutex);
-            printf("%s BURNED BY %s\n", city->citizens[i].name, status->name);/// 
+            //printf("%s BURNED BY %s\n", city->citizens[i].name, status->name);/// 
         }
     }
 }
@@ -820,7 +820,7 @@ void risk_of_death(status_t *status)
         pthread_mutex_lock(&mutex);
         status->type = DEAD;
         pthread_mutex_unlock(&mutex);
-        printf("=====> %s    %d\n", status->name, status->sickness_duration);
+        //printf("=====> %s    %d\n", status->name, status->sickness_duration);///
     }
 }
 

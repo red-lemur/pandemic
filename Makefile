@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -I./include -Wall -Wextra -pedantic -g
 LDFLAGS = -lrt -lpthread -lm -lncurses
-EXEC = bin/main bin/epidemic_sim bin/citizen_manager bin/press_agency bin/timer # bin/interface
+EXEC = bin/main bin/epidemic_sim bin/citizen_manager bin/press_agency bin/timer
 
 all: $(EXEC)
 
@@ -26,7 +26,7 @@ obj/timer.o: src/timer.c include/timer.h
 obj/city_sim.o: src/city_sim.c include/city_sim.h include/city.h
 obj/map_generator.o: src/map_generator.c include/map_generator.h src/city_sim.c include/city_sim.h include/city.h src/util.c include/util.h
 obj/util.o: src/util.c include/util.h
-obj/interface.o: src/interface.c include/interface.h include/city.h # include/exchanges_between_processes.h
+obj/interface.o: src/interface.c include/interface.h include/city.h
 
 clean:
 	rm -f obj/*.o

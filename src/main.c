@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-12
+ * @version 1.0.0 - 2020-12-19
  */
 
 /**
@@ -54,7 +54,7 @@ int main(void)
     sprintf(pid_epidemic_sim_arg, "%d", pid_epidemic_sim);
     
     pid_citizen_manager = fork();
-
+    
     switch (pid_citizen_manager) {
     case -1:
         perror("Error on fork()\n");
