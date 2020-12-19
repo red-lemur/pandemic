@@ -132,7 +132,7 @@ void create_interface()
     initialize_situations();    
     initialize_places();
     initialize_legend();
-    initialize_citizens();   
+    initialize_citizens();  
 }
 
 void initialize_interface() 
@@ -150,6 +150,8 @@ void initialize_interface()
     init_pair(SICK_CODE, COLOR_YELLOW, COLOR_BLACK);
     init_pair(DEAD_CODE, COLOR_BLUE, COLOR_BLACK);
     init_pair(BURNED_CODE, COLOR_RED, COLOR_BLACK);
+
+    curs_set(0);
     
     refresh();
 }
@@ -265,7 +267,6 @@ void initialize_situations()
                                                      "Personnes malades",
                                                      "Personnes décédées",
                                                      "Cadavres brûlés" };
-
     situation = newwin(2 * NUMBER_OF_SITUATIONS - 1,
                        size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS),
                        HEADER_HEIGHT + 2*TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
@@ -277,8 +278,6 @@ void initialize_situations()
                     + size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS)
                     + SPACE_SITUATION);
 
-
-
     for (i = 0; i < NUMBER_OF_SITUATIONS; i++) {
         mvwprintw(situation, i*2, 0, situations_title[i]);
     }
@@ -286,21 +285,12 @@ void initialize_situations()
     set_number_of_people_in_state(CITIZENS_NB, HEALTHY_CODE);
     set_number_of_people_in_state(0, SICK_CODE);
     set_number_of_people_in_state(0, DEAD_CODE);
-    set_number_of_people_in_state(0, BURNED_CODE);
+    set_number_of_people_in_state(0, BURNED_CODE);    
 
-    //wbkgd(situation, COLOR_PAIR(FIRESTATION_CODE));
+    refresh();
 
     wrefresh(people);
     wrefresh(situation);
-}
-
-void reset_array(int *tab, int size)
-{
-    int i;
-
-    for (i = 0; i < size; i++) {
-        tab[i] = 0;
-    }
 }
 
 void update_population_states(int *state_counters)
@@ -312,34 +302,26 @@ void update_population_states(int *state_counters)
     }
 }
 
-/*void update_population_map(int ***population)
-{
-    
-}*/
-
-/*void fill_arrays_with_city(int ***population, int *state_counters)
-{
-    
-}*/
-
-void update_interface()
+void update_population_map(int ***population)
 {
     int i;
     int j;
-    int population[CITY_WIDTH][CITY_HEIGHT][NUMBER_OF_SITUATIONS];
-    int state_counters[NUMBER_OF_SITUATIONS];
-
-    reset_array(state_counters, NUMBER_OF_SITUATIONS);
-    
+    int k;
 
     for (i = 0; i < CITY_WIDTH; i++) {
         for (j = 0; j < CITY_HEIGHT; j++) {
-            reset_array(population[i][j], NUMBER_OF_SITUATIONS);
+            for (k = 0; k < NUMBER_OF_SITUATIONS; k++) {
+                if (population[i][j][k]) {
+                    set_citizen_on_tile(i, j, population[i][j][k], get_state_color_code(k));
+                }
+            }
         }
     }
+}
 
-    //fill_arrays_with_city(population, state_counters);
-    //int i;
+void fill_arrays_with_city(int ***population, int *state_counters)
+{
+    int i;
 
     for (i = 0; i < CITIZENS_NB; i++) {
         if (city->citizens[i].type == BURNED) {
@@ -358,23 +340,29 @@ void update_interface()
             population[city->citizens[i].x][city->citizens[i].y][HEALTHY_STATE]++;
             state_counters[HEALTHY_STATE]++;
         }
-    }
+    }   
+}
 
-    update_population_states(state_counters);
-    //update_population_map(population);
-    //int i;
-    //int j;
-    int k;
+void update_interface()
+{
+    int i;
+    int j;
+    int ***population;
+    int *state_counters;
 
+    state_counters = (int*) calloc(NUMBER_OF_SITUATIONS, sizeof(int));
+    
+    population = (int***) calloc(CITY_WIDTH, sizeof(int**));
     for (i = 0; i < CITY_WIDTH; i++) {
+        population[i] = (int**) calloc(CITY_HEIGHT, sizeof(int*));
         for (j = 0; j < CITY_HEIGHT; j++) {
-            for (k = 0; k < NUMBER_OF_SITUATIONS; k++) {
-                if (population[i][j][k]) {
-                    set_citizen_on_tile(i, j, population[i][j][k], get_state_color_code(k));
-                }
-            }
+            population[i][j] = (int*) calloc(NUMBER_OF_SITUATIONS, sizeof(int));
         }
     }
+
+    fill_arrays_with_city(population, state_counters);
+    update_population_states(state_counters);
+    update_population_map(population);
 
     next_day();
 

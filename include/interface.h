@@ -139,6 +139,25 @@ void initialize_citizens();
 void initialize_situations();
 
 /**
+ * @brief Changes the population states with the array given
+ * @param state_counters array with the number of people in each state
+ */
+void update_population_states(int *state_counters);
+
+/**
+ * @brief Changes the population map with the array given
+ * @param population array with the number of people on each tile and different state
+ */
+void update_population_map(int ***population);
+
+/**
+ * @brief Fills the two arrays with the city in shared memory
+ * @param population array that will contain the number of people on each tile and different state
+ * @param state_counters that will contain the number of people in each state
+ */
+void fill_arrays_with_city(int ***population, int *state_counters);
+
+/**
  * @brief Updates the place of citizens and their states with the city in the shared memory
  */
 void update_interface();
