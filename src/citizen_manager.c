@@ -158,6 +158,7 @@ void *simple_citizen_process(void *status)
 void every_citizen_round(status_t *status)
 {
     tile_decrease_citizen_contamination(status);
+    sprayer_decontamination(status);
     increment_sickness_duration(status);
     increase_tile_contamination(status);
     contaminate_other_citizens_if_sick(status);
@@ -509,6 +510,47 @@ void tile_decrease_citizen_contamination(status_t *status)
     if (status->contamination < MIN_CONTAMINATION) {
         status->contamination = MIN_CONTAMINATION;
     }
+}
+
+void sprayer_decontamination(status_t *status)
+{
+    status_t *most_contaminated;
+    
+    if (status->type != FIREMAN || city->map[status->x][status->y].type == FIRESTATION) {
+        return;
+    }
+    
+    most_contaminated
+        = get_most_contaminated_citizen_of_tile(&(city->map[status->x][status->y]));
+    
+    if (most_contaminated == NULL) {
+        /////
+
+        printf("%s DECONTAMINATE TILE", status->name);
+    } else {
+        /////
+
+        printf("%s DECONTAMINATE %s", status->name, most_contaminated->name);
+    }
+}
+
+status_t *get_most_contaminated_citizen_of_tile(tile_t *tile)
+{
+    int i;
+    status_t *most_contaminated;
+
+    most_contaminated = NULL;
+    for (i = 0; i < CITIZENS_NB; i++) {
+        if (city->citizens[i].x != tile->x || city->citizens[i].y != tile->y) {
+            continue;
+        }
+        
+        if ((most_contaminated == NULL && city->citizens[i].contamination > 0)
+            || most_contaminated->contamination < city->citizens[i].contamination){
+            most_contaminated = &(city->citizens[i]); /// SEGFAULT
+        }
+    }
+    return most_contaminated;
 }
 
 void increase_tile_contamination(status_t *status)

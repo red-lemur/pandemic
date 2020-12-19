@@ -230,6 +230,19 @@ void generate_new_citizen_position(status_t *status, unsigned int* new_x, unsign
 void tile_decrease_citizen_contamination(status_t *status);
 
 /**
+ * @brief A fireman decreases a tile with its sprayer.
+ * @param status Status of the citizen.
+ */
+void sprayer_decontamination(status_t *status);
+
+/**
+ * @brief Return the most contaminated citizen on tile, if he exist.
+ * @param tile Tile where to search the most contaminated citizen.
+ * @return The most contaminated citizen if he exist / else null.
+ */
+status_t *get_most_contaminated_citizen_of_tile(tile_t *tile);
+
+/**
  * @brief Increase the contamination of a tile with the contamination level of a citizen.
  * @param status Status of the citizen.
  */
