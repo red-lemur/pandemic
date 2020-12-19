@@ -45,6 +45,9 @@ typedef enum { SIMPLE_CITIZEN, FIREMAN, DOCTOR, JOURNALIST, DEAD, BURNED } citiz
  * @param type The type of the citizen.
  * @param days_spend_in_hospital_healthy the number of days spent in the hospital while not being sick.
  * @param must_leave Indicates if the citizen must leave his tile.
+ * @param doctor_can_enter_hospital A doctor who leave the hospital can come back at least two days after.
+ * @param treatment_pouches_nb Number of treatment pouches if the citizen is a DOCTOR.
+ * @param sprayer_capacity Sprayer capacity if the citizen is a FIREMAN.
  */
 typedef struct status {
     unsigned int id;
@@ -57,6 +60,9 @@ typedef struct status {
     citizen_type_e type;
     int days_spent_in_hospital_healthy;
     int must_leave;
+    int doctor_can_enter_hospital;
+    int treatment_pouches_nb;
+    double sprayer_capacity;
 } status_t;
 
 /**

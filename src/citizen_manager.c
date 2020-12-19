@@ -62,12 +62,10 @@ int citizen_ended_nb = 0;
 void *doctor_process(void *status)
 {
     status_t *st = (status_t *) status;
-
-    int treatment_pouches_nb;
     
     int current_round;
     
-    init_doctor(st, &treatment_pouches_nb);
+    init_doctor(st);
     
     current_round = 0;
     for(;;) {        
@@ -78,13 +76,7 @@ void *doctor_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
-            tile_decrease_citizen_contamination(st);
-            increment_sickness_duration(st);
-            increase_tile_contamination(st);
-            contaminate_other_citizens_if_sick(st);
-            move_citizen(st);
-            risk_of_death(st);
-            risk_of_disease(st);
+            every_citizen_round(st);
         }
     }
     
@@ -95,11 +87,9 @@ void *fireman_process(void *status)
 {
     status_t *st = (status_t *) status;
 
-    double sprayer_capacity;
-
     int current_round;
     
-    init_fireman(st, &sprayer_capacity);
+    init_fireman(st);
 
     current_round = 0;
     for(;;) {        
@@ -110,13 +100,7 @@ void *fireman_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
-            tile_decrease_citizen_contamination(st);
-            increment_sickness_duration(st);
-            increase_tile_contamination(st);
-            contaminate_other_citizens_if_sick(st);
-            move_citizen(st);
-            risk_of_death(st);
-            risk_of_disease(st);
+            every_citizen_round(st);
         }
     }
     
@@ -140,13 +124,7 @@ void *journalist_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
-            tile_decrease_citizen_contamination(st);
-            increment_sickness_duration(st);
-            increase_tile_contamination(st);
-            contaminate_other_citizens_if_sick(st);
-            move_citizen(st);
-            risk_of_death(st);
-            risk_of_disease(st);
+            every_citizen_round(st);
         }
     }
     
@@ -170,20 +148,25 @@ void *simple_citizen_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
-            tile_decrease_citizen_contamination(st);
-            increment_sickness_duration(st);
-            increase_tile_contamination(st);
-            contaminate_other_citizens_if_sick(st);
-            move_citizen(st);
-            risk_of_death(st);
-            risk_of_disease(st);
+            every_citizen_round(st);
         }
     }
     
     pthread_exit(NULL);
 }
 
-void init_doctor(status_t *status, int* treatment_pouches_nb)
+void every_citizen_round(status_t *status)
+{
+    tile_decrease_citizen_contamination(status);
+    increment_sickness_duration(status);
+    increase_tile_contamination(status);
+    contaminate_other_citizens_if_sick(status);
+    move_citizen(status);
+    risk_of_death(status);
+    risk_of_disease(status);
+}
+
+void init_doctor(status_t *status)
 {
     int row;
     int col;
@@ -200,7 +183,7 @@ void init_doctor(status_t *status, int* treatment_pouches_nb)
                         && hospital_taken_counter == init_doctors_in_hospital) {
                         add_citizen_in_tile(&(city->map[col][row]));
                         init_citizen_status(status, col, row, DOCTOR);
-                        *treatment_pouches_nb = MAX_TREATMENT_POUCHES_NB;
+                        refill_treatment_pouches(status);
                         increment_init_doctors_in_hospital();
                         return;
                     }
@@ -211,11 +194,13 @@ void init_doctor(status_t *status, int* treatment_pouches_nb)
     }
     
     init_citizen(status, DOCTOR);
-    
-    *treatment_pouches_nb = TREATMENT_POUCHES_NB_AT_BEGINNING;
+
+    pthread_mutex_lock(&mutex);
+    status->treatment_pouches_nb = TREATMENT_POUCHES_NB_AT_BEGINNING;
+    pthread_mutex_unlock(&mutex);
 }
 
-void init_fireman(status_t *status, double *sprayer_capacity)
+void init_fireman(status_t *status)
 {
     int row;
     int col;
@@ -232,7 +217,7 @@ void init_fireman(status_t *status, double *sprayer_capacity)
                         && firestation_taken_counter == init_firemen_in_firestation) {
                         add_citizen_in_tile(&(city->map[col][row]));
                         init_citizen_status(status, col, row, FIREMAN);
-                        *sprayer_capacity = MAX_SPRAYER_CAPACITY;
+                        refill_sprayer(status);
                         increment_init_firemen_in_firestation();
                         return;
                     }
@@ -243,8 +228,10 @@ void init_fireman(status_t *status, double *sprayer_capacity)
     }
     
     init_citizen(status, FIREMAN);
-    
-    *sprayer_capacity = SPRAYER_CAPACITY_AT_BEGINNING;
+
+    pthread_mutex_lock(&mutex);
+    status->sprayer_capacity = SPRAYER_CAPACITY_AT_BEGINNING;
+    pthread_mutex_unlock(&mutex);
 }
 
 void init_citizen(status_t *status, citizen_type_e type)
@@ -277,6 +264,9 @@ void init_citizen_status(status_t *status, int x, int y, citizen_type_e type)
     status->type = type;
     status->days_spent_in_hospital_healthy = 0;
     status->must_leave = 0;
+    status->doctor_can_enter_hospital = 0;
+    status->treatment_pouches_nb = 0;
+    status->sprayer_capacity = 0;
     pthread_mutex_unlock(&mutex);
 }
 
@@ -291,6 +281,20 @@ void increment_init_firemen_in_firestation()
 {
     pthread_mutex_lock(&mutex);
     init_firemen_in_firestation++;
+    pthread_mutex_unlock(&mutex);
+}
+
+void refill_treatment_pouches(status_t *status)
+{
+    pthread_mutex_lock(&mutex);
+    status->treatment_pouches_nb = MAX_TREATMENT_POUCHES_NB;
+    pthread_mutex_unlock(&mutex);
+}
+
+void refill_sprayer(status_t *status)
+{
+    pthread_mutex_lock(&mutex);
+    status->sprayer_capacity = MAX_SPRAYER_CAPACITY;
     pthread_mutex_unlock(&mutex);
 }
 
@@ -313,6 +317,7 @@ void update_citizen_coords(status_t *status, unsigned int x, unsigned int y)
     pthread_mutex_lock(&mutex);
     status->x = x;
     status->y = y;
+    status->must_leave = 0;
     pthread_mutex_unlock(&mutex);
 }
 
@@ -385,6 +390,12 @@ void move_citizen(status_t *status)
     if (status->type == DEAD || status->type == BURNED) {
         return;
     }
+
+    if (status->doctor_can_enter_hospital > 0) {
+        pthread_mutex_lock(&mutex);
+        status->doctor_can_enter_hospital--;
+        pthread_mutex_unlock(&mutex);
+    }
     
     for (;;) {
         if (citizen_can_leave_tile(status)) {
@@ -399,6 +410,14 @@ void move_citizen(status_t *status)
                     printf("%s ENTERED THE HOSPITAL\n", status->name);
                 }
                 /////
+                
+                if (city->map[status->x][status->y].type == HOSPITAL
+                    && status->type == DOCTOR) {
+                    pthread_mutex_lock(&mutex);
+                    status->doctor_can_enter_hospital = DAYS_NB_DOCTOR_HAS_TO_WAIT;
+                    pthread_mutex_unlock(&mutex);
+                    printf("%s LEFT THE HOSPITAL\n", status->name); ////
+                }
                 
                 update_citizen_coords(status, new_x, new_y);
                 increase_citizen_contamination(status, MOVE);
@@ -429,7 +448,8 @@ int citizen_can_enter_tile(status_t *status, tile_t *tile)
             || firemen_nb_in_firestation(tile->x, tile->y) == -1
             || firemen_nb_in_firestation(tile->x, tile->y) > 0)
         && (city->map[tile->x][tile->y].type != HOSPITAL
-            || is_allowed_to_enter_in_a_hospital(status));
+            || is_allowed_to_enter_in_a_hospital(status))
+        && status->doctor_can_enter_hospital == 0;
 }
 
 void generate_new_citizen_position(status_t *status, unsigned int* new_x, unsigned int* new_y)
@@ -458,7 +478,7 @@ void tile_decrease_citizen_contamination(status_t *status)
     
     if (city->map[status->x][status->y].type == FIRESTATION) {
         pthread_mutex_lock(&mutex);
-        status->contamination -= status->contamination * CONTAMINATION_DECREASE_IN_FIRESTATION;
+        status->contamination -= CONTAMINATION_DECREASE_IN_FIRESTATION;
         pthread_mutex_unlock(&mutex);
         printf("%s DECREASE IN FIRESTATION\n", status->name);///
     }
@@ -466,7 +486,7 @@ void tile_decrease_citizen_contamination(status_t *status)
     if (city->map[status->x][status->y].type == HOSPITAL
         && status->contamination > city->map[status->x][status->y].contamination) {
         pthread_mutex_lock(&mutex);
-        status->contamination -= status->contamination * CONTAMINATION_DECREASE_IN_HOSPITAL;
+        status->contamination -= CONTAMINATION_DECREASE_IN_HOSPITAL;
         pthread_mutex_unlock(&mutex);
         printf("%s DECREASE IN HOSPITAL\n", status->name);///
 

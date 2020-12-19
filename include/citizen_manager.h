@@ -39,6 +39,8 @@
 
 #define PROB_TO_STAY_ON_TILE 0.6
 
+#define DAYS_NB_DOCTOR_HAS_TO_WAIT 2
+
 #define CONTAMINATION_INCREASE_MOVE_CITIZEN 0.02
 #define CONTAMINATION_INCREASE_STAY_CITIZEN 0.05
 #define CONTAMINATION_INCREASE_TILE 0.1
@@ -88,18 +90,22 @@ void *journalist_process(void *status);
 void *simple_citizen_process(void *status);
 
 /**
+ * @brief Every citizen does the same actions during a round.
+ * @param status Status of the citizen.
+ */
+void every_citizen_round(status_t *status);
+
+/**
  * @brief Initialize a doctor.
  * @param status Status of the doctor.
- * @param treatment_pouches_nb Number of treatment pouches of the doctor.
- **/
-void init_doctor(status_t *status, int* treatment_pouches_nb);
+ */
+void init_doctor(status_t *status);
 
 /**
  * @brief Initialize a fireman.
  * @param status Status of the fireman.
- * @param sprayer_capacity Capacity of the sprayer of the fireman.
- **/
-void init_fireman(status_t *status, double *sprayer_capacity);
+ */
+void init_fireman(status_t *status);
 
 /**
  * @brief Initialize a citizen.
@@ -126,6 +132,18 @@ void increment_init_doctors_in_hospital();
  * @brief Increment a global variable that counts the number of firemen initialized in a firestation.
  */
 void increment_init_firemen_in_firestation();
+
+/**
+ * @brief Refill the treatment pouches of a doctor.
+ * @param status Status of the citizen.
+ */
+void refill_treatment_pouches(status_t *status);
+
+/**
+ * @brief Refill the sprayer of a fireman.
+ * @param status Status of the citizen.
+ */
+void refill_sprayer(status_t *status);
 
 /**
  * @brief Add a citizen in a tile.
