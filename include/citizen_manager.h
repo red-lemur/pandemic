@@ -33,6 +33,7 @@
 #define MAX_TREATMENT_POUCHES_NB 10
 #define MAX_SPRAYER_CAPACITY 10
 #define MAX_SPRAYER_USE 0.1
+#define MAX_SPRAYER_DECONTAMINATION 0.2
 
 #define TREATMENT_POUCHES_NB_AT_BEGINNING 5
 #define SPRAYER_CAPACITY_AT_BEGINNING 5
@@ -237,10 +238,28 @@ void sprayer_decontamination(status_t *status);
 
 /**
  * @brief Return the most contaminated citizen on tile, if he exist.
+ * @param fireman_status Fireman currently decontaminating.
  * @param tile Tile where to search the most contaminated citizen.
  * @return The most contaminated citizen if he exist / else null.
  */
-status_t *get_most_contaminated_citizen_of_tile(tile_t *tile);
+status_t *get_most_contaminated_citizen_of_tile(status_t *fireman_status, tile_t *tile);
+
+/**
+ * @brief Decontaminate a tile with a sprayer.
+ * @param status Status of the fireman.
+ * @param tile Tile to be decontaminated.
+ * @param decontamination Decontamination to be applied.
+ */
+void decontamine_tile_with_sprayer(status_t *status, tile_t *tile, double decontamination);
+
+/**
+ * @brief Decontaminate a citizen with a sprayer.
+ * @param fireman_status Status of the fireman.
+ * @param citizen_status Status of the citizens to be decontaminated.
+ * @param decontamination Decontamination to be applied.
+ */
+void decontamine_citizen_with_sprayer(status_t *fireman_status, status_t *citizen_status,
+                                      double decontamination);
 
 /**
  * @brief Increase the contamination of a tile with the contamination level of a citizen.

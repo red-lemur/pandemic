@@ -515,42 +515,95 @@ void tile_decrease_citizen_contamination(status_t *status)
 void sprayer_decontamination(status_t *status)
 {
     status_t *most_contaminated;
+    double sprayer_used;
     
     if (status->type != FIREMAN || city->map[status->x][status->y].type == FIRESTATION) {
         return;
     }
-    
-    most_contaminated
-        = get_most_contaminated_citizen_of_tile(&(city->map[status->x][status->y]));
-    
-    if (most_contaminated == NULL) {
-        /////
 
-        printf("%s DECONTAMINATE TILE", status->name);
-    } else {
-        /////
-
-        printf("%s DECONTAMINATE %s", status->name, most_contaminated->name);
+    sprayer_used = 0;
+    do {
+        most_contaminated
+            = get_most_contaminated_citizen_of_tile(status, &(city->map[status->x][status->y]));
+        
+        if (most_contaminated == NULL) {
+            if (city->map[status->x][status->y].contamination == 0) {
+                break;
+            }
+            
+            if (city->map[status->x][status->y].contamination < MAX_SPRAYER_DECONTAMINATION) {
+                decontamine_tile_with_sprayer(status, &(city->map[status->x][status->y]),
+                                              city->map[status->x][status->y].contamination);
+                sprayer_used += city->map[status->x][status->y].contamination;
+            } else {
+                decontamine_tile_with_sprayer(status, &(city->map[status->x][status->y]),
+                                              MAX_SPRAYER_DECONTAMINATION);
+                sprayer_used += MAX_SPRAYER_DECONTAMINATION;
+            }
+        } else {
+            if (most_contaminated->contamination < MAX_SPRAYER_DECONTAMINATION) {
+                decontamine_citizen_with_sprayer(status, most_contaminated,
+                                                 most_contaminated->contamination);
+                sprayer_used += most_contaminated->contamination;
+            } else {
+                decontamine_citizen_with_sprayer(status, most_contaminated,
+                                                 MAX_SPRAYER_DECONTAMINATION);
+                sprayer_used += MAX_SPRAYER_DECONTAMINATION;
+            }
+        }
     }
+    while (sprayer_used < MAX_SPRAYER_USE && status->sprayer_capacity > 0
+           && !(most_contaminated == NULL
+                && city->map[status->x][status->y].contamination == 0));
 }
 
-status_t *get_most_contaminated_citizen_of_tile(tile_t *tile)
+status_t *get_most_contaminated_citizen_of_tile(status_t *fireman_status, tile_t *tile)
 {
     int i;
     status_t *most_contaminated;
 
     most_contaminated = NULL;
     for (i = 0; i < CITIZENS_NB; i++) {
-        if (city->citizens[i].x != tile->x || city->citizens[i].y != tile->y) {
+        if (city->citizens[i].x != tile->x || city->citizens[i].y != tile->y
+            || city->citizens[i].id == fireman_status->id) {
             continue;
         }
         
-        if ((most_contaminated == NULL && city->citizens[i].contamination > 0)
-            || most_contaminated->contamination < city->citizens[i].contamination){
-            most_contaminated = &(city->citizens[i]); /// SEGFAULT
+        if (most_contaminated == NULL) {
+            if (city->citizens[i].contamination > 0) {
+                most_contaminated = &(city->citizens[i]);
+            }
+        }
+        else if (most_contaminated->contamination < city->citizens[i].contamination) {
+            most_contaminated = &(city->citizens[i]);
         }
     }
     return most_contaminated;
+}
+
+void decontamine_tile_with_sprayer(status_t *status, tile_t *tile, double decontamination)
+{
+    if (status->sprayer_capacity < decontamination) {
+        decontamination = status->sprayer_capacity;
+    }
+    
+    pthread_mutex_lock(&mutex);
+    tile->contamination -= decontamination;
+    status->sprayer_capacity -= decontamination;
+    pthread_mutex_unlock(&mutex);
+}
+
+void decontamine_citizen_with_sprayer(status_t *fireman_status, status_t *citizen_status,
+                                      double decontamination)
+{
+    if (fireman_status->sprayer_capacity < decontamination) {
+        decontamination = fireman_status->sprayer_capacity;
+    }
+    
+    pthread_mutex_lock(&mutex);
+    citizen_status->contamination -= decontamination;
+    fireman_status->sprayer_capacity -= decontamination;
+    pthread_mutex_unlock(&mutex);
 }
 
 void increase_tile_contamination(status_t *status)
