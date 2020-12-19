@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-16
+ * @version 1.0.0 - 2020-12-19
  */
 
 /**
@@ -35,6 +35,7 @@ typedef enum { SIMPLE_CITIZEN, FIREMAN, DOCTOR, JOURNALIST, DEAD, BURNED } citiz
 
 /**
  * @brief Defines the status of a citizen.
+ * @param id ID of the citizen for him to be unique.
  * @param name The name of the citizen.
  * @param x The x coordinate in the city.
  * @param y The y coordinate in the city.
@@ -46,6 +47,7 @@ typedef enum { SIMPLE_CITIZEN, FIREMAN, DOCTOR, JOURNALIST, DEAD, BURNED } citiz
  * @param must_leave Indicates if the citizen must leave his tile.
  */
 typedef struct status {
+    unsigned int id;
     char name[CITIZEN_NAME_MAX_LENGTH];
     unsigned int x;
     unsigned int y;

@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-16
+ * @version 1.0.0 - 2020-12-19
  */
 
 /**
@@ -52,6 +52,8 @@ pthread_mutex_t mutex;
 
 int citizen_round;
 
+unsigned int id_generator = 0;
+
 int init_doctors_in_hospital = 0;
 int init_firemen_in_firestation = 0;
 
@@ -78,6 +80,7 @@ void *doctor_process(void *status)
             current_round++;
             increment_sickness_duration(st);
             increase_tile_contamination(st);
+            contaminate_other_citizens_if_sick(st);
             move_citizen(st);
             risk_of_death(st);
             risk_of_disease(st);
@@ -108,6 +111,7 @@ void *fireman_process(void *status)
             current_round++;
             increment_sickness_duration(st);
             increase_tile_contamination(st);
+            contaminate_other_citizens_if_sick(st);
             move_citizen(st);
             risk_of_death(st);
             risk_of_disease(st);
@@ -136,6 +140,7 @@ void *journalist_process(void *status)
             current_round++;
             increment_sickness_duration(st);
             increase_tile_contamination(st);
+            contaminate_other_citizens_if_sick(st);
             move_citizen(st);
             risk_of_death(st);
             risk_of_disease(st);
@@ -164,6 +169,7 @@ void *simple_citizen_process(void *status)
             current_round++;
             increment_sickness_duration(st);
             increase_tile_contamination(st);
+            contaminate_other_citizens_if_sick(st);
             move_citizen(st);
             risk_of_death(st);
             risk_of_disease(st);
@@ -179,7 +185,6 @@ void init_doctor(status_t *status, int* treatment_pouches_nb)
     int col;
 
     int hospital_taken_counter;
-    //printf("Je suis un docteur\n"); ///
     
     if (init_doctors_in_hospital < city->hospital_tiles_nb) {
         hospital_taken_counter = 0;
@@ -204,8 +209,6 @@ void init_doctor(status_t *status, int* treatment_pouches_nb)
     init_citizen(status, DOCTOR);
     
     *treatment_pouches_nb = TREATMENT_POUCHES_NB_AT_BEGINNING;
-
-    //printf("Je suis un docteur et END\n"); ///
 }
 
 void init_fireman(status_t *status, double *sprayer_capacity)
@@ -214,7 +217,6 @@ void init_fireman(status_t *status, double *sprayer_capacity)
     int col;
     
     int firestation_taken_counter;
-    //printf("Je suis un pompier\n"); ///
     
     if (init_firemen_in_firestation < city->firestation_tiles_nb) {
         firestation_taken_counter = 0;
@@ -239,8 +241,6 @@ void init_fireman(status_t *status, double *sprayer_capacity)
     init_citizen(status, FIREMAN);
     
     *sprayer_capacity = SPRAYER_CAPACITY_AT_BEGINNING;
-
-    //printf("Je suis un pompier et END\n"); ///
 }
 
 void init_citizen(status_t *status, citizen_type_e type)
@@ -263,6 +263,7 @@ void init_citizen(status_t *status, citizen_type_e type)
 void init_citizen_status(status_t *status, int x, int y, citizen_type_e type)
 {
     pthread_mutex_lock(&mutex);
+    status->id = id_generator++;
     strcpy(status->name, CITIZEN_NAMES[generate_random_index(NAMES_NB)]);
     status->x = x;
     status->y = y;
@@ -374,8 +375,8 @@ int is_allowed_to_enter_in_a_hospital(status_t *status)
 
 void move_citizen(status_t *status)
 {
-    int new_x;
-    int new_y;
+    unsigned int new_x;
+    unsigned int new_y;
     
     if (status->type == DEAD || status->type == BURNED) {
         return;
@@ -388,9 +389,17 @@ void move_citizen(status_t *status)
             if (citizen_can_enter_tile(status, &(city->map[new_x][new_y]))) {
                 remove_citizen_from_tile(&(city->map[status->x][status->y]));
                 add_citizen_in_tile(&(city->map[new_x][new_y]));
+
+                /////
+                if (city->map[new_x][new_y].type == HOSPITAL) {
+                    printf("%s ENTERED THE HOSPITAL\n", status->name);
+                }
+                /////
                 
                 update_citizen_coords(status, new_x, new_y);
                 increase_citizen_contamination(status, MOVE);
+
+                burn_the_dead(status);
                 return;
             }
         } else {
@@ -419,19 +428,21 @@ int citizen_can_enter_tile(status_t *status, tile_t *tile)
             || is_allowed_to_enter_in_a_hospital(status));
 }
 
-void generate_new_citizen_position(status_t *status, int* new_x, int* new_y)
+void generate_new_citizen_position(status_t *status, unsigned int* new_x, unsigned int* new_y)
 {
     int min_x;
     int min_y;
     int max_x;
     int max_y;
 
-    min_x = status->x == 0 ? 0 : -1;
-    min_y = status->y == 0 ? 0 : -1;
-    max_x = status->x == CITY_WIDTH - 1 ? 0 : 1;
-    max_y = status->y == CITY_HEIGHT - 1 ? 0 : 1;
-    *new_x = status->x + generate_random_int_in_interval(min_x, max_x);
-    *new_y = status->y + generate_random_int_in_interval(min_y, max_y);
+    min_x = (status->x == 0) ? 0 : -1;
+    min_y = (status->y == 0) ? 0 : -1;
+    max_x = (status->x == CITY_WIDTH - 1) ? 0 : 1;
+    max_y = (status->y == CITY_HEIGHT - 1) ? 0 : 1;
+    do {
+        *new_x = generate_random_int_in_interval(status->x + min_x, status->x + max_x);
+        *new_y = generate_random_int_in_interval(status->y + min_y, status->y + max_y);
+    } while (*new_x == status->x && *new_y == status->y);
 }
 
 void increase_tile_contamination(status_t *status)
@@ -495,6 +506,114 @@ void increase_citizen_contamination(status_t *status, int move)
     }
     
     pthread_mutex_unlock(&mutex);
+}
+
+void contaminate_other_citizens_if_sick(status_t *status)
+{
+    if (!status->is_sick) {
+        return;
+    }
+
+    if (generate_random_percentage() <= PROB_CONTAMINATE_IF_SICK_TILE) {
+        contaminate_citizens_in_same_tile(status);
+    }
+    
+    if (generate_random_percentage() <= PROB_CONTAMINATE_IF_SICK_WASTELANDS_AROUND) {
+        contaminate_citizens_in_wastelands_around(status);
+    }
+}
+
+void contaminate_citizens_in_same_tile(status_t *status)
+{
+    int i;
+    
+    for (i = 0; i < CITIZENS_NB; i++) {
+        if (city->citizens[i].x != status->x
+            || city->citizens[i].y != status->y
+            || city->citizens[i].id == status->id) {
+            continue;
+        }
+        
+        if (city->citizens[i].type == FIREMAN
+            && generate_random_percentage() <= FIREMAN_PROTECTION_CITIZEN) {
+            continue;
+        }
+        
+        pthread_mutex_lock(&mutex);
+        
+        city->citizens[i].contamination += status->contamination
+            * CONTAMINATION_CITIZEN_BY_CITIZEN;
+        
+        printf("%s CONTAMINATE_TILE %s\n", status->name, city->citizens[i].name);///
+        
+        if (city->citizens[i].contamination > MAX_CONTAMINATION) {
+            city->citizens[i].contamination = MAX_CONTAMINATION;
+        }
+        
+        pthread_mutex_unlock(&mutex);
+    }
+}
+
+void contaminate_citizens_in_wastelands_around(status_t *status)
+{
+    int i;
+    unsigned int other_x;
+    unsigned int other_y;
+
+    if (city->map[status->x][status->y].type != WASTELAND) {
+        return;
+    }
+    
+    for (i = 0; i < CITIZENS_NB; i++) {
+        other_x = city->citizens[i].x;
+        other_y = city->citizens[i].y;
+        
+        if (city->map[other_x][other_y].type != WASTELAND
+            || other_x < status->x - 1 || other_x > status->y + 1
+            || other_y < status->y - 1 || other_y > status->y + 1
+            || (other_x == status->x && other_y == status->y)) {
+            continue;
+        }
+        
+        if (city->citizens[i].type == FIREMAN
+            && generate_random_percentage() <= FIREMAN_PROTECTION_CITIZEN) {
+            continue;
+        }
+        
+        pthread_mutex_lock(&mutex);
+        
+        city->citizens[i].contamination += status->contamination
+            * CONTAMINATION_CITIZEN_BY_CITIZEN;
+        
+        printf("%s CONTAMINATE_WASTELAND %s\n", status->name, city->citizens[i].name);///
+        
+        if (city->citizens[i].contamination > MAX_CONTAMINATION) {
+            city->citizens[i].contamination = MAX_CONTAMINATION;
+        }
+        
+        pthread_mutex_unlock(&mutex);
+    }
+}
+
+void burn_the_dead(status_t *status)
+{
+    int i;
+    
+    if (status->type != FIREMAN) {
+        return;
+    }
+    
+    for (i = 0; i < CITIZENS_NB; i++) {
+        if (city->citizens[i].x == status->x
+            && city->citizens[i].y == status->y
+            && city->citizens[i].type == DEAD) {
+            pthread_mutex_lock(&mutex);
+            city->citizens[i].type = BURNED;
+            city->citizens[i].is_sick = 0;
+            pthread_mutex_unlock(&mutex);
+            printf("%s BURNED BY %s\n", city->citizens[i].name, status->name);/// 
+        }
+    }
 }
 
 void risk_of_disease(status_t *status)

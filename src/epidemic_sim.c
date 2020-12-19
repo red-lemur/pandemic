@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-16
+ * @version 1.0.0 - 2020-12-19
  */
 
 /**
@@ -44,6 +44,8 @@ int fifo_to_citizen_manager;
 fifo_message_e message_to_citizen_manager[1];
 
 int simulation_is_not_over = 1;
+
+int round_nb = 0;
 
 city_t *city;
 
@@ -148,28 +150,29 @@ void launch_simulation()
 
 void simulation_round()
 {
-    //printf("Round\n"); ///
+    printf("=====================================================\n"); ///
+    printf("Round %d\n", ++round_nb); ///
     
     // write in evolution.txt
 
     update_wastelands_contamination();
 
     /* DEBUG */
-    int row, col;
-    printf("=====================================================\n");
-    for (row = 0; row < CITY_HEIGHT; row++) {
+    //int row, col;
+    printf("=====================================================\n"); ///
+    /*for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_WIDTH; col++) {
             printf("[%d %.3lf %d] ", city->map[col][row].type,
                    city->map[col][row].contamination, city->map[col][row].citizens_nb);
         }
         printf("\n");
-        }
+        }*/
     int i;
     for (i = 0; i < CITIZENS_NB; i++) {
         printf("%d %d %.3lf T%d S%d %s\n", city->citizens[i].x, city->citizens[i].y,
                city->citizens[i].contamination, city->citizens[i].type,
                city->citizens[i].is_sick, city->citizens[i].name);
-    }
+               }
     /* ----- */
     
     *message_to_citizen_manager = NEXT_ROUND;
@@ -242,7 +245,7 @@ int main(void)
     //create_interface(city);
     
     launch_simulation();
-
+    
     //end_interface();
 
     close(fifo_to_citizen_manager);

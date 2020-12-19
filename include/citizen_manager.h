@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-16
+ * @version 1.0.0 - 2020-12-19
  */
 
 /**
@@ -42,10 +42,15 @@
 #define CONTAMINATION_INCREASE_MOVE_CITIZEN 0.02
 #define CONTAMINATION_INCREASE_STAY_CITIZEN 0.05
 #define CONTAMINATION_INCREASE_TILE 0.1
+#define CONTAMINATION_CITIZEN_BY_CITIZEN 0.01
+
+#define PROB_CONTAMINATE_IF_SICK_TILE 0.1
+#define PROB_CONTAMINATE_IF_SICK_WASTELANDS_AROUND 0.01
 
 #define HOSPITAL_CONTAMINATION_REDUCTION 0.25
 
 #define FIREMAN_PROTECTION_FACTOR 0.1
+#define FIREMAN_PROTECTION_CITIZEN 0.7
 
 #define DAYS_NB_DISEASE_DEADLY 5
 #define PROB_OF_DEATH_BY_DAY 0.05
@@ -195,7 +200,7 @@ int citizen_can_enter_tile(status_t *status, tile_t *tile);
  * @param new_x Possible new x coordinate in the city.
  * @param new_y Possible new y coordinate in the city.
  */
-void generate_new_citizen_position(status_t *status, int* new_x, int* new_y);
+void generate_new_citizen_position(status_t *status, unsigned int* new_x, unsigned int* new_y);
 
 /**
  * @brief Increase the contamination of a tile with the contamination level of a citizen.
@@ -209,6 +214,30 @@ void increase_tile_contamination(status_t *status);
  * @param move Indicate if the citizen has moved or not.
  */
 void increase_citizen_contamination(status_t *status, int move);
+
+/**
+ * @brief A citizen has a chance to contaminate other citizens if he is sick.
+ * @param status Status of the citizen.
+ */
+void contaminate_other_citizens_if_sick(status_t *status);
+
+/**
+ * @brief A citizen contaminate the citizens on his tile.
+ * @param status Status of the citizen.
+ */
+void contaminate_citizens_in_same_tile(status_t *status);
+
+/**
+ * @brief A citizen contaminate the citizens in WASTELANDS around.
+ * @param status Status of the citizen.
+ */
+void contaminate_citizens_in_wastelands_around(status_t *status);
+
+/**
+ * @brief If a citizen is a FIREMAN, he can burn the dead in a tile he enters.
+ * @param status Status of the citizen.
+ */
+void burn_the_dead(status_t *status);
 
 /**
  * @brief A citizen gets sick if he is too contaminated.
