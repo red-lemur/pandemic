@@ -121,22 +121,6 @@ void increase_wasteland_contamination(tile_t *tile, double other_tile_contaminat
     }
 }
 
-/*void launch_interface()
-{
-    int pid;
-    
-    pid = fork();
-    
-    switch (pid) {
-    case -1:
-        perror("Error on fork()\n");
-        exit(EXIT_FAILURE);
-    case 0:
-        execl(INTERFACE_URL, INTERFACE_NAME, NULL);
-        exit(EXIT_FAILURE);
-        }
-}*/
-
 void launch_simulation()
 {
     for(;;) {
@@ -158,15 +142,15 @@ void simulation_round()
     update_wastelands_contamination();
 
     /* DEBUG */
-    //int row, col;
+    int row, col;
     printf("=====================================================\n"); ///
-    /*for (row = 0; row < CITY_HEIGHT; row++) {
+    for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_WIDTH; col++) {
             printf("[%d %.3lf %d] ", city->map[col][row].type,
                    city->map[col][row].contamination, city->map[col][row].citizens_nb);
         }
         printf("\n");
-        }*/
+    }
     int i;
     for (i = 0; i < CITIZENS_NB; i++) {
         printf("%d %d %.3lf T%d S%d %s\n", city->citizens[i].x, city->citizens[i].y,
@@ -225,22 +209,6 @@ int main(void)
         perror("Error while opening a FIFO\n");
         exit(EXIT_FAILURE);
     }
-    
-    /* TEST DEBUG MAP */
-    /*int row, col;
-    for (row = 0; row < CITY_HEIGHT; row++) {
-        for (col = 0; col < CITY_HEIGHT; col++) {
-            printf("%d", city->map[col][row].type);
-        }
-        printf("\n");
-    }
-    for (row = 0; row < CITY_HEIGHT; row++) {
-        for (col = 0; col < CITY_HEIGHT; col++) {
-            printf("%.3lf ", city->map[col][row].contamination);
-        }
-        printf("\n");
-        }*/
-    /* ----- */
     
     //create_interface(city);
     

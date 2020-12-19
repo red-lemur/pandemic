@@ -78,6 +78,7 @@ void *doctor_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
+            tile_decrease_citizen_contamination(st);
             increment_sickness_duration(st);
             increase_tile_contamination(st);
             contaminate_other_citizens_if_sick(st);
@@ -109,6 +110,7 @@ void *fireman_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
+            tile_decrease_citizen_contamination(st);
             increment_sickness_duration(st);
             increase_tile_contamination(st);
             contaminate_other_citizens_if_sick(st);
@@ -138,6 +140,7 @@ void *journalist_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
+            tile_decrease_citizen_contamination(st);
             increment_sickness_duration(st);
             increase_tile_contamination(st);
             contaminate_other_citizens_if_sick(st);
@@ -167,6 +170,7 @@ void *simple_citizen_process(void *status)
 
         if (current_round < citizen_round) {
             current_round++;
+            tile_decrease_citizen_contamination(st);
             increment_sickness_duration(st);
             increase_tile_contamination(st);
             contaminate_other_citizens_if_sick(st);
@@ -439,10 +443,41 @@ void generate_new_citizen_position(status_t *status, unsigned int* new_x, unsign
     min_y = (status->y == 0) ? 0 : -1;
     max_x = (status->x == CITY_WIDTH - 1) ? 0 : 1;
     max_y = (status->y == CITY_HEIGHT - 1) ? 0 : 1;
+
     do {
         *new_x = generate_random_int_in_interval(status->x + min_x, status->x + max_x);
         *new_y = generate_random_int_in_interval(status->y + min_y, status->y + max_y);
     } while (*new_x == status->x && *new_y == status->y);
+}
+
+void tile_decrease_citizen_contamination(status_t *status)
+{
+    if (status->type == DEAD || status->type == BURNED) {
+        return;
+    }
+    
+    if (city->map[status->x][status->y].type == FIRESTATION) {
+        pthread_mutex_lock(&mutex);
+        status->contamination -= status->contamination * CONTAMINATION_DECREASE_IN_FIRESTATION;
+        pthread_mutex_unlock(&mutex);
+        printf("%s DECREASE IN FIRESTATION\n", status->name);///
+    }
+    
+    if (city->map[status->x][status->y].type == HOSPITAL
+        && status->contamination > city->map[status->x][status->y].contamination) {
+        pthread_mutex_lock(&mutex);
+        status->contamination -= status->contamination * CONTAMINATION_DECREASE_IN_HOSPITAL;
+        pthread_mutex_unlock(&mutex);
+        printf("%s DECREASE IN HOSPITAL\n", status->name);///
+
+        if (status->contamination < city->map[status->x][status->y].contamination) {
+            status->contamination = city->map[status->x][status->y].contamination;
+        }
+    }
+
+    if (status->contamination < MIN_CONTAMINATION) {
+        status->contamination = MIN_CONTAMINATION;
+    }
 }
 
 void increase_tile_contamination(status_t *status)

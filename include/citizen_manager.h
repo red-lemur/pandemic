@@ -44,6 +44,9 @@
 #define CONTAMINATION_INCREASE_TILE 0.1
 #define CONTAMINATION_CITIZEN_BY_CITIZEN 0.01
 
+#define CONTAMINATION_DECREASE_IN_FIRESTATION 0.2
+#define CONTAMINATION_DECREASE_IN_HOSPITAL 0.1
+
 #define PROB_CONTAMINATE_IF_SICK_TILE 0.1
 #define PROB_CONTAMINATE_IF_SICK_WASTELANDS_AROUND 0.01
 
@@ -201,6 +204,12 @@ int citizen_can_enter_tile(status_t *status, tile_t *tile);
  * @param new_y Possible new y coordinate in the city.
  */
 void generate_new_citizen_position(status_t *status, unsigned int* new_x, unsigned int* new_y);
+
+/**
+ * @brief Depending on the tile he is on, the contamination of a citizen can decrease.
+ * @param status Status of the citizen.
+ */
+void tile_decrease_citizen_contamination(status_t *status);
 
 /**
  * @brief Increase the contamination of a tile with the contamination level of a citizen.
