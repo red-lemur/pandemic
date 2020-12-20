@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-19
+ * @version 1.0.0 - 2020-12-20
  */
 
 /**
@@ -25,7 +25,7 @@
 
 #include <signal.h>
 
-#define TOTAL_TOUR_NB 50 // 100
+#define TOTAL_TOUR_NB 10 // 100
 
 /**
  * @brief Emit a signal which call this function again.

@@ -121,7 +121,7 @@ void set_citizen_on_tile(int tile_x, int tile_y, int number, int state_code)
     }
 
     wattron(citizens, COLOR_PAIR(state_code));
-    mvwprintw(citizens, tile_y*3 + shift_bottom, tile_x*6 + shift_right, str);
+    mvwprintw(citizens, tile_y*3 + shift_bottom + 1, tile_x*6 + shift_right + 1, str);
     wattroff(citizens, COLOR_PAIR(state_code));
 }
 
@@ -244,11 +244,11 @@ void initialize_citizens()
     int j;
     int state;
     
-    citizens = newwin(CITY_HEIGHT * 2 + (CITY_HEIGHT - 1),
-                      (CITY_WIDTH * 2 + (CITY_WIDTH - 1)) * 2,
-                      HEADER_HEIGHT + 2 * TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
+    citizens = newwin(CITY_HEIGHT * 2 + (CITY_HEIGHT - 1) + 2,
+                      (CITY_WIDTH * 2 + (CITY_WIDTH - 1)) * 2 + 1,
+                      HEADER_HEIGHT + 2 * TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN - 1,
                       (COLS / 2) - ((CITY_WIDTH * 2 + (CITY_WIDTH - 1)) * 2) - MARGIN);
-    //box(citizens, 0, 0);
+    box(citizens, 0, 0);
     
     for (state = HEALTHY_CODE; state <= BURNED_CODE; state++) {
         for (i = 0; i < CITY_WIDTH; i++) {
@@ -274,7 +274,7 @@ void initialize_situations()
                        HEADER_HEIGHT + 2*TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
                        (COLS / 2) + MARGIN);
     people = newwin(2 * NUMBER_OF_SITUATIONS - 1,
-                    (int) log10(CITIZENS_NB) + 1 + 3,
+                    (int) log10(CITIZENS_NB) + 1,
                     HEADER_HEIGHT + 2 * TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
                     (COLS / 2) + MARGIN
                     + size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS)
@@ -366,6 +366,9 @@ void update_interface(int round_nb, city_t *city)
     fill_arrays_with_city(population, state_counters, city);
 
     wclear(citizens);
+    wclear(people);
+
+    box(citizens, 0, 0);
     
     update_population_states(state_counters);
     update_population_map(population);
