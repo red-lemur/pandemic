@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-19
+ * @version 1.0.0 - 2020-12-20
  */
 
 /**
@@ -142,20 +142,21 @@ void initialize_situations();
  * @brief Change the population states with the array given.
  * @param state_counters Array with the number of people in each state.
  */
-void update_population_states(int *state_counters);
+void update_population_states(int state_counters[NUMBER_OF_SITUATIONS]);
 
 /**
  * @brief Change the population map with the array given.
  * @param population Array with the number of people on each tile and different state.
  */
-void update_population_map(int ***population);
+void update_population_map(int population[CITY_WIDTH][CITY_HEIGHT][NUMBER_OF_SITUATIONS]);
 
 /**
  * @brief Fill the two arrays with the city in shared memory.
  * @param population Array that will contain the number of people on each tile and different state.
  * @param state_counters Array that will contain the number of people in each state.
  */
-void fill_arrays_with_city(int ***population, int *state_counters);
+void fill_arrays_with_city(int population[CITY_WIDTH][CITY_HEIGHT][NUMBER_OF_SITUATIONS],
+                           int state_counters[NUMBER_OF_SITUATIONS]);
 
 /**
  * @brief Update the place of citizens and their states with the city in the shared memory.

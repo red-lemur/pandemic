@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-19
+ * @version 1.0.0 - 2020-12-20
  */
 
 /**
@@ -58,7 +58,7 @@ void write_space(WINDOW *win, int y, int x, int color_index)
 int size_of_longest_string(char **strings, int size)
 {
     unsigned int longest = strlen(strings[0]);
-
+    
     for (int i = 1; i < size; i++) {
         if (strlen(strings[i]) > longest) {
             longest = strlen(strings[i]);
@@ -296,10 +296,10 @@ void initialize_situations()
 
     wrefresh(people);
 
-    refresh();
+    //refresh();
 }
 
-void update_population_states(int *state_counters)
+void update_population_states(int state_counters[NUMBER_OF_SITUATIONS])
 {
     int i;
 
@@ -308,7 +308,7 @@ void update_population_states(int *state_counters)
     }
 }
 
-void update_population_map(int ***population)
+void update_population_map(int population[CITY_WIDTH][CITY_HEIGHT][NUMBER_OF_SITUATIONS])
 {
     int i;
     int j;
@@ -325,7 +325,8 @@ void update_population_map(int ***population)
     }
 }
 
-void fill_arrays_with_city(int ***population, int *state_counters)
+void fill_arrays_with_city(int population[CITY_WIDTH][CITY_HEIGHT][NUMBER_OF_SITUATIONS],
+                           int state_counters[NUMBER_OF_SITUATIONS])
 {
     int i;
 
@@ -350,16 +351,19 @@ void update_interface(int round_nb)
 {
     int i;
     int j;
-    int ***population;
-    int *state_counters;
+    int k;
+    int population[CITY_WIDTH][CITY_HEIGHT][NUMBER_OF_SITUATIONS];
+    int state_counters[NUMBER_OF_SITUATIONS];
     
-    state_counters = (int*) calloc(NUMBER_OF_SITUATIONS, sizeof(int));
+    for (i = 0; i < NUMBER_OF_SITUATIONS; i++) {
+        state_counters[i] = 0;
+    }
     
-    population = (int***) calloc(CITY_WIDTH, sizeof(int**));
     for (i = 0; i < CITY_WIDTH; i++) {
-        population[i] = (int**) calloc(CITY_HEIGHT, sizeof(int*));
         for (j = 0; j < CITY_HEIGHT; j++) {
-            population[i][j] = (int*) calloc(NUMBER_OF_SITUATIONS, sizeof(int));
+            for (k = 0; k < NUMBER_OF_SITUATIONS; k++) {
+                population[i][j][k] = 0;
+            }
         }
     }
     
@@ -372,14 +376,6 @@ void update_interface(int round_nb)
     wrefresh(citizens);
     wrefresh(people);
     wrefresh(main_title);
-
-    for (i = 0; i < CITY_WIDTH; i++) {
-        for (j = 0; j < CITY_HEIGHT; j++) {
-            free(population[i][j]);
-        }
-        free(population[i]);
-    }
-    free(population);
 }
 
 void end_interface()
