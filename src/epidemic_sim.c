@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-19
+ * @version 1.0.0 - 2020-12-20
  */
 
 /**
@@ -163,7 +163,7 @@ void simulation_round()
     *message_to_citizen_manager = NEXT_ROUND;
     write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));
 
-    update_interface(round_nb);
+    update_interface(round_nb, city);
 }
 
 void end_of_simulation()

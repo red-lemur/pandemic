@@ -25,7 +25,7 @@
 
 #include <signal.h>
 
-#define TOTAL_TOUR_NB 4 // 100
+#define TOTAL_TOUR_NB 50 // 100
 
 /**
  * @brief Emit a signal which call this function again.

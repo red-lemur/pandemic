@@ -100,8 +100,9 @@ void set_citizen_on_tile(int tile_x, int tile_y, int number, int state);
 
 /**
  * @brief Call every functions that will initialize each part of the interface.
+ * @param city City to display.
  */
-void create_interface();
+void create_interface(city_t *city);
 
 /**
  * @brief Initialize the interface, every color code and clears the screen.
@@ -120,8 +121,9 @@ void initialize_titles();
 
 /**
  * @brief Initialize a window at the top left of the window and displays the map into it.
+ * @param city City to display.
  */
-void initialize_places();
+void initialize_places(city_t *city);
 
 /**
  * @brief Initialize a window at the right of the map and writes a legend for the map.
@@ -154,15 +156,17 @@ void update_population_map(int population[CITY_WIDTH][CITY_HEIGHT][NUMBER_OF_SIT
  * @brief Fill the two arrays with the city in shared memory.
  * @param population Array that will contain the number of people on each tile and different state.
  * @param state_counters Array that will contain the number of people in each state.
+ * @param city City that contains the people.
  */
 void fill_arrays_with_city(int population[CITY_WIDTH][CITY_HEIGHT][NUMBER_OF_SITUATIONS],
-                           int state_counters[NUMBER_OF_SITUATIONS]);
+                           int state_counters[NUMBER_OF_SITUATIONS], city_t *city);
 
 /**
  * @brief Update the place of citizens and their states with the city in the shared memory.
  * @param round_nb Num of the round.
+ * @param city City to display.
  */
-void update_interface(int round_nb);
+void update_interface(int round_nb, city_t *city);
 
 /**
  * @brief Delete all windows and quit the interface.
