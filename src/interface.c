@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-20
+ * @version 1.0.0 - 2020-12-21
  */
 
 /**
@@ -131,7 +131,7 @@ void set_type_of_tile(int tile_x, int tile_y, int type)
 }
 
 void create_interface(city_t *city)
-{    
+{
     initialize_interface();
     initialize_main_title();
     initialize_titles();
@@ -265,14 +265,15 @@ void initialize_situations()
 {
     int i;
 
-    char *situations_title[NUMBER_OF_SITUATIONS] = { "Personnes en bonne santé",
-                                                     "Personnes malades",
-                                                     "Personnes décédées",
+    char *situations_title[NUMBER_OF_SITUATIONS] = { "Personnes saines",
+                                                     "Nombre de malades",
+                                                     "Personnes décédées   ",
                                                      "Cadavres brûlés" };
     situation = newwin(2 * NUMBER_OF_SITUATIONS - 1,
                        size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS),
                        HEADER_HEIGHT + 2*TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
                        (COLS / 2) + MARGIN);
+    
     people = newwin(2 * NUMBER_OF_SITUATIONS - 1,
                     (int) log10(CITIZENS_NB) + 1,
                     HEADER_HEIGHT + 2 * TITLES_HEIGHT + CITY_HEIGHT + VERTICAL_MARGIN,
@@ -283,16 +284,7 @@ void initialize_situations()
     for (i = 0; i < NUMBER_OF_SITUATIONS; i++) {
         mvwprintw(situation, i*2, 0, situations_title[i]);
     }
-
-    wclear(people);
-    set_number_of_people_in_state(CITIZENS_NB, HEALTHY_CODE);
-    set_number_of_people_in_state(0, SICK_CODE);
-    set_number_of_people_in_state(0, DEAD_CODE);
-    set_number_of_people_in_state(0, BURNED_CODE);
-
     wrefresh(situation);
-
-    wrefresh(people);
 }
 
 void update_population_states(int state_counters[NUMBER_OF_SITUATIONS])
@@ -367,7 +359,7 @@ void update_interface(int round_nb, city_t *city)
 
     wclear(citizens);
     wclear(people);
-
+    
     box(citizens, 0, 0);
     
     update_population_states(state_counters);
