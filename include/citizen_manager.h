@@ -219,6 +219,13 @@ int citizen_can_leave_tile(status_t *status);
 int citizen_can_enter_tile(status_t *status, tile_t *tile);
 
 /**
+ * @brief A citizen move if he can enter a tile.
+ * @param status Status of the citizen.
+ * @return 1 if the citizen managed to leave / 0 if not.
+ */
+int citizen_try_to_leave_tile(status_t *status);
+
+/**
  * @brief Healed citizen must leave the hospital if it is full.
  * @param tile Tile the hospital is.
  */

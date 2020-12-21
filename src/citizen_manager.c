@@ -390,9 +390,6 @@ int is_allowed_to_enter_in_a_hospital(status_t *status)
 
 void move_citizen(status_t *status)
 {
-    unsigned int new_x;
-    unsigned int new_y;
-    
     if (status->type == DEAD || status->type == BURNED) {
         return;
     }
@@ -405,44 +402,8 @@ void move_citizen(status_t *status)
     
     for (;;) {
         if (citizen_can_leave_tile(status)) {
-            generate_new_citizen_position(status, &new_x, &new_y);
-            
-            if (citizen_can_enter_tile(status, &(city->map[new_x][new_y]))) {
-                remove_citizen_from_tile(&(city->map[status->x][status->y]));
-                add_citizen_in_tile(&(city->map[new_x][new_y]));
-                
-                if (city->map[status->x][status->y].type == HOSPITAL
-                    && status->type == DOCTOR) {
-                    pthread_mutex_lock(&mutex);
-                    status->doctor_can_enter_hospital = DAYS_NB_DOCTOR_HAS_TO_WAIT;
-                    pthread_mutex_unlock(&mutex);
-                }
-                
-                update_citizen_coords(status, new_x, new_y);
-                increase_citizen_contamination(status, MOVE);
-                
-                if (status->must_leave) {
-                    pthread_mutex_lock(&mutex);
-                    status->must_leave = 0;
-                    pthread_mutex_unlock(&mutex);
-                }
-                
-                if (city->map[status->x][status->y].type == HOSPITAL
-                    && status->type == DOCTOR) {
-                    refill_treatment_pouches(status);
-                }
-                
-                if (city->map[status->x][status->y].type == FIRESTATION
-                    && status->type == FIREMAN) {
-                    refill_sprayer(status);
-                }
-                
-                burn_the_dead(status);
+            if (citizen_try_to_leave_tile(status)) {
                 return;
-            } else if (status->type != DEAD && status->is_sick
-                       && city->map[new_x][new_y].type == HOSPITAL
-                       && tile_is_full(&(city->map[new_x][new_y]))) {
-                healed_citizens_must_leave_hospital(&(city->map[new_x][new_y]));
             }
         } else {
             if (city->map[status->x][status->y].type == HOSPITAL
@@ -485,6 +446,53 @@ int citizen_can_enter_tile(status_t *status, tile_t *tile)
         && (city->map[tile->x][tile->y].type != HOSPITAL
             || is_allowed_to_enter_in_a_hospital(status))
         && status->doctor_can_enter_hospital == 0;
+}
+
+int citizen_try_to_leave_tile(status_t *status)
+{
+    unsigned int new_x;
+    unsigned int new_y;
+    
+    generate_new_citizen_position(status, &new_x, &new_y);
+    
+    if (citizen_can_enter_tile(status, &(city->map[new_x][new_y]))) {
+        remove_citizen_from_tile(&(city->map[status->x][status->y]));
+        add_citizen_in_tile(&(city->map[new_x][new_y]));
+        
+        if (city->map[status->x][status->y].type == HOSPITAL
+            && status->type == DOCTOR) {
+            pthread_mutex_lock(&mutex);
+            status->doctor_can_enter_hospital = DAYS_NB_DOCTOR_HAS_TO_WAIT;
+            pthread_mutex_unlock(&mutex);
+        }
+        
+        update_citizen_coords(status, new_x, new_y);
+        increase_citizen_contamination(status, MOVE);
+        
+        if (status->must_leave) {
+            pthread_mutex_lock(&mutex);
+            status->must_leave = 0;
+            pthread_mutex_unlock(&mutex);
+        }
+        
+        if (city->map[status->x][status->y].type == HOSPITAL
+            && status->type == DOCTOR) {
+            refill_treatment_pouches(status);
+        }
+        
+        if (city->map[status->x][status->y].type == FIRESTATION
+            && status->type == FIREMAN) {
+            refill_sprayer(status);
+        }
+        
+        burn_the_dead(status);
+        return 1;
+    } else if (status->type != DEAD && status->is_sick
+               && city->map[new_x][new_y].type == HOSPITAL
+               && tile_is_full(&(city->map[new_x][new_y]))) {
+        healed_citizens_must_leave_hospital(&(city->map[new_x][new_y]));
+    }
+    return 0;
 }
 
 void healed_citizens_must_leave_hospital(tile_t* tile)

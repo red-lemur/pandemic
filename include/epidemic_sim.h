@@ -100,4 +100,15 @@ void simulation_round();
  */
 void end_of_simulation();
 
+/**
+ * @brief Reset the evolution.txt file.
+ */
+void reset_evolution_file();
+
+/**
+ * @brief Save the evolution of the simulation in a file.
+ * @param round_nb Number of the simulation round.
+ */
+void save_evolution(int round_nb);
+
 #endif

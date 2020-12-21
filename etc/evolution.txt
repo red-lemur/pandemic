@@ -1,0 +1,5 @@
+# Tours | Personnes saines | Personnes malades | Personnes décédées | Cadavres brûlés
+1	37	0	0	0
+2	37	0	0	0
+3	37	0	0	0
+4	37	0	0	0

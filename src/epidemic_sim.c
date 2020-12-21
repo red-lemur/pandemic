@@ -35,6 +35,7 @@
 #include "exchanges_between_processes.h"
 #include "util.h"
 #include "interface.h"
+#include "file_paths.h"
 
 struct sigaction action_sigusr1;
 struct sigaction action_sigusr2;
@@ -216,8 +217,8 @@ void simulation_round()
     //printf("=====================================================\n"); ///
     //printf("Round %d\n", round_nb); ///
     
-    // write in evolution.txt
-
+    save_evolution(round_nb);
+    
     update_wastelands_contamination();
 
     /* DEBUG */
@@ -258,6 +259,47 @@ void end_of_simulation()
     simulation_is_not_over = 0;
 }
 
+void reset_evolution_file()
+{
+    FILE* file;
+    file = fopen(EVOLUTION_URL, "w");
+    fprintf(file, "# Tours | Personnes saines | Personnes malades | Personnes décédées | Cadavres brûlés\n");
+    fclose(file);
+}
+
+void save_evolution(int round_nb)
+{
+    FILE* file = NULL;
+    int burned_counter;
+    int dead_counter;
+    int sick_counter;
+    int sane_counter;
+    int i;
+
+    burned_counter = 0;
+    dead_counter = 0;
+    sick_counter = 0;
+    sane_counter = 0;
+    for (i = 0; i < CITIZENS_NB; i++) {
+        if (city->citizens[i].type == BURNED) {
+            burned_counter++;
+        } else if (city->citizens[i].type == DEAD) {
+            dead_counter++;
+        } else if (city->citizens[i].is_sick) {
+            sick_counter++;
+        } else {
+            sane_counter++;
+        }
+    }
+    
+    file = fopen(EVOLUTION_URL, "a");    
+    if (file != NULL) {
+	fprintf(file, "%d\t%d\t%d\t%d\t%d\n", round_nb, sane_counter, sick_counter,
+                dead_counter, burned_counter);
+	fclose(file);
+    }
+}
+
 /* mqd_t create_mqueue(); */
 
 int main(void)
@@ -294,9 +336,8 @@ int main(void)
     }
     
     create_interface(city);
-    
+    reset_evolution_file();
     launch_simulation();
-    
     end_interface();
 
     close(fifo_to_citizen_manager);
@@ -311,5 +352,11 @@ int main(void)
     if (shm_unlink(SHARED_MEM) < 0) {
         perror("Error when calling shm_unlink()\n");
     }
-    exit(EXIT_SUCCESS);
+
+    if (execlp("gnuplot", "gnuplot", "-persist", COMMANDS_URL, (void*) 0) < 0) {
+        printf("Error calling gnuplot\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    //exit(EXIT_SUCCESS);
 }

@@ -266,7 +266,7 @@ void initialize_situations()
     int i;
 
     char *situations_title[NUMBER_OF_SITUATIONS] = { "Personnes saines",
-                                                     "Nombre de malades",
+                                                     "Personnes malades",
                                                      "Personnes décédées   ",
                                                      "Cadavres brûlés" };
     situation = newwin(2 * NUMBER_OF_SITUATIONS - 1,
@@ -332,7 +332,7 @@ void fill_arrays_with_city(int population[CITY_WIDTH][CITY_HEIGHT][NUMBER_OF_SIT
             population[city->citizens[i].x][city->citizens[i].y][HEALTHY_STATE]++;
             state_counters[HEALTHY_STATE]++;
         }
-    }   
+    }
 }
 
 void update_interface(int round_nb, city_t *city)

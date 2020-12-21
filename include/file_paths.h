@@ -11,13 +11,13 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-16
+ * @version 1.0.0 - 2020-12-21
  */
 
 /**
  * @file file_paths.h
  *
- * Constants defining the paths ans args of program files.
+ * Constants defining the paths and args of program files.
  */
 
 #ifndef FILE_PATHS_H
@@ -32,5 +32,8 @@
 #define TIMER_URL "./bin/timer"
 #define TIMER_NAME "timer"
 #define TIMER_ARG "1"
+
+#define EVOLUTION_URL "./etc/evolution.txt"
+#define COMMANDS_URL "./etc/commands.gp"
 
 #endif
