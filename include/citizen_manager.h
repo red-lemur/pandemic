@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-19
+ * @version 1.0.0 - 2020-12-21
  */
 
 /**
@@ -41,6 +41,7 @@
 #define PROB_TO_STAY_ON_TILE 0.6
 
 #define DAYS_NB_DOCTOR_HAS_TO_WAIT 2
+#define DAYS_NB_SICK_DOCTOR_CAN_HEAL_HIMSELF 10
 
 #define CONTAMINATION_INCREASE_MOVE_CITIZEN 0.02
 #define CONTAMINATION_INCREASE_STAY_CITIZEN 0.05
@@ -237,7 +238,7 @@ void tile_decrease_citizen_contamination(status_t *status);
 void sprayer_decontamination(status_t *status);
 
 /**
- * @brief Return the most contaminated citizen on tile, if he exist.
+ * @brief Return the most contaminated citizen on a given tile, if he exist.
  * @param fireman_status Fireman currently decontaminating.
  * @param tile Tile where to search the most contaminated citizen.
  * @return The most contaminated citizen if he exist / else null.
@@ -260,6 +261,25 @@ void decontamine_tile_with_sprayer(status_t *status, tile_t *tile, double decont
  */
 void decontamine_citizen_with_sprayer(status_t *fireman_status, status_t *citizen_status,
                                       double decontamination);
+/**
+ * @brief A ctitizen who is a doctor can heal other citizens under some conditions.
+ * @param status Status of the citizen.
+ */
+void doctor_can_heal(status_t *status);
+
+/**
+ * @brief A doctor heals a citizen.
+ * @param doctor_status Status of the doctor.
+ * @param citizen_status Status of the citizen.
+ */
+void heal(status_t *doctor_status, status_t *citizen_status);
+
+/**
+ * @brief Return the sickest citizen on a given tile, if he exist.
+ * @param tile Tile where to search the sickest citizen.
+ * @return The sickest citizen if he exist / else null.
+ */
+status_t *get_sickest_citizen_of_tile(tile_t *tile);
 
 /**
  * @brief Increase the contamination of a tile with the contamination level of a citizen.
