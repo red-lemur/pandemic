@@ -121,6 +121,84 @@ void increase_wasteland_contamination(tile_t *tile, double other_tile_contaminat
     }
 }
 
+void hospitals_heal()
+{
+    int row;
+    int col;
+    
+    for (row = 0; row < CITY_HEIGHT; row++) {
+        for (col = 0; col < CITY_WIDTH; col++) {
+            if (city->map[col][row].type == HOSPITAL) {
+                hospital_heal_tile(&(city->map[col][row]));
+            }   
+        }
+    }
+}
+
+void hospital_heal_tile(tile_t *tile)
+{
+    status_t *sickest;
+    int healthy_doctors_nb_on_tile;
+    int i;
+
+    healthy_doctors_nb_on_tile = get_healthy_doctors_nb_on_tile(tile);
+    
+    for (i = 0; i < healthy_doctors_nb_on_tile; i++) {
+        sickest = get_sickest_citizen_of_tile(tile);
+
+        if (sickest == NULL) {
+            return;
+        }
+        
+        heal_citizen(sickest);
+        //printf("%s HEALED BY HOSPITAL\n", sickest->name); ///
+    }
+}
+
+int get_healthy_doctors_nb_on_tile(tile_t *tile)
+{
+    int counter;
+    int i;
+
+    counter = 0;
+    for (i = 0; i < CITIZENS_NB; i++) {
+        if (city->citizens[i].x == tile->x && city->citizens[i].y == tile->y
+            && city->citizens[i].type == DOCTOR && !city->citizens[i].is_sick) {
+            counter++;
+        }
+    }
+
+    return counter;
+}
+
+status_t *get_sickest_citizen_of_tile(tile_t *tile)
+{
+    status_t *sickest;
+    int i;
+    
+    sickest = NULL;
+    for (i = 0; i < CITIZENS_NB; i++) {
+        if (city->citizens[i].x != tile->x || city->citizens[i].y != tile->y
+            || !city->citizens[i].is_sick) {
+            continue;
+        }
+        
+        if (sickest == NULL) {
+            sickest = &(city->citizens[i]);
+        } else if (sickest->sickness_duration < city->citizens[i].sickness_duration) {
+            sickest = &(city->citizens[i]);
+        }
+    }
+    return sickest;
+}
+
+void heal_citizen(status_t *status)
+{
+    status->is_sick = 0;
+    status->sickness_duration = 0;
+    //status->contamination = 0;
+}
+
 void launch_simulation()
 {
     for(;;) {
@@ -135,15 +213,15 @@ void launch_simulation()
 void simulation_round()
 {
     ++round_nb;
-    printf("=====================================================\n"); ///
-    printf("Round %d\n", round_nb); ///
+    //printf("=====================================================\n"); ///
+    //printf("Round %d\n", round_nb); ///
     
     // write in evolution.txt
 
     update_wastelands_contamination();
 
     /* DEBUG */
-    int row, col;
+    /*int row, col;
     printf("=====================================================\n"); ///
     for (row = 0; row < CITY_HEIGHT; row++) {
         for (col = 0; col < CITY_WIDTH; col++) {
@@ -159,18 +237,20 @@ void simulation_round()
                city->citizens[i].contamination, city->citizens[i].type,
                city->citizens[i].is_sick,
                city->citizens[i].treatment_pouches_nb, city->citizens[i].name);
-               }
+               }*/
     /* ----- */
+
+    hospitals_heal();
     
     *message_to_citizen_manager = NEXT_ROUND;
     write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));
 
-    //update_interface(round_nb, city);
+    update_interface(round_nb, city);
 }
 
 void end_of_simulation()
 {
-    printf("End of the simulation !\n"); ///
+    //printf("End of the simulation !\n"); ///
 
     *message_to_citizen_manager = END_OF_SIMULATION;
     write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));
@@ -213,11 +293,11 @@ int main(void)
         exit(EXIT_FAILURE);
     }
     
-    //create_interface(city);
+    create_interface(city);
     
     launch_simulation();
     
-    //end_interface();
+    end_interface();
 
     close(fifo_to_citizen_manager);
     unlink(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);

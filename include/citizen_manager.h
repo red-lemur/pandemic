@@ -55,6 +55,7 @@
 #define PROB_CONTAMINATE_IF_SICK_WASTELANDS_AROUND 0.01
 
 #define HOSPITAL_CONTAMINATION_REDUCTION 0.25
+#define MAX_DAYS_IN_HOSPITAL_HEALTHY 2
 
 #define FIREMAN_PROTECTION_FACTOR 0.1
 #define FIREMAN_PROTECTION_CITIZEN 0.7
@@ -216,6 +217,12 @@ int citizen_can_leave_tile(status_t *status);
  * @return 1 if the citizen can enter / 0 if not.
  */
 int citizen_can_enter_tile(status_t *status, tile_t *tile);
+
+/**
+ * @brief Healed citizen must leave the hospital if it is full.
+ * @param tile Tile the hospital is.
+ */
+void healed_citizens_must_leave_hospital(tile_t* tile);
 
 /**
  * Generate a possible new position for a citizen.

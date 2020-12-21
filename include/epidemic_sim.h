@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-16
+ * @version 1.0.0 - 2020-12-21
  */
 
 /**
@@ -48,6 +48,37 @@ void update_wastelands_contamination();
  * @param other_tile_contamination Contamination of another tile.
  */
 void increase_wasteland_contamination(tile_t *tile, double other_tile_contamination);
+
+/**
+ * @brief Hospitals can heal some citizens each round.
+ */
+void hospitals_heal();
+
+/**
+ * @brief Heal some citizens on an hospital tile.
+ * @param tile Tile where the hospital is.
+ */
+void hospital_heal_tile(tile_t *tile);
+
+/**
+ * @brief Return the number of healthy doctors in a tile.
+ * @param tile Tile where to search the doctors.
+ * @return The number of healthy doctors.
+ */
+int get_healthy_doctors_nb_on_tile(tile_t *tile);
+
+/**
+ * @brief Return the sickest citizen on a given tile, if he exist.
+ * @param tile Tile where to search the sickest citizen.
+ * @return The sickest citizen if he exist / else null.
+ */
+status_t *get_sickest_citizen_of_tile(tile_t *tile);
+
+/**
+ * @brief Heal a citizen.
+ * @param status Status of the citizen.
+ */
+void heal_citizen(status_t *status);
 
 /**
  * @brief Create and launch the interface.
