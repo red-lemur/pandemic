@@ -27,7 +27,14 @@
 #define MQUEUE "/news"
 
 #define FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL "/tmp/epidemic_sim_to_citizen_manager"
-#define FIFO_EPIDEMIC_SIM_TO_PRESS_AGENCY_URL "/tmp/epidemic_sim_to_press_agency"
+#define FIFO_PRESS_AGENCY_TO_EPIDEMIC_SIM_URL "/tmp/press_agency_to_epidemic_sim"
+
+#define PERSONNAL_CONTAMINATION_PRIORITY 1
+#define CITIZENS_CONTAMINATION_PRIORITY 2
+#define CITY_CONTAMINATION_PRIORITY 5
+#define DEADS_NUMBER_PRIORITY 10
+
+#define MAX_MESSAGES_SIZE 100
 
 typedef enum { NEXT_ROUND, END_OF_SIMULATION } fifo_message_e;
 

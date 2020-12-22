@@ -91,6 +91,9 @@ typedef struct tile {
  * @param house_tiles_nb Number of HOUSE tiles.
  * @param hospital_tiles_nb Number of HOSPITAL tiles.
  * @param firestation_tiles_nb Number of FIRESTATION tiles.
+ * @param citizens_sick_number Number of citizens currently sick in the city.
+ * @param city_mean_contamination Mean contamination of the city.
+ * @param deads_number Actual deads number in the city.
  */
 typedef struct city {
     tile_t map[CITY_WIDTH][CITY_HEIGHT];
@@ -99,6 +102,9 @@ typedef struct city {
     int house_tiles_nb;
     int hospital_tiles_nb;
     int firestation_tiles_nb;
+    int citizens_sick_number;
+    double city_mean_contamination;
+    int deads_number;
 } city_t;
 
 #endif

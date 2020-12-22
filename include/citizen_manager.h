@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-21
+ * @version 1.0.0 - 2020-12-22
  */
 
 /**
@@ -22,6 +22,8 @@
 
 #ifndef CITIZEN_MANAGER_H
 #define CITIZEN_MANAGER_H
+
+#include <mqueue.h>
 
 #include "city.h"
 
@@ -91,6 +93,18 @@ void *journalist_process(void *status);
  * @param status Status of the simple citizen.
  */
 void *simple_citizen_process(void *status);
+
+/**
+ * @brief Open a message queue for a journalist to send news to the press agency.
+ * @return The message queue that has been openend.
+ */
+mqd_t open_mqueue();
+
+/**
+ * @brief A journalist send news to the press agency.
+ * @param status Status of the journalist.
+ */
+void send_news(status_t *status);
 
 /**
  * @brief Every citizen does the same actions during a round.

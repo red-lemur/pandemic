@@ -38,8 +38,10 @@
 #include "names.h"
 
 int fifo_from_epidemic_sim;
-
 fifo_message_e message_from_epidemic_sim[1];
+
+mqd_t mq;
+struct mq_attr attr;
 
 city_t *city;
 
@@ -53,16 +55,13 @@ pthread_mutex_t mutex;
 int citizen_round;
 
 unsigned int id_generator = 0;
-
 int init_doctors_in_hospital = 0;
 int init_firemen_in_firestation = 0;
-
 int citizen_ended_nb = 0;
 
 void *doctor_process(void *status)
 {
     status_t *st = (status_t *) status;
-    
     int current_round;
     
     init_doctor(st);
@@ -86,7 +85,6 @@ void *doctor_process(void *status)
 void *fireman_process(void *status)
 {
     status_t *st = (status_t *) status;
-
     int current_round;
     
     init_fireman(st);
@@ -110,7 +108,6 @@ void *fireman_process(void *status)
 void *journalist_process(void *status)
 {
     status_t *st = (status_t *) status;
-
     int current_round;
     
     init_citizen(st, JOURNALIST);
@@ -121,10 +118,11 @@ void *journalist_process(void *status)
             citizen_ended();
             break;
         }
-
+        
         if (current_round < citizen_round) {
             current_round++;
             every_citizen_round(st);
+            send_news(st);
         }
     }
     
@@ -134,7 +132,6 @@ void *journalist_process(void *status)
 void *simple_citizen_process(void *status)
 {
     status_t *st = (status_t *) status;
-
     int current_round;
 
     init_citizen(st, SIMPLE_CITIZEN);
@@ -153,6 +150,43 @@ void *simple_citizen_process(void *status)
     }
     
     pthread_exit(NULL);
+}
+
+mqd_t open_mqueue()
+{
+    mqd_t mq;
+    
+    mq = mq_open(MQUEUE, O_WRONLY | O_NONBLOCK, 0600, NULL);
+    if (mq == (mqd_t) -1) {
+        perror("Error when calling mq_open()\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (mq_getattr(mq, &attr) != 0) {
+        perror("Error when calling mq_getattr()\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    return mq;
+}
+
+void send_news(status_t *status)
+{
+    char buffer[MAX_MESSAGES_SIZE];
+    
+    sprintf(buffer, "Nombre total de citoyens contaminés : %d", city->citizens_sick_number);
+    mq_send(mq, buffer, sizeof(buffer), CITIZENS_CONTAMINATION_PRIORITY);
+    
+    sprintf(buffer, "Niveau moyen de contamination de la ville : %.3lf",
+            city->city_mean_contamination);
+    mq_send(mq, buffer, sizeof(buffer), CITY_CONTAMINATION_PRIORITY);
+    
+    sprintf(buffer, "Nombre total de morts : %d", city->deads_number);
+    mq_send(mq, buffer, sizeof(buffer), DEADS_NUMBER_PRIORITY);
+    
+    sprintf(buffer, "Taux de contamination du journaliste %s : %.3lf", status->name,
+            status->contamination);
+    mq_send(mq, buffer, sizeof(buffer), PERSONNAL_CONTAMINATION_PRIORITY);
 }
 
 void every_citizen_round(status_t *status)
@@ -992,12 +1026,18 @@ int main(void)
     }
     
     city = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, shared_memory, 0);
+
+    mq = open_mqueue();
     
     init_population();
 
     citizens_simulation();
     
     wait_for_citizens_to_end();
+
+    if (mq_close(mq) < 0) {
+        perror("Error when calling mq_close(mq)\n");
+    }
     
     close(fifo_from_epidemic_sim);
     

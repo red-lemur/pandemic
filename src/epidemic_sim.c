@@ -41,9 +41,11 @@ struct sigaction action_sigusr1;
 struct sigaction action_sigusr2;
 
 int fifo_to_citizen_manager;
-int fifo_to_press_agency;
+int fifo_from_press_agency;
 
-fifo_message_e message_to_fifos[1];
+fifo_message_e message_to_citizen_manager[1];
+
+pid_t press_agency_pid;
 
 int simulation_is_not_over = 1;
 
@@ -67,6 +69,38 @@ int create_shared_memory()
     }
     
     return mem;
+}
+
+void update_infos()
+{
+    int citizens_sick_number;
+    int deads_number;
+    double city_tiles_contamination_sum;
+
+    int i;
+    int row;
+    int col;
+
+    citizens_sick_number = 0;
+    deads_number = 0;
+    for (i = 0; i < CITIZENS_NB; i++) {
+        if (city->citizens[i].type == BURNED || city->citizens[i].type == DEAD) {
+            deads_number++;
+        } else if (city->citizens[i].is_sick) {
+            citizens_sick_number++;
+        }
+    }
+
+    city_tiles_contamination_sum = 0;
+    for (row = 0; row < CITY_HEIGHT; row++) {
+        for (col = 0; col < CITY_WIDTH; col++) {     
+            city_tiles_contamination_sum += city->map[col][row].contamination;
+        }
+    }           
+    
+    city->citizens_sick_number = citizens_sick_number;
+    city->deads_number = deads_number;
+    city->city_mean_contamination = city_tiles_contamination_sum / (CITY_HEIGHT * CITY_WIDTH);
 }
 
 void update_wastelands_contamination()
@@ -213,48 +247,26 @@ void launch_simulation()
 
 void simulation_round()
 {
-    ++round_nb;
-    //printf("=====================================================\n"); ///
-    //printf("Round %d\n", round_nb); ///
-    
+    ++round_nb;    
     save_evolution(round_nb);
-    
-    update_wastelands_contamination();
 
-    /* DEBUG */
-    /*int row, col;
-    printf("=====================================================\n"); ///
-    for (row = 0; row < CITY_HEIGHT; row++) {
-        for (col = 0; col < CITY_WIDTH; col++) {
-            printf("[%d %.3lf %d] ", city->map[col][row].type,
-                   city->map[col][row].contamination, city->map[col][row].citizens_nb);
-        }
-        printf("\n");
-    }
-    int i;
-    for (i = 0; i < CITIZENS_NB; i++) {
-        printf("%d %d %.3lf T%d S%d tr:%d %s\n",
-               city->citizens[i].x, city->citizens[i].y,
-               city->citizens[i].contamination, city->citizens[i].type,
-               city->citizens[i].is_sick,
-               city->citizens[i].treatment_pouches_nb, city->citizens[i].name);
-               }*/
-    /* ----- */
+    update_infos();
+    update_wastelands_contamination();
 
     hospitals_heal();
     
-    *message_to_fifos = NEXT_ROUND;
-    //write(fifo_to_press_agency, message_to_fifos, sizeof(int));
-    write(fifo_to_citizen_manager, message_to_fifos, sizeof(int));
+    *message_to_citizen_manager = NEXT_ROUND;
+    write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(fifo_message_e));
 
     update_interface(round_nb, city);
 }
 
 void end_of_simulation()
 {
-    *message_to_fifos = END_OF_SIMULATION;
-    write(fifo_to_press_agency, message_to_fifos, sizeof(int));
-    write(fifo_to_citizen_manager, message_to_fifos, sizeof(int));
+    *message_to_citizen_manager = END_OF_SIMULATION;
+    write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(fifo_message_e));
+
+    kill(press_agency_pid, SIGUSR1);
     
     simulation_is_not_over = 0;
 }
@@ -302,15 +314,15 @@ void save_evolution(int round_nb)
 
 void open_fifos()
 {
-    unlink(FIFO_EPIDEMIC_SIM_TO_PRESS_AGENCY_URL);
-    if (mkfifo(FIFO_EPIDEMIC_SIM_TO_PRESS_AGENCY_URL, S_IRUSR | S_IWUSR) == -1) {
+    unlink(FIFO_PRESS_AGENCY_TO_EPIDEMIC_SIM_URL);
+    if (mkfifo(FIFO_PRESS_AGENCY_TO_EPIDEMIC_SIM_URL, S_IRUSR | S_IWUSR) == -1) {
         perror("Error while creating a FIFO to press_agency\n");
         exit(EXIT_FAILURE);
     }
 
-    fifo_to_press_agency = open(FIFO_EPIDEMIC_SIM_TO_PRESS_AGENCY_URL, O_WRONLY);
+    fifo_from_press_agency = open(FIFO_PRESS_AGENCY_TO_EPIDEMIC_SIM_URL, O_RDONLY);
     
-    if (fifo_to_press_agency == -1) {
+    if (fifo_from_press_agency == -1) {
         perror("Error while opening a FIFO to press_agency\n");
         exit(EXIT_FAILURE);
     }
@@ -331,8 +343,8 @@ void open_fifos()
 
 void close_fifos()
 {
-    close(fifo_to_press_agency);
-    unlink(FIFO_EPIDEMIC_SIM_TO_PRESS_AGENCY_URL);
+    close(fifo_from_press_agency);
+    unlink(FIFO_PRESS_AGENCY_TO_EPIDEMIC_SIM_URL);
     
     close(fifo_to_citizen_manager);
     unlink(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);
@@ -356,6 +368,8 @@ int main(void)
     sigaction(SIGUSR2, &action_sigusr2, NULL);
 
     open_fifos();
+
+    read(fifo_from_press_agency, &press_agency_pid, sizeof(pid_t));
     
     create_interface(city);
     reset_evolution_file();

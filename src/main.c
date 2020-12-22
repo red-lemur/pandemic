@@ -30,7 +30,7 @@
 
 #define MAX_PID_LENGTH 7
 
-void make_sos_file(int epidemic_sim_pid, int citizen_manager_pid, int timer_pid)
+void make_sos_file(pid_t epidemic_sim_pid, pid_t citizen_manager_pid, pid_t timer_pid)
 {
     FILE* file = NULL;
     int fd;
@@ -43,7 +43,7 @@ void make_sos_file(int epidemic_sim_pid, int citizen_manager_pid, int timer_pid)
         fprintf(file, "kill -9 %d\n", citizen_manager_pid);
         fprintf(file, "kill -9 %d\n", timer_pid);
         fprintf(file, "rm %s\n", FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);
-        fprintf(file, "rm %s\n", FIFO_EPIDEMIC_SIM_TO_PRESS_AGENCY_URL);
+        fprintf(file, "rm %s\n", FIFO_PRESS_AGENCY_TO_EPIDEMIC_SIM_URL);
         fclose(file);
     }
 }
@@ -52,9 +52,9 @@ int main(void)
 {
     char epidemic_sim_pid_arg[MAX_PID_LENGTH + 1];
     
-    int epidemic_sim_pid;
-    int citizen_manager_pid;
-    int timer_pid;
+    pid_t epidemic_sim_pid;
+    pid_t citizen_manager_pid;
+    pid_t timer_pid;
     
     epidemic_sim_pid = fork();
 

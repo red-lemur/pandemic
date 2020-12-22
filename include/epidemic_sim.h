@@ -38,6 +38,11 @@
 int create_shared_memory();
 
 /**
+ * @brief Update useful informations for journalists.
+ */
+void update_infos();
+
+/**
  * @brief Update the contamination level of the WASTELAND tiles.
  */
 void update_wastelands_contamination();

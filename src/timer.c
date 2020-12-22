@@ -28,7 +28,7 @@
 
 struct sigaction action;
 
-int epidemic_sim_pid;
+pid_t epidemic_sim_pid;
 int game_round_duration;
 int game_round_nb = 0;
 

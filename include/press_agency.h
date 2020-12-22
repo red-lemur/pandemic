@@ -17,7 +17,7 @@
 /**
  * @file press_agency.h
  * 
- * 
+ * Receive news from the journalists who circulate in the city and post them continuously.
  */
 
 #ifndef PRESS_AGENCY_H
@@ -26,9 +26,19 @@
 #include <mqueue.h>
 
 /**
+ * @brief Print the header of the press agency on the terminal.
+ */
+void print_header();
+
+/**
  * @brief Create the memory queue.
  * @return The memory queue for exchanges between journalists and the press agency.
  */
 mqd_t create_mqueue();
+
+/**
+ * Close everything that has been opened and end the program.
+ */
+void end_press_agency();
 
 #endif
