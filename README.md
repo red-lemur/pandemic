@@ -3,28 +3,21 @@
 ## Authors : Jérémy Poullain / Guillaume Revel
 
 ### This project contains :
-#### README.md
+- README.md:
 Describe the project
-
-#### Makefile
+- Makefile:
 Generate the executable files of the project
-
-#### ./src
+- ./src:
 Contain the source files (.c) of the project
-
-#### ./include
+- ./include:
 Contain the include files (.h) of the project
-
-#### ./obj
+- ./obj:
 Contain the object files (.o) of the project
-
-#### ./bin
+- ./bin:
 Contain the executable files of the project
-
-#### ./etc
+- ./etc:
 Contain useful files to load maps, graphics and to help the user
-
-#### ./doc
+- ./doc:
 Contain documentation on the project
 
 ### Make commands:
