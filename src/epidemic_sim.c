@@ -152,7 +152,6 @@ void hospital_heal_tile(tile_t *tile)
         }
         
         heal_citizen(sickest);
-        //printf("%s HEALED BY HOSPITAL\n", sickest->name); ///
     }
 }
 
@@ -300,18 +299,13 @@ void save_evolution(int round_nb)
     }
 }
 
-/* mqd_t create_mqueue(); */
-
 int main(void)
 {
     int shared_memory;
     
-    /*mqd_t mqueue;*/
-    
     srand(time(NULL));
     
     shared_memory = create_shared_memory();
-    /*mqueue = create_mqueue();*/
 
     city = mmap(NULL, sizeof(city_t), PROT_READ | PROT_WRITE, MAP_SHARED, shared_memory, 0);
     load_map(city);
@@ -346,9 +340,11 @@ int main(void)
     if (munmap(city, sizeof(city_t)) < 0) {
         perror("Error when calling munmap()\n");
     }
+    
     if (close(shared_memory) < 0) {
         perror("Error when calling close(mem)\n");
     }
+    
     if (shm_unlink(SHARED_MEM) < 0) {
         perror("Error when calling shm_unlink()\n");
     }
@@ -357,6 +353,4 @@ int main(void)
         printf("Error calling gnuplot\n");
         exit(EXIT_FAILURE);
     }
-    
-    //exit(EXIT_SUCCESS);
 }

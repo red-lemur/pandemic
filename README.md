@@ -4,21 +4,21 @@
 
 ### This project contains :
 - README.md:
-Describe the project
+describe the project
 - Makefile:
-Generate the executable files of the project
+generate the executable files of the project
 - ./src:
-Contain the source files (.c) of the project
+contain the source files (.c) of the project
 - ./include:
-Contain the include files (.h) of the project
+contain the include files (.h) of the project
 - ./obj:
-Contain the object files (.o) of the project
+contain the object files (.o) of the project
 - ./bin:
-Contain the executable files of the project
+contain the executable files of the project
 - ./etc:
-Contain useful files to load maps, graphics and to help the user
+contain useful files to load maps, graphics and to help the user
 - ./doc:
-Contain documentation on the project
+contain documentation on the project
 
 ### Make commands:
 To compile the project:

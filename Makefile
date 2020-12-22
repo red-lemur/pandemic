@@ -21,7 +21,7 @@ obj/%.o:
 obj/main.o: src/main.c include/file_paths.h include/exchanges_between_processes.h
 obj/epidemic_sim.o: src/epidemic_sim.c include/epidemic_sim.h src/city_sim.c include/city_sim.h src/map_generator.c include/map_generator.h include/city.h include/exchanges_between_processes.h src/interface.c include/interface.h include/file_paths.h
 obj/citizen_manager.o: src/citizen_manager.c include/citizen_manager.h include/epidemic_sim.h include/city.h include/exchanges_between_processes.h src/util.c include/util.h include/city_sim.h include/names.h
-obj/press_agency.o: src/press_agency.c
+obj/press_agency.o: src/press_agency.c include/press_agency.h include/exchanges_between_processes.h
 obj/timer.o: src/timer.c include/timer.h
 obj/city_sim.o: src/city_sim.c include/city_sim.h include/city.h
 obj/map_generator.o: src/map_generator.c include/map_generator.h src/city_sim.c include/city_sim.h include/city.h src/util.c include/util.h

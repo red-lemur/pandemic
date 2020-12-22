@@ -1,5 +1,6 @@
 #!/bin/sh
-kill -9 20905
-kill -9 20906
-kill -9 20907
+kill -9 24571
+kill -9 24581
+kill -9 24582
 rm /tmp/epidemic_sim_to_citizen_manager
+tizen_manager

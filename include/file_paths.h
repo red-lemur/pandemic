@@ -26,6 +26,8 @@
 #define EPIDEMIC_SIM_URL "./bin/epidemic_sim"
 #define EPIDEMIC_SIM_NAME "epidemic_sim"
 
+#define PRESS_AGENCY_COMMAND "gnome-terminal --geometry 80x10+1000+600 -- ./bin/press_agency"
+
 #define CITIZEN_MANAGER_URL "./bin/citizen_manager"
 #define CITIZEN_MANAGER_NAME "citizen_manager"
 

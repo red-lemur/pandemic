@@ -291,8 +291,6 @@ void refill_treatment_pouches(status_t *status)
     pthread_mutex_lock(&mutex);
     status->treatment_pouches_nb = MAX_TREATMENT_POUCHES_NB;
     pthread_mutex_unlock(&mutex);
-
-    //printf("%s REFILL TREATMENT\n", status->name); ///
 }
 
 void refill_sprayer(status_t *status)
@@ -300,8 +298,6 @@ void refill_sprayer(status_t *status)
     pthread_mutex_lock(&mutex);
     status->sprayer_capacity = MAX_SPRAYER_CAPACITY;
     pthread_mutex_unlock(&mutex);
-
-    //printf("%s REFILL SPRAYER\n", status->name); ///
 }
 
 void add_citizen_in_tile(tile_t *tile)
@@ -419,7 +415,6 @@ void move_citizen(status_t *status)
                 status->must_leave = 1;
                 status->days_spent_in_hospital_healthy = 0;
                 pthread_mutex_unlock(&mutex);
-                //printf("%s MUST LEAVE\n", status->name); ///
             }
             
             increase_citizen_contamination(status, STAY);
@@ -507,7 +502,6 @@ void healed_citizens_must_leave_hospital(tile_t* tile)
             pthread_mutex_lock(&mutex);
             city->citizens[i].must_leave = 1;
             pthread_mutex_unlock(&mutex);
-            //printf("%s MUST LEAVE HOSPITAL BECAUSE\n", city->citizens[i].name); ///
         }
     }
 }
@@ -661,14 +655,12 @@ void doctor_can_heal(status_t *status)
     
     if (status->is_sick) {
         heal(status, status);
-        //printf("%s HEALS HIMSELF\n", status->name); ///
         return;
     }
 
     sickest = get_sickest_citizen_of_tile(&(city->map[status->x][status->y]));
     if (sickest != NULL) {
         heal(status, sickest);
-        //printf("%s HEALS %s\n", status->name, sickest->name); ///
     }
 }
 
@@ -802,8 +794,6 @@ void contaminate_citizens_in_same_tile(status_t *status)
         city->citizens[i].contamination += status->contamination
             * CONTAMINATION_CITIZEN_BY_CITIZEN;
         
-        //printf("%s CONTAMINATE_TILE %s\n", status->name, city->citizens[i].name);///
-        
         if (city->citizens[i].contamination > MAX_CONTAMINATION) {
             city->citizens[i].contamination = MAX_CONTAMINATION;
         }
@@ -843,8 +833,6 @@ void contaminate_citizens_in_wastelands_around(status_t *status)
         city->citizens[i].contamination += status->contamination
             * CONTAMINATION_CITIZEN_BY_CITIZEN;
         
-        //printf("%s CONTAMINATE_WASTELAND %s\n", status->name, city->citizens[i].name);///
-        
         if (city->citizens[i].contamination > MAX_CONTAMINATION) {
             city->citizens[i].contamination = MAX_CONTAMINATION;
         }
@@ -869,7 +857,6 @@ void burn_the_dead(status_t *status)
             city->citizens[i].type = BURNED;
             city->citizens[i].is_sick = 0;
             pthread_mutex_unlock(&mutex);
-            //printf("%s BURNED BY %s\n", city->citizens[i].name, status->name);/// 
         }
     }
 }
@@ -917,7 +904,6 @@ void risk_of_death(status_t *status)
         pthread_mutex_lock(&mutex);
         status->type = DEAD;
         pthread_mutex_unlock(&mutex);
-        //printf("=====> %s    %d\n", status->name, status->sickness_duration);///
     }
 }
 

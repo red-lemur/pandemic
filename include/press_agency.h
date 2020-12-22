@@ -15,19 +15,20 @@
  */
 
 /**
- * @file exchanges_between_processes.h
- *
- * Constants to manage the exchanges between processes.
+ * @file press_agency.h
+ * 
+ * 
  */
 
-#ifndef EXCHANGES_BETWEEN_PROCESSES_H
-#define EXCHANGES_BETWEEN_PROCESSES_H
+#ifndef PRESS_AGENCY_H
+#define PRESS_AGENCY_H
 
-#define SHARED_MEM "/simulation"
-#define MQUEUE "/news"
+#include <mqueue.h>
 
-#define FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL "/tmp/epidemic_sim_to_citizen_manager"
-
-typedef enum { NEXT_ROUND, END_OF_SIMULATION } fifo_message_e;
+/**
+ * @brief Create the memory queue.
+ * @return The memory queue for exchanges between journalists and the press agency.
+ */
+mqd_t create_mqueue();
 
 #endif

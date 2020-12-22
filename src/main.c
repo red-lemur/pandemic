@@ -68,6 +68,8 @@ int main(void)
     
     sprintf(epidemic_sim_pid_arg, "%d", epidemic_sim_pid);
     
+    system(PRESS_AGENCY_COMMAND);
+    
     citizen_manager_pid = fork();
     
     switch (citizen_manager_pid) {
