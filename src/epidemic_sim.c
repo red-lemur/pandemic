@@ -41,8 +41,9 @@ struct sigaction action_sigusr1;
 struct sigaction action_sigusr2;
 
 int fifo_to_citizen_manager;
+int fifo_to_press_agency;
 
-fifo_message_e message_to_citizen_manager[1];
+fifo_message_e message_to_fifos[1];
 
 int simulation_is_not_over = 1;
 
@@ -242,18 +243,18 @@ void simulation_round()
 
     hospitals_heal();
     
-    *message_to_citizen_manager = NEXT_ROUND;
-    write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));
+    *message_to_fifos = NEXT_ROUND;
+    //write(fifo_to_press_agency, message_to_fifos, sizeof(int));
+    write(fifo_to_citizen_manager, message_to_fifos, sizeof(int));
 
     update_interface(round_nb, city);
 }
 
 void end_of_simulation()
 {
-    //printf("End of the simulation !\n"); ///
-
-    *message_to_citizen_manager = END_OF_SIMULATION;
-    write(fifo_to_citizen_manager, message_to_citizen_manager, sizeof(int));
+    *message_to_fifos = END_OF_SIMULATION;
+    write(fifo_to_press_agency, message_to_fifos, sizeof(int));
+    write(fifo_to_citizen_manager, message_to_fifos, sizeof(int));
     
     simulation_is_not_over = 0;
 }
@@ -299,6 +300,44 @@ void save_evolution(int round_nb)
     }
 }
 
+void open_fifos()
+{
+    unlink(FIFO_EPIDEMIC_SIM_TO_PRESS_AGENCY_URL);
+    if (mkfifo(FIFO_EPIDEMIC_SIM_TO_PRESS_AGENCY_URL, S_IRUSR | S_IWUSR) == -1) {
+        perror("Error while creating a FIFO to press_agency\n");
+        exit(EXIT_FAILURE);
+    }
+
+    fifo_to_press_agency = open(FIFO_EPIDEMIC_SIM_TO_PRESS_AGENCY_URL, O_WRONLY);
+    
+    if (fifo_to_press_agency == -1) {
+        perror("Error while opening a FIFO to press_agency\n");
+        exit(EXIT_FAILURE);
+    }
+        
+    unlink(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);
+    if (mkfifo(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL, S_IRUSR | S_IWUSR) == -1) {
+        perror("Error while creating a FIFO to citizen_manager\n");
+        exit(EXIT_FAILURE);
+    }
+
+    fifo_to_citizen_manager = open(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL, O_WRONLY);
+    
+    if (fifo_to_citizen_manager == -1) {
+        perror("Error while opening a FIFO to citizen_manager\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void close_fifos()
+{
+    close(fifo_to_press_agency);
+    unlink(FIFO_EPIDEMIC_SIM_TO_PRESS_AGENCY_URL);
+    
+    close(fifo_to_citizen_manager);
+    unlink(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);
+}
+
 int main(void)
 {
     int shared_memory;
@@ -316,26 +355,14 @@ int main(void)
     action_sigusr2.sa_handler = &end_of_simulation;
     sigaction(SIGUSR2, &action_sigusr2, NULL);
 
-    unlink(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);
-    if (mkfifo(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL, S_IRUSR | S_IWUSR) == -1) {
-        perror("Error while creating a FIFO\n");
-        exit(EXIT_FAILURE);
-    }
-    
-    fifo_to_citizen_manager = open(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL, O_WRONLY);
-    
-    if (fifo_to_citizen_manager == -1) {
-        perror("Error while opening a FIFO\n");
-        exit(EXIT_FAILURE);
-    }
+    open_fifos();
     
     create_interface(city);
     reset_evolution_file();
     launch_simulation();
     end_interface();
 
-    close(fifo_to_citizen_manager);
-    unlink(FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);
+    close_fifos();
     
     if (munmap(city, sizeof(city_t)) < 0) {
         perror("Error when calling munmap()\n");
@@ -348,6 +375,8 @@ int main(void)
     if (shm_unlink(SHARED_MEM) < 0) {
         perror("Error when calling shm_unlink()\n");
     }
+
+    clear_terminal();
 
     if (execlp("gnuplot", "gnuplot", "-persist", COMMANDS_URL, (void*) 0) < 0) {
         printf("Error calling gnuplot\n");

@@ -996,7 +996,7 @@ int main(void)
     init_population();
 
     citizens_simulation();
-
+    
     wait_for_citizens_to_end();
     
     close(fifo_from_epidemic_sim);

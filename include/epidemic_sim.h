@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-21
+ * @version 1.0.0 - 2020-12-22
  */
 
 /**
@@ -110,5 +110,15 @@ void reset_evolution_file();
  * @param round_nb Number of the simulation round.
  */
 void save_evolution(int round_nb);
+
+/**
+ * @brief Open the FIFOs to communicate with other processes.
+ */
+void open_fifos();
+
+/**
+ * @brief Close the FIFOs to communicate with other processes.
+ */
+void close_fifos();
 
 #endif

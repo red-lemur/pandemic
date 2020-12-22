@@ -27,6 +27,7 @@
 #define MQUEUE "/news"
 
 #define FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL "/tmp/epidemic_sim_to_citizen_manager"
+#define FIFO_EPIDEMIC_SIM_TO_PRESS_AGENCY_URL "/tmp/epidemic_sim_to_press_agency"
 
 typedef enum { NEXT_ROUND, END_OF_SIMULATION } fifo_message_e;
 

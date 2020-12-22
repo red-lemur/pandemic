@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-21
+ * @version 1.0.0 - 2020-12-22
  */
 
 /**
@@ -26,6 +26,8 @@
 #include <ncurses.h>
 
 #include "city.h"
+
+#define CLEAR "gnome-terminal -- ./etc/clear"
 
 #define MARGIN 10
 #define VERTICAL_MARGIN 2
@@ -172,5 +174,10 @@ void update_interface(int round_nb, city_t *city);
  * @brief Delete all windows and quit the interface.
  */
 void end_interface();
+
+/**
+ * @brief Clear the terminal in case something went wrong.
+ */
+void clear_terminal();
 
 #endif

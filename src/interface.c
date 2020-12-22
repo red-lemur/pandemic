@@ -385,3 +385,8 @@ void end_interface()
     
     endwin();
 }
+
+void clear_terminal()
+{
+    system(CLEAR);
+}

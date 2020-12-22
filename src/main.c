@@ -43,7 +43,8 @@ void make_sos_file(int epidemic_sim_pid, int citizen_manager_pid, int timer_pid)
         fprintf(file, "kill -9 %d\n", citizen_manager_pid);
         fprintf(file, "kill -9 %d\n", timer_pid);
         fprintf(file, "rm %s\n", FIFO_EPIDEMIC_SIM_TO_CITIZEN_MANAGER_URL);
-	fclose(file);
+        fprintf(file, "rm %s\n", FIFO_EPIDEMIC_SIM_TO_PRESS_AGENCY_URL);
+        fclose(file);
     }
 }
 
