@@ -1,5 +1,5 @@
 #!/bin/sh
-
-stty -raw
-stty echo
-stty onlcr
+kill -9 20905
+kill -9 20906
+kill -9 20907
+rm /tmp/epidemic_sim_to_citizen_manager

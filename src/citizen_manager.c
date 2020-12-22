@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-21
+ * @version 1.0.0 - 2020-12-22
  */
 
 /**
@@ -678,7 +678,7 @@ void heal(status_t *doctor_status, status_t *citizen_status)
     doctor_status->treatment_pouches_nb--;
     citizen_status->is_sick = 0;
     citizen_status->sickness_duration = 0;
-    //citizen_status->contamination = 0;
+    citizen_status->contamination = 0;
     pthread_mutex_unlock(&mutex);
 }
 

@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-21
+ * @version 1.0.0 - 2020-12-22
  */
 
 /**
@@ -267,7 +267,7 @@ void initialize_situations()
 
     char *situations_title[NUMBER_OF_SITUATIONS] = { "Personnes saines",
                                                      "Personnes malades",
-                                                     "Personnes décédées   ",
+                                                     "Cadavres contaminés   ",
                                                      "Cadavres brûlés" };
     situation = newwin(2 * NUMBER_OF_SITUATIONS - 1,
                        size_of_longest_string(situations_title, NUMBER_OF_SITUATIONS),
