@@ -29,7 +29,6 @@
 #include <math.h>
 
 #include "press_agency.h"
-#include "city.h"
 #include "citizen_manager.h"
 #include "exchanges_between_processes.h"
 
