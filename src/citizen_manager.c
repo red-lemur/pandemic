@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-22
+ * @version 1.0.0 - 2020-12-23
  */
 
 /**
@@ -54,7 +54,7 @@ pthread_mutex_t mutex;
 
 int citizen_round;
 
-unsigned int id_generator = 0;
+unsigned int id_generator = 1;
 int init_doctors_in_hospital = 0;
 int init_firemen_in_firestation = 0;
 int citizen_ended_nb = 0;

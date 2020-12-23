@@ -42,13 +42,13 @@ void allocate_receive_parameters();
 void receive_news();
 
 /**
- * @brief Close everything that has been opened and end the program.
- */
-void end_press_agency();
-
-/**
  * @brief Print the header of the press agency on the terminal.
  */
 void print_header();
+
+/**
+ * @brief Close everything that has been opened and end the program.
+ */
+void end_press_agency();
 
 #endif

@@ -25,8 +25,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <string.h>
 
 #include "press_agency.h"
+#include "city.h"
+#include "citizen_manager.h"
 #include "exchanges_between_processes.h"
 
 mqd_t mq;
@@ -74,16 +77,76 @@ void allocate_receive_parameters()
 }
 
 void receive_news()
-{    
-    print_header();
+{
+    char journalists_name[JOURNALISTS_NB][CITIZEN_NAME_MAX_LENGTH];
+    char journalist_name[CITIZEN_NAME_MAX_LENGTH];
+    
+    double journalists_contamination[JOURNALISTS_NB];
+    double journalist_contamination;
+
+    double city_mean_contamination;
+    
+    unsigned int journalists_id[JOURNALISTS_NB];
+    unsigned int journalist_id;
+    
+    int journalists_dead[JOURNALISTS_NB];
+
+    int citizens_sick_number;
+    int deads_number;
+
+    int i;
+    for (i = 0; i < JOURNALISTS_NB; i++) {
+        journalists_id[i] = 0;
+        journalists_contamination[i] = 0;
+        journalists_dead[i] = 0;
+    }
+    
+    //print_header();
+    
+    citizens_sick_number = -1;
+    city_mean_contamination = -1;
+    deads_number = -1;
     for (;;) {
         if (mq_receive(mq, buffer, attr.mq_msgsize, priority) > 0) {
-            printf("%d %s\n", *priority, buffer);////
+            switch (*priority) {
+            case CITIZENS_CONTAMINATION_PRIORITY:
+                citizens_sick_number = atoi(buffer);
+                break;
+            case CITY_CONTAMINATION_PRIORITY:
+                city_mean_contamination = strtod(buffer, NULL);
+                break;
+            case DEADS_NUMBER_PRIORITY:
+                deads_number = atoi(buffer);
+                break;
+            case PERSONNAL_CONTAMINATION_PRIORITY:
+                sscanf(buffer, "%ud %s %lf", &journalist_id, journalist_name,
+                       &journalist_contamination);
+                
+                for (i = 0; i < JOURNALISTS_NB; i++) {
+                    if (!journalists_id[i] || journalists_id[i] == journalist_id) {
+                        if (!journalists_id[i]) {
+                            journalists_id[i] = journalist_id;
+                            strcpy(journalists_name[i], journalist_name);
+                        }
+                        journalists_contamination[i] = journalist_contamination;
+                        break;
+                    }
+                }
+            }
         }
+        
+        //////PRINT
         /* A FINIR : MINORER LES DEPECHES, PAS JUSTE LES PRINT BETEMENT */
         /* => TESTER LES PRIORITES */
         /* PEUT-ETRE CHANGER LES MESSAGES DANS CITIZEN_MANAGER POUR LAISSER QUE LES CHIFFRES */
     }
+}
+
+void print_header()
+{
+    printf("+------------------------------------------------------------------------------+\n");
+    printf("|                                BREAKING  NEWS                                |\n");
+    printf("+------------------------------------------------------------------------------+\n");
 }
 
 void end_press_agency()
@@ -100,13 +163,6 @@ void end_press_agency()
     }
     
     exit(EXIT_SUCCESS);
-}
-
-void print_header()
-{
-    printf("+------------------------------------------------------------------------------+\n");
-    printf("|                                BREAKING  NEWS                                |\n");
-    printf("+------------------------------------------------------------------------------+\n");
 }
 
 int main(void)
