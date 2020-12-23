@@ -111,7 +111,7 @@ void init_fixed_tiles(city_t *city, int indexes_taken[CITY_WIDTH][CITY_HEIGHT], 
             break;
         case 'X' : break;
         default :
-            perror("Error while reading the map\n");
+            printf("Error while reading the map\n");
             exit(EXIT_FAILURE);
         }
     }
@@ -187,7 +187,7 @@ void replace_unitialized_tiles_with_wasteland(city_t *city,
 void contaminate_some_wastelands(city_t *city)
 {
     tile_t **wastelands = malloc(city->wasteland_tiles_nb*sizeof(tile_t *));
-
+    
     double contamination;
     
     int col;

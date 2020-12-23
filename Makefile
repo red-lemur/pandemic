@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -I./include -Wall -Wextra -pedantic -g
+CFLAGS = -I./include -Wall -Wextra -pedantic
 LDFLAGS = -lrt -lpthread -lm -lncurses
 EXEC = bin/main bin/epidemic_sim bin/citizen_manager bin/press_agency bin/timer
 

@@ -45,15 +45,11 @@ char *buffer = NULL;
 unsigned int *priority = NULL;
 
 char journalists_name[JOURNALISTS_NB][CITIZEN_NAME_MAX_LENGTH];
-char journalist_name[CITIZEN_NAME_MAX_LENGTH];
-
 double journalists_contamination[JOURNALISTS_NB];
-double journalist_contamination;
 
 double city_mean_contamination;
 
 unsigned int journalists_id[JOURNALISTS_NB];
-unsigned int journalist_id;
 
 int journalists_dead[JOURNALISTS_NB];
 
@@ -96,7 +92,7 @@ void allocate_receive_parameters()
 void receive_news()
 {    
     int i;
-
+    
     for (i = 0; i < JOURNALISTS_NB; i++) {
         journalists_id[i] = 0;
         journalists_contamination[i] = 0;
@@ -121,6 +117,10 @@ void receive_news()
 
 void store_news()
 {
+    char journalist_name[CITIZEN_NAME_MAX_LENGTH];
+    double journalist_contamination;
+    unsigned int journalist_id;
+    
     int i;
     
     switch (*priority) {

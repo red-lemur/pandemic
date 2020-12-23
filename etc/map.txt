@@ -1,3 +1,4 @@
+// Types of tiles :
 // F = FIRESTATION
 // H = HOSPITAL
 // O = HOUSE
@@ -5,6 +6,7 @@
 // X = UNDETERMINED
 
 // MAP
+// You can change the letters to change the tiles
 XXXXXXF
 XXXXXXX
 XXXXXXX
@@ -14,4 +16,7 @@ XXXXXXX
 FXXXXXX
 
 // RANDOM
+// Tiles that will be placed randomly on the map
 O 12
+
+// The map is filled with WASTELAND if there remain some UNDETERMINED tiles
