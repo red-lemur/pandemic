@@ -1,1 +1,12 @@
-Ceci est un fichier inutile à supprimer une fois le rapport fait.
+Ceci est un fichier à supprimer une fois le rapport fait.
+
+Aides :
+- Forums
+https://stackoverflow.com/
+https://www.geeksforgeeks.org/
+- Documentation officielle
+http://www.gnuplot.info/
+https://linux.die.net/man/
+
+Source ASCII :
+http://www.asciiworld.com/-Death-Co-.html
