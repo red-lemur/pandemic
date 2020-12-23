@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-22
+ * @version 1.0.0 - 2020-12-23
  */
 
 /**
@@ -26,8 +26,6 @@
 #include <ncurses.h>
 
 #include "city.h"
-
-#define CLEAR "gnome-terminal -- ./etc/clear"
 
 #define MARGIN 10
 #define VERTICAL_MARGIN 2

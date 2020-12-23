@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-22
+ * @version 1.0.0 - 2020-12-23
  */
 
 /**
@@ -26,19 +26,29 @@
 #include <mqueue.h>
 
 /**
- * @brief Print the header of the press agency on the terminal.
- */
-void print_header();
-
-/**
  * @brief Create the memory queue.
  * @return The memory queue for exchanges between journalists and the press agency.
  */
 mqd_t create_mqueue();
 
 /**
- * Close everything that has been opened and end the program.
+ * @brief Allocate the parameters for the mq_receive() function.
+ */
+void allocate_receive_parameters();
+
+/**
+ * @brief The press agency receives in a loop news from the journalists.
+ */
+void receive_news();
+
+/**
+ * @brief Close everything that has been opened and end the program.
  */
 void end_press_agency();
+
+/**
+ * @brief Print the header of the press agency on the terminal.
+ */
+void print_header();
 
 #endif

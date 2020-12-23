@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-22
+ * @version 1.0.0 - 2020-12-23
  */
 
 /**
@@ -37,14 +37,8 @@ struct sigaction action;
 int fifo_to_epidemic_sim;
 fifo_message_e message_to_epidemic_sim[1];
 
-char *buffer;
-
-void print_header()
-{
-    printf("+------------------------------------------------------------------------------+\n");
-    printf("|                                BREAKING  NEWS                                |\n");
-    printf("+------------------------------------------------------------------------------+\n");
-}
+char *buffer = NULL;
+unsigned int *priority = NULL;
 
 mqd_t create_mqueue()
 {
@@ -64,8 +58,37 @@ mqd_t create_mqueue()
     return mq;
 }
 
+void allocate_receive_parameters()
+{
+    buffer = malloc(attr.mq_msgsize * sizeof(char));
+    if (buffer == NULL) {
+        perror("Error when calling malloc()\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    priority = malloc(sizeof(unsigned int));
+    if (priority == NULL) {
+        perror("Error when calling malloc()\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void receive_news()
+{    
+    print_header();
+    for (;;) {
+        if (mq_receive(mq, buffer, attr.mq_msgsize, priority) > 0) {
+            printf("%d %s\n", *priority, buffer);////
+        }
+        /* A FINIR : MINORER LES DEPECHES, PAS JUSTE LES PRINT BETEMENT */
+        /* => TESTER LES PRIORITES */
+        /* PEUT-ETRE CHANGER LES MESSAGES DANS CITIZEN_MANAGER POUR LAISSER QUE LES CHIFFRES */
+    }
+}
+
 void end_press_agency()
 {
+    free(priority);
     free(buffer);
     
     if (mq_close(mq) < 0) {
@@ -79,20 +102,21 @@ void end_press_agency()
     exit(EXIT_SUCCESS);
 }
 
+void print_header()
+{
+    printf("+------------------------------------------------------------------------------+\n");
+    printf("|                                BREAKING  NEWS                                |\n");
+    printf("+------------------------------------------------------------------------------+\n");
+}
+
 int main(void)
 {
     pid_t pid;
-
+    
     action.sa_handler = &end_press_agency;
     sigaction(SIGUSR1, &action, NULL);
     
     mq = create_mqueue();
-    
-    buffer = (char *) malloc(attr.mq_msgsize);
-    if (buffer == NULL) {
-        perror("Error when calling malloc()\n");
-        exit(EXIT_FAILURE);
-    }
     
     do {
         fifo_to_epidemic_sim = open(FIFO_PRESS_AGENCY_TO_EPIDEMIC_SIM_URL, O_WRONLY);
@@ -100,15 +124,7 @@ int main(void)
     
     pid = getpid();
     write(fifo_to_epidemic_sim, &pid, sizeof(pid_t));
-    
-    print_header();
-    
-    for (;;) {
-        if (mq_receive(mq, buffer, attr.mq_msgsize, NULL) > 0) {
-            printf("%s\n", buffer);////
-        }
-        /* A FINIR : MINORER LES DEPECHES, PAS JUSTE LES PRINT BETEMENT */
-        /* => TESTER LES PRIORITES */
-        /* PEUT-ETRE CHANGER LES MESSAGES DANS CITIZEN_MANAGER POUR LAISSER QUE LES CHIFFRES */
-    }
+
+    allocate_receive_parameters();
+    receive_news();
 }

@@ -1,6 +1,6 @@
 #!/bin/sh
-kill -9 31057
-kill -9 31067
-kill -9 31068
+kill -9 17304
+kill -9 17314
+kill -9 17315
 rm /tmp/epidemic_sim_to_citizen_manager
 rm /tmp/press_agency_to_epidemic_sim
