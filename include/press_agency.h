@@ -25,6 +25,11 @@
 
 #include <mqueue.h>
 
+#define MIN_JOURNALIST_CONTAMINATION_TO_DISPLAY 0.8
+
+#define CONTAMINATION_MINORATION 0.1
+#define DEADS_MINORATION 0.35
+
 /**
  * @brief Create the memory queue.
  * @return The memory queue for exchanges between journalists and the press agency.
@@ -42,9 +47,30 @@ void allocate_receive_parameters();
 void receive_news();
 
 /**
+ * @brief Store the news to print them later.
+ */
+void store_news();
+
+/**
+ * @brief Check if all the journalists are dead.
+ * @return 1 if all the journalists are dead / 0 if not.
+ */
+int all_journalists_are_dead();
+
+/**
  * @brief Print the header of the press agency on the terminal.
  */
 void print_header();
+
+/**
+ * @brief Print the news on the terminal.
+ */
+void print_news();
+
+/**
+ * @brief This happen when all the journalists are dead.
+ */
+void press_agency_zombie();
 
 /**
  * @brief Close everything that has been opened and end the program.

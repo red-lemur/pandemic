@@ -1,5 +1,5 @@
 set title "Résultats de la simulation" font ",20"
-set xlabel 'Nombre de tours'
+set xlabel 'Nombre de jours'
 set ylabel 'Nombre de citoyens
 set style line 1 lc rgb 'gray' lt 1
 set grid ytics ls 1

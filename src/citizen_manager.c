@@ -173,20 +173,23 @@ mqd_t open_mqueue()
 void send_news(status_t *status)
 {
     char buffer[MAX_MESSAGES_SIZE];
-    
-    sprintf(buffer, "Nombre total de citoyens contaminés : %d", city->citizens_sick_number);
-    mq_send(mq, buffer, sizeof(buffer), CITIZENS_CONTAMINATION_PRIORITY);
-    
-    sprintf(buffer, "Niveau moyen de contamination de la ville : %.3lf",
-            city->city_mean_contamination);
-    mq_send(mq, buffer, sizeof(buffer), CITY_CONTAMINATION_PRIORITY);
-    
-    sprintf(buffer, "Nombre total de morts : %d", city->deads_number);
-    mq_send(mq, buffer, sizeof(buffer), DEADS_NUMBER_PRIORITY);
-    
-    sprintf(buffer, "Taux de contamination du journaliste %s : %.3lf", status->name,
-            status->contamination);
-    mq_send(mq, buffer, sizeof(buffer), PERSONNAL_CONTAMINATION_PRIORITY);
+
+    if (status->type == JOURNALIST) {
+        sprintf(buffer, "%d", city->citizens_sick_number);
+        mq_send(mq, buffer, sizeof(buffer), CITIZENS_CONTAMINATION_PRIORITY);
+        
+        sprintf(buffer, "%.3lf", city->city_mean_contamination);
+        mq_send(mq, buffer, sizeof(buffer), CITY_CONTAMINATION_PRIORITY);
+        
+        sprintf(buffer, "%d", city->deads_number);
+        mq_send(mq, buffer, sizeof(buffer), DEADS_NUMBER_PRIORITY);
+        
+        sprintf(buffer, "%ud %.3lf %s", status->id, status->contamination, status->name);
+        mq_send(mq, buffer, sizeof(buffer), PERSONNAL_CONTAMINATION_PRIORITY);
+    } else {
+        sprintf(buffer, "%ud", status->id);
+        mq_send(mq, buffer, sizeof(buffer), DEAD_PRIORITY);
+    }
 }
 
 void every_citizen_round(status_t *status)

@@ -11,7 +11,7 @@
 /**
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-22
+ * @version 1.0.0 - 2020-12-23
  */
 
 /**
@@ -32,9 +32,10 @@
 #define PERSONNAL_CONTAMINATION_PRIORITY 1
 #define CITIZENS_CONTAMINATION_PRIORITY 2
 #define CITY_CONTAMINATION_PRIORITY 5
+#define DEAD_PRIORITY 9
 #define DEADS_NUMBER_PRIORITY 10
 
-#define MAX_MESSAGES_SIZE 100
+#define MAX_MESSAGES_SIZE 80
 
 typedef enum { NEXT_ROUND, END_OF_SIMULATION } fifo_message_e;
 

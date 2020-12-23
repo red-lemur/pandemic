@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <string.h>
+#include <math.h>
 
 #include "press_agency.h"
 #include "city.h"
@@ -42,6 +43,22 @@ fifo_message_e message_to_epidemic_sim[1];
 
 char *buffer = NULL;
 unsigned int *priority = NULL;
+
+char journalists_name[JOURNALISTS_NB][CITIZEN_NAME_MAX_LENGTH];
+char journalist_name[CITIZEN_NAME_MAX_LENGTH];
+
+double journalists_contamination[JOURNALISTS_NB];
+double journalist_contamination;
+
+double city_mean_contamination;
+
+unsigned int journalists_id[JOURNALISTS_NB];
+unsigned int journalist_id;
+
+int journalists_dead[JOURNALISTS_NB];
+
+int citizens_sick_number;
+int deads_number;
 
 mqd_t create_mqueue()
 {
@@ -77,69 +94,86 @@ void allocate_receive_parameters()
 }
 
 void receive_news()
-{
-    char journalists_name[JOURNALISTS_NB][CITIZEN_NAME_MAX_LENGTH];
-    char journalist_name[CITIZEN_NAME_MAX_LENGTH];
-    
-    double journalists_contamination[JOURNALISTS_NB];
-    double journalist_contamination;
-
-    double city_mean_contamination;
-    
-    unsigned int journalists_id[JOURNALISTS_NB];
-    unsigned int journalist_id;
-    
-    int journalists_dead[JOURNALISTS_NB];
-
-    int citizens_sick_number;
-    int deads_number;
-
+{    
     int i;
+
     for (i = 0; i < JOURNALISTS_NB; i++) {
         journalists_id[i] = 0;
         journalists_contamination[i] = 0;
         journalists_dead[i] = 0;
     }
     
-    //print_header();
-    
     citizens_sick_number = -1;
     city_mean_contamination = -1;
     deads_number = -1;
-    for (;;) {
+    for (;;) {        
         if (mq_receive(mq, buffer, attr.mq_msgsize, priority) > 0) {
-            switch (*priority) {
-            case CITIZENS_CONTAMINATION_PRIORITY:
-                citizens_sick_number = atoi(buffer);
-                break;
-            case CITY_CONTAMINATION_PRIORITY:
-                city_mean_contamination = strtod(buffer, NULL);
-                break;
-            case DEADS_NUMBER_PRIORITY:
-                deads_number = atoi(buffer);
-                break;
-            case PERSONNAL_CONTAMINATION_PRIORITY:
-                sscanf(buffer, "%ud %s %lf", &journalist_id, journalist_name,
-                       &journalist_contamination);
-                
-                for (i = 0; i < JOURNALISTS_NB; i++) {
-                    if (!journalists_id[i] || journalists_id[i] == journalist_id) {
-                        if (!journalists_id[i]) {
-                            journalists_id[i] = journalist_id;
-                            strcpy(journalists_name[i], journalist_name);
-                        }
-                        journalists_contamination[i] = journalist_contamination;
-                        break;
-                    }
-                }
+            if (all_journalists_are_dead()) {
+                press_agency_zombie();
+                continue;
+            } else {
+                store_news(&priority, buffer);            
+                print_news();
             }
         }
-        
-        //////PRINT
-        /* A FINIR : MINORER LES DEPECHES, PAS JUSTE LES PRINT BETEMENT */
-        /* => TESTER LES PRIORITES */
-        /* PEUT-ETRE CHANGER LES MESSAGES DANS CITIZEN_MANAGER POUR LAISSER QUE LES CHIFFRES */
     }
+}
+
+void store_news()
+{
+    int i;
+    
+    switch (*priority) {
+    case CITIZENS_CONTAMINATION_PRIORITY:
+        citizens_sick_number = atoi(buffer);
+        break;
+    case CITY_CONTAMINATION_PRIORITY:
+        city_mean_contamination = strtod(buffer, NULL);
+        break;
+    case DEADS_NUMBER_PRIORITY:
+        deads_number = atoi(buffer);
+        break;
+    case PERSONNAL_CONTAMINATION_PRIORITY:
+        sscanf(buffer, "%ud %lf %s", &journalist_id, &journalist_contamination,
+               journalist_name);
+        
+        for (i = 0; i < JOURNALISTS_NB; i++) {
+            if (!journalists_id[i] || journalists_id[i] == journalist_id) {
+                if (!journalists_id[i]) {
+                    journalists_id[i] = journalist_id;
+                    strcpy(journalists_name[i], journalist_name);
+                }
+                journalists_contamination[i] = journalist_contamination;
+                break;
+            }
+        }
+        break;
+    case DEAD_PRIORITY:
+        sscanf(buffer, "%ud", &journalist_id);
+        
+        for (i = 0; i < JOURNALISTS_NB; i++) {
+            if (!journalists_id[i] || journalists_id[i] == journalist_id) {
+                if (!journalists_id[i]) {
+                    journalists_id[i] = journalist_id;
+                }
+                journalists_dead[i] = 1;
+                break;
+            }
+        }
+    }
+}
+
+int all_journalists_are_dead()
+{
+    int i;
+    
+    for (i = 0; i < JOURNALISTS_NB; i++) {
+        if (!journalists_dead[i]) {
+            return 0;
+        }
+    }
+
+    return 1;
 }
 
 void print_header()
@@ -147,6 +181,62 @@ void print_header()
     printf("+------------------------------------------------------------------------------+\n");
     printf("|                                BREAKING  NEWS                                |\n");
     printf("+------------------------------------------------------------------------------+\n");
+}
+
+void print_news()
+{
+    int i;
+    
+    system("clear");
+    print_header();
+    
+    if (citizens_sick_number != -1) {
+        printf("Nombre total de citoyens malades : %d\n",
+               citizens_sick_number - (int) round(citizens_sick_number
+                                                  * CONTAMINATION_MINORATION));
+    }
+    
+    if (city_mean_contamination != -1) {
+        printf("Niveau moyen de contamination de la ville : %.3lf\n",
+               city_mean_contamination - city_mean_contamination * CONTAMINATION_MINORATION);
+    }
+    
+    if (deads_number != -1) {
+        printf("Nombre total de morts : %d\n",
+               deads_number - (int) round(deads_number * DEADS_MINORATION));
+    }
+    
+    for (i = 0; i < JOURNALISTS_NB; i++) {
+        if (journalists_id[i] && !journalists_dead[i]
+            && journalists_contamination[i] >= MIN_JOURNALIST_CONTAMINATION_TO_DISPLAY) {
+            printf("Taux de contamination du journaliste %s : %.3lf\n",
+                   journalists_name[i], journalists_contamination[i]);
+        }
+    }
+}
+
+void press_agency_zombie()
+{
+    system("clear");
+    printf("                                     uuuuuuu\n");
+    printf("                                 uu$$$$$$$$$$$uu\n");
+    printf("                              uu$$$$$$$$$$$$$$$$$uu\n");
+    printf("                             u$$$$$$$$$$$$$$$$$$$$$u\n");
+    printf("                            u$$$$$$$$$$$$$$$$$$$$$$$u\n");
+    printf("                           u$$$$$$$$$$$$$$$$$$$$$$$$$u\n");
+    printf("                           u$$$$$$$$$$$$$$$$$$$$$$$$$u\n");
+    printf("                           u$$$$$$\"   \"$$$\"   \"$$$$$$u\n");
+    printf("                           \"$$$$\"      u$u       $$$$\"\n");
+    printf("                            $$$u       u$u       u$$$\n");
+    printf("                            $$$u      u$$$u      u$$$\n");
+    printf("                             \"$$$$uu$$$   $$$uu$$$$\"\n");
+    printf("                              \"$$$$$$$\"   \"$$$$$$$\"\n");
+    printf("                                u$$$$$$$u$$$$$$$u\n");
+    printf("                                 u$\"$\"$\"$\"$\"$\"$u\n");
+    printf("                                 $$u$ $ $ $ $u$$\n");
+    printf("                                  $$$$$u$u$u$$$\n");
+    printf("                                   \"$$$$$$$$$\"\n");
+    printf("                                      \"\"\"\"\"\n");
 }
 
 void end_press_agency()
@@ -180,7 +270,7 @@ int main(void)
     
     pid = getpid();
     write(fifo_to_epidemic_sim, &pid, sizeof(pid_t));
-
+    
     allocate_receive_parameters();
     receive_news();
 }
