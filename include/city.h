@@ -12,7 +12,7 @@
  * @author Alain Lebret <alain.lebret@ensicaen.fr> [original author]
  * @author Jérémy Poullain <jeremy.poullain@ecole.ensicaen.fr>
  * @author Guillaume Revel <guillaume.revel@ecole.ensicaen.fr>
- * @version 1.0.0 - 2020-12-23
+ * @version 1.0.0 - 2020-12-28
  */
 
 /**
@@ -50,19 +50,19 @@ typedef enum { SIMPLE_CITIZEN, FIREMAN, DOCTOR, JOURNALIST, DEAD, BURNED } citiz
  * @param sprayer_capacity Sprayer capacity if the citizen is a FIREMAN.
  */
 typedef struct status {
-    unsigned int id;
-    char name[CITIZEN_NAME_MAX_LENGTH];
-    unsigned int x;
-    unsigned int y;
-    double contamination;
-    int is_sick;
-    int sickness_duration;
-    citizen_type_e type;
-    int days_spent_in_hospital_healthy;
-    int must_leave;
-    int doctor_can_enter_hospital;
-    int treatment_pouches_nb;
-    double sprayer_capacity;
+        unsigned int id;
+        char name[CITIZEN_NAME_MAX_LENGTH];
+        unsigned int x;
+        unsigned int y;
+        double contamination;
+        int is_sick;
+        int sickness_duration;
+        citizen_type_e type;
+        int days_spent_in_hospital_healthy;
+        int must_leave;
+        int doctor_can_enter_hospital;
+        int treatment_pouches_nb;
+        double sprayer_capacity;
 } status_t;
 
 /**
@@ -75,12 +75,12 @@ typedef struct status {
  * @param contamination The contamination level on the tile.
  */
 typedef struct tile {
-    unsigned int x;
-    unsigned int y;
-    int capacity;
-    int citizens_nb;
-    building_type_e type;
-    double contamination;
+        unsigned int x;
+        unsigned int y;
+        int capacity;
+        int citizens_nb;
+        building_type_e type;
+        double contamination;
 } tile_t;
 
 /**
@@ -96,15 +96,15 @@ typedef struct tile {
  * @param deads_number Actual deads number in the city.
  */
 typedef struct city {
-    tile_t map[CITY_WIDTH][CITY_HEIGHT];
-    status_t citizens[CITIZENS_NB];
-    int wasteland_tiles_nb;
-    int house_tiles_nb;
-    int hospital_tiles_nb;
-    int firestation_tiles_nb;
-    int citizens_sick_number;
-    double city_mean_contamination;
-    int deads_number;
+        tile_t map[CITY_WIDTH][CITY_HEIGHT];
+        status_t citizens[CITIZENS_NB];
+        int wasteland_tiles_nb;
+        int house_tiles_nb;
+        int hospital_tiles_nb;
+        int firestation_tiles_nb;
+        int citizens_sick_number;
+        double city_mean_contamination;
+        int deads_number;
 } city_t;
 
 #endif

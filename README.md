@@ -69,3 +69,6 @@ the following command:
 ```{bash}
 $ ./etc/sos
 ```
+
+If you have any problem with gnuplot, make sure you installed the 'gnuplot-qt' package on your
+device.
