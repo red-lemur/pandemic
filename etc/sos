@@ -1,7 +1,0 @@
-#!/bin/sh
-kill -9 2082
-kill -9 2092
-kill -9 2093
-rm /tmp/epidemic_sim_to_citizen_manager
-rm /tmp/press_agency_to_epidemic_sim
-c_sim

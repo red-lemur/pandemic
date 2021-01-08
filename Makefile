@@ -45,5 +45,7 @@ clean:
 
 distclean: clean
 	rm -f $(BIN)/*
+	rm -f $(ETC)/evolution.txt
+	rm -f $(ETC)/sos
 
 .PHONY: all clean distclean
